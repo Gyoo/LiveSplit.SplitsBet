@@ -1,0 +1,276 @@
+﻿using LiveSplit.Model;
+using LiveSplit.Model.Input;
+using LiveSplit.Options;
+using LiveSplit.SplitsBet;
+using LiveSplit.UI.Components;
+using LiveSplit.Web.Share;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace LiveSplit.SplitsBet
+{
+    public class SplitsBetComponent : LogicComponent
+    {
+        public Settings Settings { get; set; }
+        protected LiveSplitState State { get; set; }
+        public Dictionary<String, Action<TwitchChat.User, string>> Commands { get; set; }
+        private Dictionary<string, Tuple<TimeSpan, double>>[] Bets { get; set; }
+        private Dictionary<string, int>[] Scores { get; set; }
+        private Time SegmentBeginning { get; set; }
+       
+        public override string ComponentName
+        {
+            get { return "Splits Bet Bot"; }
+        }
+
+        public SplitsBetComponent(LiveSplitState state)
+        {
+            /*Initializing variables*/
+            Settings = new Settings();
+            Commands = new Dictionary<string, Action<TwitchChat.User, string>>();
+            State = state;
+            SegmentBeginning = new Time();
+            Bets = new Dictionary<string, Tuple<TimeSpan, double>>[State.Run.Count];
+            Scores = new Dictionary<string, int>[State.Run.Count];
+
+            /*Adding available commands*/
+            Commands.Add("bet", Bet);
+            Commands.Add("checkbet", CheckBet);
+            Commands.Add("betcommands", BetCommands);
+            Commands.Add("score", Score);
+            Commands.Add("highscore", Highscore);
+
+            /*Setting Livesplit events*/
+            State.OnStart += new EventHandler(StartBets);
+            State.OnSplit += new EventHandler(CalculateScore);
+            State.OnUndoSplit += new EventHandler(RollbackScore);
+            State.OnSkipSplit += new EventHandler(CopyScore);
+            State.OnReset += State_OnReset;
+
+            /*Bot is ready !*/
+            Start();
+        }
+        
+        public void Start()
+        {
+            if (!Twitch.Instance.IsLoggedIn)
+            {
+                var thread = new Thread(() => Twitch.Instance.VerifyLogin()) { ApartmentState = ApartmentState.STA };
+                thread.Start();
+                thread.Join();
+            }
+
+            Twitch.Instance.ConnectToChat(Twitch.Instance.ChannelName);
+            Twitch.Instance.Chat.OnMessage += OnMessage;
+        }
+
+
+        private void OnMessage(object sender, TwitchChat.Message message)
+        {
+            if (message.Text.StartsWith("!"))
+            {
+                try
+                {
+                    var splits = message.Text.Substring(1).Split(new char[] { ' ' }, 2);
+                    Commands[splits[0].ToLower()].Invoke(message.User, splits.Length > 1 ? splits[1] : "");
+                }
+                catch { }
+            }
+            try
+            {
+                Commands["anymessage"].Invoke(message.User, "");
+            }
+            catch { }
+        }
+
+        /* Commands */
+        private void Bet(TwitchChat.User user, string argument)
+        {
+            
+            if (State.CurrentPhase == TimerPhase.Running)
+            {
+                double Percentage = (State.CurrentTime - SegmentBeginning).RealTime.Value.TotalSeconds / State.CurrentSplit.BestSegmentTime.RealTime.Value.TotalSeconds;
+                if (Percentage < 0.9)
+                {
+                    Regex hhmmss = new Regex("^([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$");
+                    Regex mmss = new Regex("^[0-5][0-9](:[0-5][0-9])?$");
+                    Regex mss = new Regex("^[0-9](:[0-5][0-9])?$");
+                    if (!Bets[State.CurrentSplitIndex].ContainsKey(user.Name))
+                    {
+                        if (mss.Match(argument).Success)
+                        {
+                            argument = "00:0" + argument;
+                            Tuple<TimeSpan, double> t = new Tuple<TimeSpan, double>(TimeSpan.Parse(argument), Math.Exp(-2*Math.Pow(Percentage,2)));
+                            Bets[State.CurrentSplitIndex].Add(user.Name, t);
+                        }
+                        else if (mmss.Match(argument).Success)
+                        {
+                            argument = "00:" + argument;
+                            Tuple<TimeSpan, double> t = new Tuple<TimeSpan, double>(TimeSpan.Parse(argument), Math.Exp(-2*Math.Pow(Percentage,2)));
+                            Bets[State.CurrentSplitIndex].Add(user.Name, t);
+                        }
+                        else if (hhmmss.Match(argument).Success)
+                        {
+                            Tuple<TimeSpan, double> t = new Tuple<TimeSpan, double>(TimeSpan.Parse(argument), Math.Exp(-2*Math.Pow(Percentage,2)));
+                            Bets[State.CurrentSplitIndex].Add(user.Name, t);
+                        }
+                        else Twitch.Instance.Chat.SendMessage("/me " + user.Name + " : Invalid time, please retry");
+                    }
+                    else Twitch.Instance.Chat.SendMessage("/me " + user.Name + " : You already bet, silly !");
+                }
+                else Twitch.Instance.Chat.SendMessage("/me Too late to bet for this split, wait for the next one !");
+            }
+            else Twitch.Instance.Chat.SendMessage("/me Timer is not running, bets are closed");
+        }
+
+        private void CheckBet(TwitchChat.User user, string argument)
+        {
+            if (State.CurrentPhase == TimerPhase.Running)
+            {
+                if (Bets[State.CurrentSplitIndex].ContainsKey(user.Name))
+                    Twitch.Instance.Chat.SendMessage("/me " + user.Name + " : Your bet for " + State.CurrentSplit.Name + " is " + Bets[State.CurrentSplitIndex][user.Name]);
+                else
+                    Twitch.Instance.Chat.SendMessage("/me " + user.Name + " : You didn't bet for this split yet !");
+            }
+            else Twitch.Instance.Chat.SendMessage("/me Timer is not running, bets are closed");
+        }
+
+        private void BetCommands(TwitchChat.User user, string argument)
+        {
+            string ret = "";
+            foreach (KeyValuePair<string, Action<TwitchChat.User, string>> entry in Commands)
+            {
+                ret += "!" + entry.Key + " ";
+            }
+            Twitch.Instance.Chat.SendMessage("/me " + ret);
+        }
+
+        private void Score(TwitchChat.User user, string argument)
+        {
+            if (State.CurrentPhase == TimerPhase.Running)
+            {
+                Twitch.Instance.Chat.SendMessage("/me " + user.Name + "'s score is " + Scores[State.CurrentSplitIndex - 1][user.Name]);
+            }
+            else Twitch.Instance.Chat.SendMessage("/me Timer is not running, no score available");
+        }
+
+        private void Highscore(TwitchChat.User user, string argument)
+        {
+            if (State.CurrentPhase == TimerPhase.Running)
+            {
+                if (State.CurrentSplitIndex > 0)
+                {
+                    List<KeyValuePair<string, int>> myList = Scores[State.CurrentSplitIndex - 1].ToList();
+
+                    myList.Sort(
+                        delegate(KeyValuePair<string, int> firstPair,
+                        KeyValuePair<string, int> nextPair)
+                        {
+                            return firstPair.Value.CompareTo(nextPair.Value);
+                        }
+                    );
+                    Twitch.Instance.Chat.SendMessage("/me " + myList[0].Key + "'s score is " + myList[0].Value);
+                }
+                else Twitch.Instance.Chat.SendMessage("/me No highscore yet !");
+            }
+            else Twitch.Instance.Chat.SendMessage("/me Timer is not running, no score available");
+        }
+
+
+        /*Events*/
+
+        private void StartBets(object sender, EventArgs e)
+        {
+            SegmentBeginning = State.CurrentTime;
+            Bets[State.CurrentSplitIndex] = new Dictionary<string, Tuple<TimeSpan, double>>();
+            Twitch.Instance.Chat.SendMessage("/me Place your bets for " + State.CurrentSplit.Name + " ! Best segment for this split is " + State.CurrentSplit.BestSegmentTime.RealTime.Value);
+        }
+
+        private void CalculateScore(object sender, EventArgs e)
+        {
+            Time Segment = State.CurrentTime - SegmentBeginning;
+            Scores[State.CurrentSplitIndex - 1] = State.CurrentSplitIndex > 1 ? Scores[State.CurrentSplitIndex - 2] : new Dictionary<string, int>();
+            foreach (KeyValuePair<string, Tuple<TimeSpan, double>> entry in Bets[State.CurrentSplitIndex - 1])
+            {
+                if (Scores[State.CurrentSplitIndex - 1].ContainsKey(entry.Key))
+                {
+                    Scores[State.CurrentSplitIndex - 1][entry.Key] += (int)(entry.Value.Item2 * (int)Segment.RealTime.Value.TotalSeconds * Math.Exp(-(Math.Pow((int)Segment.RealTime.Value.TotalSeconds - (int)entry.Value.Item1.TotalSeconds, 2) / (int)Segment.RealTime.Value.TotalSeconds)));
+                }
+                else Scores[State.CurrentSplitIndex - 1].Add(entry.Key, (int)(entry.Value.Item2 * (int)Segment.RealTime.Value.TotalSeconds * Math.Exp(-(Math.Pow((int)Segment.RealTime.Value.TotalSeconds - (int)entry.Value.Item1.TotalSeconds, 2) / (int)Segment.RealTime.Value.TotalSeconds))));
+            }
+            StartBets(sender, e);
+        }
+
+        private void ShowScore()
+        {
+            List<KeyValuePair<string, int>> myList = Scores[State.CurrentSplitIndex-1].ToList();
+
+            myList.Sort(
+                delegate(KeyValuePair<string, int> firstPair,
+                KeyValuePair<string, int> nextPair)
+                {
+                    return firstPair.Value.CompareTo(nextPair.Value);
+                }
+            );
+
+            foreach (KeyValuePair<string, int> entry in myList)
+            {
+                Twitch.Instance.Chat.SendMessage("/me " + entry.Key + " : " + entry.Value);
+                //TODO Show Delta score as well (Ex : "Gyoo : 420 (+42)" )
+            }
+        }
+
+        private void RollbackScore(object sender, EventArgs e)
+        {
+            Scores[State.CurrentSplitIndex].Clear();
+        }
+
+        private void CopyScore(object sender, EventArgs e)
+        {
+            Scores[State.CurrentSplitIndex - 1] = Scores[State.CurrentSplitIndex - 2];
+            Bets[State.CurrentSplitIndex] = new Dictionary<string, Tuple<TimeSpan, double>>();
+        }
+
+        private void ResetSplitsBet()
+        {
+            Array.Clear(Bets, 0, Bets.Length);
+            Array.Clear(Scores, 0, Scores.Length);
+        }
+        void State_OnReset(object sender, TimerPhase value)
+        {
+            ResetSplitsBet();
+        }
+
+        /*Misc*/
+
+        public override System.Xml.XmlNode GetSettings(System.Xml.XmlDocument document)
+        {
+            return Settings.GetSettings(document);
+        }
+
+        public override System.Windows.Forms.Control GetSettingsControl(UI.LayoutMode mode)
+        {
+            return Settings;
+        }
+
+        public override void SetSettings(System.Xml.XmlNode settings)
+        {
+            Settings.SetSettings(settings);
+        }
+
+        public override void Update(UI.IInvalidator invalidator, Model.LiveSplitState state, float width, float height, UI.LayoutMode mode)
+        {
+        }
+
+        public override void Dispose()
+        {
+        }
+    }
+}
