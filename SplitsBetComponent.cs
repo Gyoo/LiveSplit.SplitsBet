@@ -211,17 +211,9 @@ namespace LiveSplit.SplitsBet
 
         private void ShowScore()
         {
-            List<KeyValuePair<string, int>> myList = Scores[State.CurrentSplitIndex-1].ToList();
+            var orderedScores = Scores[State.CurrentSplitIndex - 1].OrderByDescending(x => x.Value);
 
-            myList.Sort(
-                delegate(KeyValuePair<string, int> firstPair,
-                KeyValuePair<string, int> nextPair)
-                {
-                    return firstPair.Value.CompareTo(nextPair.Value);
-                }
-            );
-
-            foreach (KeyValuePair<string, int> entry in myList)
+            foreach (var entry in orderedScores)
             {
                 Twitch.Instance.Chat.SendMessage("/me " + entry.Key + ": " + entry.Value);
                 //TODO Show Delta score as well (Ex : "Gyoo : 420 (+42)" )
