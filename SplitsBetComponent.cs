@@ -104,6 +104,7 @@ namespace LiveSplit.SplitsBet
                     Regex mss = new Regex("^[0-9](:[0-5][0-9])?$");
                     if (!Bets[State.CurrentSplitIndex].ContainsKey(user.Name))
                     {
+                        //TODO !bet 0:00 should be refused
                         if (mss.Match(argument).Success)
                         {
                             argument = "00:0" + argument;
