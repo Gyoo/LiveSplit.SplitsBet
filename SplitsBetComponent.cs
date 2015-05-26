@@ -104,8 +104,8 @@ namespace LiveSplit.SplitsBet
             //TODO Manage Game Time
             if (State.CurrentPhase == TimerPhase.Running)
             {
-                double Percentage = (State.CurrentTime - SegmentBeginning).RealTime.Value.TotalSeconds / State.CurrentSplit.BestSegmentTime.RealTime.Value.TotalSeconds;
-                if (Percentage < 0.9)
+                var percentage = (State.CurrentTime - SegmentBeginning).RealTime.Value.TotalSeconds / State.CurrentSplit.BestSegmentTime.RealTime.Value.TotalSeconds;
+                if (percentage < 0.9)
                 {
                     if (!Bets[State.CurrentSplitIndex].ContainsKey(user.Name))
                     {
@@ -115,7 +115,7 @@ namespace LiveSplit.SplitsBet
                             if (time.CompareTo(MinimumTime) <= 0) {
                                 Twitch.Instance.Chat.SendMessage("/me " + user.Name + ", Nice try, but it's invalid");
                             }
-                            var t = new Tuple<TimeSpan, double>(time, Math.Exp(-2 * Math.Pow(Percentage, 2)));
+                            var t = new Tuple<TimeSpan, double>(time, Math.Exp(-2 * Math.Pow(percentage, 2)));
                             Bets[State.CurrentSplitIndex].Add(user.Name, t);
                         }
                         catch
@@ -244,7 +244,7 @@ namespace LiveSplit.SplitsBet
 
         private void CalculateScore(object sender, EventArgs e)
         {
-            Time Segment = State.CurrentTime - SegmentBeginning;
+            var segment = State.CurrentTime - SegmentBeginning;
             var timeFormatter = new ShortTimeFormatter();
             Twitch.Instance.Chat.SendMessage("/me Time for this split was " + timeFormatter.Format(Segment.RealTime));
             Scores[State.CurrentSplitIndex - 1] = State.CurrentSplitIndex > 1 ? new Dictionary<string, int>(Scores[State.CurrentSplitIndex - 2]) : new Dictionary<string, int>();
@@ -252,9 +252,9 @@ namespace LiveSplit.SplitsBet
             {
                 if (Scores[State.CurrentSplitIndex - 1].ContainsKey(entry.Key))
                 {
-                    Scores[State.CurrentSplitIndex - 1][entry.Key] += (int)(entry.Value.Item2 * (int)Segment.RealTime.Value.TotalSeconds * Math.Exp(-(Math.Pow((int)Segment.RealTime.Value.TotalSeconds - (int)entry.Value.Item1.TotalSeconds, 2) / (int)Segment.RealTime.Value.TotalSeconds)));
+                    Scores[State.CurrentSplitIndex - 1][entry.Key] += (int)(entry.Value.Item2 * (int)segment.RealTime.Value.TotalSeconds * Math.Exp(-(Math.Pow((int)segment.RealTime.Value.TotalSeconds - (int)entry.Value.Item1.TotalSeconds, 2) / (int)segment.RealTime.Value.TotalSeconds)));
                 }
-                else Scores[State.CurrentSplitIndex - 1].Add(entry.Key, (int)(entry.Value.Item2 * (int)Segment.RealTime.Value.TotalSeconds * Math.Exp(-(Math.Pow((int)Segment.RealTime.Value.TotalSeconds - (int)entry.Value.Item1.TotalSeconds, 2) / (int)Segment.RealTime.Value.TotalSeconds))));
+                else Scores[State.CurrentSplitIndex - 1].Add(entry.Key, (int)(entry.Value.Item2 * (int)segment.RealTime.Value.TotalSeconds * Math.Exp(-(Math.Pow((int)segment.RealTime.Value.TotalSeconds - (int)entry.Value.Item1.TotalSeconds, 2) / (int)segment.RealTime.Value.TotalSeconds))));
             }
             StartBets(sender, e);
         }
@@ -265,7 +265,7 @@ namespace LiveSplit.SplitsBet
 
             foreach (var entry in orderedScores)
             {
-                int delta = 0;
+                var delta = 0;
                 if (State.CurrentSplitIndex - 2 >= 0) {
                     delta = entry.Value - Scores[State.CurrentSplitIndex - 2][entry.Key];
                 }
