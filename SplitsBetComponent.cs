@@ -111,6 +111,12 @@ namespace LiveSplit.SplitsBet
                     {
                         try
                         {
+                            if (argument.ToLower().Contains("Kappa"))
+                            {
+                                argument = "420:69";
+                                Twitch.Instance.Chat.SendMessage("/me " + user.Name + " bet 420:69 Kappa");
+                            }
+
                             var time = TimeSpanParser.Parse(argument);
                             if (time.CompareTo(MinimumTime) <= 0) {
                                 Twitch.Instance.Chat.SendMessage("/me " + user.Name + ", Nice try, but it's invalid");
@@ -268,7 +274,7 @@ namespace LiveSplit.SplitsBet
             foreach (var entry in orderedScores)
             {
                 var delta = 0;
-                if (State.CurrentSplitIndex - 2 >= 0) {
+                if (State.CurrentSplitIndex - 2 >= 0 && Scores[State.CurrentSplitIndex - 2].ContainsKey(entry.Key)) {
                     delta = entry.Value - Scores[State.CurrentSplitIndex - 2][entry.Key];
                 }
                 Twitch.Instance.Chat.SendMessage("/me " + entry.Key + ": " + entry.Value + (delta != 0 ? (" (" + (delta < 0 ? "-" : "+") + delta + ")") : ""));
