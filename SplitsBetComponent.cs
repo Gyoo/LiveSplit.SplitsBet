@@ -93,30 +93,19 @@ namespace LiveSplit.SplitsBet
                 double Percentage = (State.CurrentTime - SegmentBeginning).RealTime.Value.TotalSeconds / State.CurrentSplit.BestSegmentTime.RealTime.Value.TotalSeconds;
                 if (Percentage < 0.9)
                 {
-                    Regex hhmmss = new Regex("^([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$");
-                    Regex mmss = new Regex("^[0-5][0-9](:[0-5][0-9])?$");
-                    Regex mss = new Regex("^[0-9](:[0-5][0-9])?$");
                     if (!Bets[State.CurrentSplitIndex].ContainsKey(user.Name))
                     {
-                        //TODO !bet 0:00 should be refused
-                        if (mss.Match(argument).Success)
+                        try
                         {
-                            argument = "00:0" + argument;
-                            Tuple<TimeSpan, double> t = new Tuple<TimeSpan, double>(TimeSpan.Parse(argument), Math.Exp(-2*Math.Pow(Percentage,2)));
+                            //TODO !bet 0:00 should be refused
+                            var time = TimeSpanParser.Parse(argument);
+                            var t = new Tuple<TimeSpan, double>(time, Math.Exp(-2 * Math.Pow(Percentage, 2)));
                             Bets[State.CurrentSplitIndex].Add(user.Name, t);
                         }
-                        else if (mmss.Match(argument).Success)
+                        catch
                         {
-                            argument = "00:" + argument;
-                            Tuple<TimeSpan, double> t = new Tuple<TimeSpan, double>(TimeSpan.Parse(argument), Math.Exp(-2*Math.Pow(Percentage,2)));
-                            Bets[State.CurrentSplitIndex].Add(user.Name, t);
-                        }
-                        else if (hhmmss.Match(argument).Success)
-                        {
-                            Tuple<TimeSpan, double> t = new Tuple<TimeSpan, double>(TimeSpan.Parse(argument), Math.Exp(-2*Math.Pow(Percentage,2)));
-                            Bets[State.CurrentSplitIndex].Add(user.Name, t);
-                        }
-                        else Twitch.Instance.Chat.SendMessage("/me " + user.Name + ", Invalid time, please retry");
+                            Twitch.Instance.Chat.SendMessage("/me " + user.Name + ", Invalid time, please retry");
+                        } 
                     }
                     else Twitch.Instance.Chat.SendMessage("/me " + user.Name + ", You already bet, silly!");
                 }
