@@ -32,6 +32,7 @@
   <ItemGroup>
     <Reference Include="LiveSplit.Core">
       <HintPath>libs\LiveSplit.Core.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -44,6 +45,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="UpdateManager">
       <HintPath>libs\UpdateManager.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
