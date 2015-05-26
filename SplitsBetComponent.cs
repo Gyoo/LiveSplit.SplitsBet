@@ -212,8 +212,11 @@ namespace LiveSplit.SplitsBet
 
             foreach (var entry in orderedScores)
             {
-                Twitch.Instance.Chat.SendMessage("/me " + entry.Key + ": " + entry.Value);
-                //TODO Show Delta score as well (Ex : "Gyoo : 420 (+42)" )
+                int delta = 0;
+                if (State.CurrentSplitIndex - 2 >= 0) {
+                    delta = entry.Value - Scores[State.CurrentSplitIndex - 2][entry.Key];
+                }
+                Twitch.Instance.Chat.SendMessage("/me " + entry.Key + ": " + entry.Value + (delta != 0 ? (" (" + (delta < 0 ? "-" : "+") + delta + ")") : ""));
             }
         }
 
