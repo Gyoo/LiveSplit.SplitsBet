@@ -57,10 +57,10 @@ namespace LiveSplit.SplitsBet
             Commands.Add("highscore", Highscore);
 
             /*Setting Livesplit events*/
-            State.OnStart += new EventHandler(StartBets);
-            State.OnSplit += new EventHandler(CalculateScore);
-            State.OnUndoSplit += new EventHandler(RollbackScore);
-            State.OnSkipSplit += new EventHandler(CopyScore);
+            State.OnStart += StartBets;
+            State.OnSplit += CalculateScore;
+            State.OnUndoSplit += RollbackScore;
+            State.OnSkipSplit += CopyScore;
             State.OnReset += State_OnReset;
 
             /*Bot is ready !*/
