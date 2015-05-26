@@ -13,6 +13,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using LiveSplit.TimeFormatters;
 
 namespace LiveSplit.SplitsBet
 {
@@ -193,7 +194,9 @@ namespace LiveSplit.SplitsBet
         {
             SegmentBeginning = State.CurrentTime;
             Bets[State.CurrentSplitIndex] = new Dictionary<string, Tuple<TimeSpan, double>>();
-            Twitch.Instance.Chat.SendMessage("/me Place your bets for " + State.CurrentSplit.Name + "! Best segment for this split is " + State.CurrentSplit.BestSegmentTime.RealTime.Value);
+            var timeFormatter = new ShortTimeFormatter();
+            var timeFormatted = timeFormatter.Format(State.CurrentSplit.BestSegmentTime.RealTime);
+            Twitch.Instance.Chat.SendMessage("/me Place your bets for " + State.CurrentSplit.Name + "! Best segment for this split is " + timeFormatted);
         }
 
         private void CalculateScore(object sender, EventArgs e)
