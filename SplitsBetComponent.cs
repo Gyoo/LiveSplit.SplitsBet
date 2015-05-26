@@ -116,6 +116,7 @@ namespace LiveSplit.SplitsBet
                             var time = TimeSpanParser.Parse(argument);
                             if (time.CompareTo(MinimumTime) <= 0) {
                                 Twitch.Instance.Chat.SendMessage("/me " + user.Name + ", Nice try, but it's invalid");
+                                return;
                             }
                             var t = new Tuple<TimeSpan, double>(time, Math.Exp(-2 * Math.Pow(percentage, 2)));
                             Bets[State.CurrentSplitIndex].Add(user.Name, t);
@@ -268,7 +269,7 @@ namespace LiveSplit.SplitsBet
             foreach (var entry in orderedScores)
             {
                 var delta = 0;
-                if (State.CurrentSplitIndex - 2 >= 0) {
+                if (State.CurrentSplitIndex - 2 >= 0 && Scores[State.CurrentSplitIndex - 2].ContainsKey(entry.Key)) {
                     delta = entry.Value - Scores[State.CurrentSplitIndex - 2][entry.Key];
                 }
                 Twitch.Instance.Chat.SendMessage("/me " + entry.Key + ": " + entry.Value + (delta != 0 ? (" (" + (delta < 0 ? "-" : "+") + delta + ")") : ""));
