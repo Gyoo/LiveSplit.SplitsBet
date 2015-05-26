@@ -152,16 +152,8 @@ namespace LiveSplit.SplitsBet
             {
                 if (State.CurrentSplitIndex > 0)
                 {
-                    List<KeyValuePair<string, int>> myList = Scores[State.CurrentSplitIndex - 1].ToList();
-
-                    myList.Sort(
-                        delegate(KeyValuePair<string, int> firstPair,
-                        KeyValuePair<string, int> nextPair)
-                        {
-                            return firstPair.Value.CompareTo(nextPair.Value);
-                        }
-                    );
-                    Twitch.Instance.Chat.SendMessage("/me " + myList[0].Key + "'s score is " + myList[0].Value);
+                    var orderedScores = Scores[State.CurrentSplitIndex - 1].OrderByDescending(x => x.Value);
+                    Twitch.Instance.Chat.SendMessage("/me " + orderedScores.ToList()[0].Key + "'s score is " + orderedScores.ToList()[0].Value);
                 }
                 else Twitch.Instance.Chat.SendMessage("/me No highscore yet!");
             }
