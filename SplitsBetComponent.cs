@@ -88,7 +88,7 @@ namespace LiveSplit.SplitsBet
 
         private void Bet(TwitchChat.User user, string argument)
         {
-            
+            //TODO Manage Game Time
             if (State.CurrentPhase == TimerPhase.Running)
             {
                 double Percentage = (State.CurrentTime - SegmentBeginning).RealTime.Value.TotalSeconds / State.CurrentSplit.BestSegmentTime.RealTime.Value.TotalSeconds;
@@ -120,7 +120,7 @@ namespace LiveSplit.SplitsBet
             if (State.CurrentPhase == TimerPhase.Running)
             {
                 if (Bets[State.CurrentSplitIndex].ContainsKey(user.Name))
-                    Twitch.Instance.Chat.SendMessage("/me " + user.Name + ", Your bet for " + State.CurrentSplit.Name + " is " + Bets[State.CurrentSplitIndex][user.Name]);
+                    Twitch.Instance.Chat.SendMessage("/me " + user.Name + ", Your bet for " + State.CurrentSplit.Name + " is " + Bets[State.CurrentSplitIndex][user.Name].Item1);
                 else
                     Twitch.Instance.Chat.SendMessage("/me " + user.Name + ", You didn't bet for this split yet!");
             }
