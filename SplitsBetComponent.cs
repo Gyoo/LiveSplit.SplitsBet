@@ -239,6 +239,8 @@ namespace LiveSplit.SplitsBet
         private void CalculateScore(object sender, EventArgs e)
         {
             Time Segment = State.CurrentTime - SegmentBeginning;
+            var timeFormatter = new ShortTimeFormatter();
+            Twitch.Instance.Chat.SendMessage("/me Time for this split was " + timeFormatter.Format(Segment.RealTime));
             Scores[State.CurrentSplitIndex - 1] = State.CurrentSplitIndex > 1 ? Scores[State.CurrentSplitIndex - 2] : new Dictionary<string, int>();
             foreach (KeyValuePair<string, Tuple<TimeSpan, double>> entry in Bets[State.CurrentSplitIndex - 1])
             {
