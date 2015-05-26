@@ -176,7 +176,7 @@ namespace LiveSplit.SplitsBet
         private void BetCommands(TwitchChat.User user, string argument)
         {
             var ret = Commands
-                .Select(x => "!" + entry.Key)
+                .Select(x => "!" + x.Key)
                 .Aggregate((a,b) => a + " " + b);
 
             Twitch.Instance.Chat.SendMessage("/me " + ret);
