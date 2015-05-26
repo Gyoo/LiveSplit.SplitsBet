@@ -77,7 +77,8 @@ namespace LiveSplit.SplitsBet
                 thread.Start();
                 thread.Join();
             }
-
+            
+            //TODO Check if bot is already connected (In case SplitsBet is added, removed and readded)
             Twitch.Instance.ConnectToChat(Twitch.Instance.ChannelName);
             Twitch.Instance.Chat.OnMessage += OnMessage;
         }
