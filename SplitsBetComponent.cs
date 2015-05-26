@@ -175,13 +175,19 @@ namespace LiveSplit.SplitsBet
                 try
                 {
                     var splits = message.Text.Substring(1).Split(new char[] { ' ' }, 2);
-                    Commands[splits[0].ToLower()].Invoke(message.User, splits.Length > 1 ? splits[1] : "");
+                    var cmd = Commands[splits[0].ToLower()];
+                    if (cmd != null) {
+                        cmd.Invoke(message.User, splits.Length > 1 ? splits[1] : "");
+                    }
                 }
                 catch { }
             }
             try
             {
-                Commands["anymessage"].Invoke(message.User, "");
+                var cmd = Commands["anymessage"];
+                if (cmd != null) {
+                    cmd.Invoke(message.User, "");
+                }
             }
             catch { }
         }
