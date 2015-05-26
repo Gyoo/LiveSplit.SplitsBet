@@ -28,6 +28,7 @@ namespace LiveSplit.SplitsBet
         private Dictionary<string, int>[] Scores { get; set; }
         private Time SegmentBeginning { get; set; }
         private TimeSpan MinimumTime { get; set; }
+        private int UnBetPenalty { get; set; }
        
         public override string ComponentName
         {
@@ -48,10 +49,12 @@ namespace LiveSplit.SplitsBet
             Bets = new Dictionary<string, Tuple<TimeSpan, double>>[State.Run.Count];
             Scores = new Dictionary<string, int>[State.Run.Count];
             MinimumTime = new TimeSpan(0, 0, 0);//TODO get the minimum time from the settings
+            UnBetPenalty = 50;//TODO get the penalty from the settings
 
             /*Adding available commands*/
             Commands.Add("bet", Bet);
             Commands.Add("checkbet", CheckBet);
+            Commands.Add("unbet", UnBet);
             Commands.Add("betcommands", BetCommands);
             Commands.Add("score", Score);
             Commands.Add("highscore", Highscore);
@@ -110,7 +113,7 @@ namespace LiveSplit.SplitsBet
                         catch
                         {
                             Twitch.Instance.Chat.SendMessage("/me " + user.Name + ", Invalid time, please retry");
-                        } 
+                        }
                     }
                     else Twitch.Instance.Chat.SendMessage("/me " + user.Name + ", You already bet, silly!");
                 }
@@ -129,6 +132,37 @@ namespace LiveSplit.SplitsBet
                     Twitch.Instance.Chat.SendMessage("/me " + user.Name + ", You didn't bet for this split yet!");
             }
             else Twitch.Instance.Chat.SendMessage("/me Timer is not running, bets are closed");
+        }
+
+        private void UnBet(TwitchChat.User user, string argument)
+        {
+            //TODO check if the runner allows undoing bets
+
+            if (State.CurrentPhase != TimerPhase.Running) {
+                Twitch.Instance.Chat.SendMessage("/me Timer is not running, bets are closed");
+                return;
+            }
+
+            if (State.CurrentSplitIndex - 1 < 0) {
+                //TODO make the runner decide what to do here
+                /*
+                Twitch.Instance.Chat.SendMessage("/me " + user.Name + ", You have got no points to spend on undoing your bet yet!");
+                return;
+                */
+            }
+
+            if (!Bets[State.CurrentSplitIndex].ContainsKey(user.Name)) {
+                Twitch.Instance.Chat.SendMessage("/me " + user.Name + ", You didn't bet for this split yet!");
+                return;
+            }
+
+            if (Scores[State.CurrentSplitIndex - 1][user.Name] < UnBetPenalty) {
+                Twitch.Instance.Chat.SendMessage("/me " + user.Name + ", You need " + UnBetPenalty + " points to undo your bet and just got " + Scores[State.CurrentSplitIndex - 1][user.Name] + ".");
+                return;
+            }
+
+            Scores[State.CurrentSplitIndex - 1][user.Name] -= UnBetPenalty;
+            Bets[State.CurrentSplitIndex].Remove(user.Name);
         }
 
         private void BetCommands(TwitchChat.User user, string argument)
