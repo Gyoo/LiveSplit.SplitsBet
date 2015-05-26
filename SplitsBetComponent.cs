@@ -27,6 +27,7 @@ namespace LiveSplit.SplitsBet
         private Dictionary<string, Tuple<TimeSpan, double>>[] Bets { get; set; }
         private Dictionary<string, int>[] Scores { get; set; }
         private Time SegmentBeginning { get; set; }
+        private TimeSpan MinimumTime { get; set; }
        
         public override string ComponentName
         {
@@ -46,6 +47,7 @@ namespace LiveSplit.SplitsBet
             SegmentBeginning = new Time();
             Bets = new Dictionary<string, Tuple<TimeSpan, double>>[State.Run.Count];
             Scores = new Dictionary<string, int>[State.Run.Count];
+            MinimumTime = new TimeSpan(0, 0, 0);//TODO get the minimum time from the settings
 
             /*Adding available commands*/
             Commands.Add("bet", Bet);
@@ -98,8 +100,10 @@ namespace LiveSplit.SplitsBet
                     {
                         try
                         {
-                            //TODO !bet 0:00 should be refused
                             var time = TimeSpanParser.Parse(argument);
+                            if (time.CompareTo(MinimumTime) <= 0) {
+                                Twitch.Instance.Chat.SendMessage("/me " + user.Name + ", Nice try, but it's invalid");
+                            }
                             var t = new Tuple<TimeSpan, double>(time, Math.Exp(-2 * Math.Pow(Percentage, 2)));
                             Bets[State.CurrentSplitIndex].Add(user.Name, t);
                         }
