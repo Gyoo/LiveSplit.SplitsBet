@@ -89,8 +89,7 @@ namespace LiveSplit.SplitsBet
                 Twitch.Instance.ConnectToChat(Twitch.Instance.ChannelName);
             }
 
-            Delegate[] onMessageHandlers = Twitch.Instance.Chat.OnMessage.GetInvocationList();
-            if (!onMessageHandlers.Contains((Action<object, TwitchChat.Message>) OnMessage))
+            if (!Twitch.Instance.Chat.OnMessage.GetInvocationList().Contains((Action<object, TwitchChat.Message>) OnMessage))
             {
                 Twitch.Instance.Chat.OnMessage += OnMessage;
             }
