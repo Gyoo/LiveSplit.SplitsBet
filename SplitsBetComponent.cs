@@ -30,6 +30,7 @@ namespace LiveSplit.SplitsBet
         private Time SegmentBeginning { get; set; }
         private TimeSpan MinimumTime { get; set; }
         private int UnBetPenalty { get; set; }
+        private TimingMethod? OverridenTimingMethod { get; set; }
        
         public override string ComponentName
         {
@@ -51,6 +52,7 @@ namespace LiveSplit.SplitsBet
             Scores = new Dictionary<string, int>[State.Run.Count];
             MinimumTime = new TimeSpan(0, 0, 0);//TODO get the minimum time from the settings
             UnBetPenalty = 50;//TODO get the penalty from the settings
+            OverridenTimingMethod = null;//TODO get the timing method from the settings
 
             /*Adding available commands*/
             Commands.Add("bet", Bet);
@@ -104,7 +106,7 @@ namespace LiveSplit.SplitsBet
             //TODO Manage Game Time
             if (State.CurrentPhase == TimerPhase.Running)
             {
-                var percentage = (State.CurrentTime - SegmentBeginning).RealTime.Value.TotalSeconds / State.CurrentSplit.BestSegmentTime.RealTime.Value.TotalSeconds;
+                var percentage = GetTime((State.CurrentTime - SegmentBeginning)).Value.TotalSeconds / GetTime(State.CurrentSplit.BestSegmentTime).Value.TotalSeconds;
                 if (percentage < 0.9)
                 {
                     if (!Bets[State.CurrentSplitIndex].ContainsKey(user.Name))
@@ -238,7 +240,7 @@ namespace LiveSplit.SplitsBet
             SegmentBeginning = State.CurrentTime;
             Bets[State.CurrentSplitIndex] = new Dictionary<string, Tuple<TimeSpan, double>>();
             var timeFormatter = new ShortTimeFormatter();
-            var timeFormatted = timeFormatter.Format(State.CurrentSplit.BestSegmentTime.RealTime);
+            var timeFormatted = timeFormatter.Format(GetTime(State.CurrentSplit.BestSegmentTime));
             Twitch.Instance.Chat.SendMessage("/me Place your bets for " + State.CurrentSplit.Name + "! Best segment for this split is " + timeFormatted);
         }
 
@@ -246,15 +248,15 @@ namespace LiveSplit.SplitsBet
         {
             var segment = State.CurrentTime - SegmentBeginning;
             var timeFormatter = new ShortTimeFormatter();
-            Twitch.Instance.Chat.SendMessage("/me Time for this split was " + timeFormatter.Format(segment.RealTime));
+            Twitch.Instance.Chat.SendMessage("/me Time for this split was " + timeFormatter.Format(GetTime(segment)));
             Scores[State.CurrentSplitIndex - 1] = State.CurrentSplitIndex > 1 ? new Dictionary<string, int>(Scores[State.CurrentSplitIndex - 2]) : new Dictionary<string, int>();
             foreach (KeyValuePair<string, Tuple<TimeSpan, double>> entry in Bets[State.CurrentSplitIndex - 1])
             {
                 if (Scores[State.CurrentSplitIndex - 1].ContainsKey(entry.Key))
                 {
-                    Scores[State.CurrentSplitIndex - 1][entry.Key] += (int)(entry.Value.Item2 * (int)segment.RealTime.Value.TotalSeconds * Math.Exp(-(Math.Pow((int)segment.RealTime.Value.TotalSeconds - (int)entry.Value.Item1.TotalSeconds, 2) / (int)segment.RealTime.Value.TotalSeconds)));
+                    Scores[State.CurrentSplitIndex - 1][entry.Key] += (int)(entry.Value.Item2 * (int)GetTime(segment).Value.TotalSeconds * Math.Exp(-(Math.Pow((int)GetTime(segment).Value.TotalSeconds - (int)entry.Value.Item1.TotalSeconds, 2) / (int)GetTime(segment).Value.TotalSeconds)));
                 }
-                else Scores[State.CurrentSplitIndex - 1].Add(entry.Key, (int)(entry.Value.Item2 * (int)segment.RealTime.Value.TotalSeconds * Math.Exp(-(Math.Pow((int)segment.RealTime.Value.TotalSeconds - (int)entry.Value.Item1.TotalSeconds, 2) / (int)segment.RealTime.Value.TotalSeconds))));
+                else Scores[State.CurrentSplitIndex - 1].Add(entry.Key, (int)(entry.Value.Item2 * (int)GetTime(segment).Value.TotalSeconds * Math.Exp(-(Math.Pow((int)GetTime(segment).Value.TotalSeconds - (int)entry.Value.Item1.TotalSeconds, 2) / (int)GetTime(segment).Value.TotalSeconds))));
             }
             StartBets(sender, e);
         }
@@ -293,6 +295,10 @@ namespace LiveSplit.SplitsBet
         void State_OnReset(object sender, TimerPhase value)
         {
             ResetSplitsBet();
+        }
+
+        private TimeSpan? GetTime(Time segment) {
+            return segment[OverridenTimingMethod ?? State.CurrentTimingMethod];
         }
 
         #endregion
