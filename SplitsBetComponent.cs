@@ -14,6 +14,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using LiveSplit.TimeFormatters;
+using System.Windows.Forms;
 
 namespace LiveSplit.SplitsBet
 {
@@ -86,6 +87,11 @@ namespace LiveSplit.SplitsBet
             if (!Twitch.Instance.ConnectedChats.ContainsKey(Twitch.Instance.ChannelName))
             {
                 Twitch.Instance.ConnectToChat(Twitch.Instance.ChannelName);
+            }
+
+            Delegate[] onMessageHandlers = Twitch.Instance.Chat.OnMessage.GetInvocationList();
+            if (!onMessageHandlers.Contains((Action<object, TwitchChat.Message>) OnMessage))
+            {
                 Twitch.Instance.Chat.OnMessage += OnMessage;
             }
         }
