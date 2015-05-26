@@ -18,6 +18,8 @@ namespace LiveSplit.SplitsBet
 {
     public class SplitsBetComponent : LogicComponent
     {
+        #region Properties
+
         public Settings Settings { get; set; }
         protected LiveSplitState State { get; set; }
         public Dictionary<String, Action<TwitchChat.User, string>> Commands { get; set; }
@@ -29,6 +31,10 @@ namespace LiveSplit.SplitsBet
         {
             get { return "Splits Bet Bot"; }
         }
+
+        #endregion
+
+        #region Constructors
 
         public SplitsBetComponent(LiveSplitState state)
         {
@@ -57,7 +63,11 @@ namespace LiveSplit.SplitsBet
             /*Bot is ready !*/
             Start();
         }
-        
+
+        #endregion
+
+        #region Methods
+
         public void Start()
         {
             if (!Twitch.Instance.IsLoggedIn)
@@ -71,26 +81,10 @@ namespace LiveSplit.SplitsBet
             Twitch.Instance.Chat.OnMessage += OnMessage;
         }
 
+        #endregion
 
-        private void OnMessage(object sender, TwitchChat.Message message)
-        {
-            if (message.Text.StartsWith("!"))
-            {
-                try
-                {
-                    var splits = message.Text.Substring(1).Split(new char[] { ' ' }, 2);
-                    Commands[splits[0].ToLower()].Invoke(message.User, splits.Length > 1 ? splits[1] : "");
-                }
-                catch { }
-            }
-            try
-            {
-                Commands["anymessage"].Invoke(message.User, "");
-            }
-            catch { }
-        }
+        #region Commands
 
-        /* Commands */
         private void Bet(TwitchChat.User user, string argument)
         {
             
@@ -184,8 +178,27 @@ namespace LiveSplit.SplitsBet
             else Twitch.Instance.Chat.SendMessage("/me Timer is not running, no score available");
         }
 
+        #endregion
 
-        /*Events*/
+        #region Events
+
+        private void OnMessage(object sender, TwitchChat.Message message)
+        {
+            if (message.Text.StartsWith("!"))
+            {
+                try
+                {
+                    var splits = message.Text.Substring(1).Split(new char[] { ' ' }, 2);
+                    Commands[splits[0].ToLower()].Invoke(message.User, splits.Length > 1 ? splits[1] : "");
+                }
+                catch { }
+            }
+            try
+            {
+                Commands["anymessage"].Invoke(message.User, "");
+            }
+            catch { }
+        }
 
         private void StartBets(object sender, EventArgs e)
         {
@@ -250,7 +263,9 @@ namespace LiveSplit.SplitsBet
             ResetSplitsBet();
         }
 
-        /*Misc*/
+        #endregion
+
+        #region Misc
 
         public override System.Xml.XmlNode GetSettings(System.Xml.XmlDocument document)
         {
@@ -274,5 +289,7 @@ namespace LiveSplit.SplitsBet
         public override void Dispose()
         {
         }
+
+        #endregion
     }
 }
