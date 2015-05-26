@@ -175,11 +175,10 @@ namespace LiveSplit.SplitsBet
 
         private void BetCommands(TwitchChat.User user, string argument)
         {
-            string ret = "";
-            foreach (KeyValuePair<string, Action<TwitchChat.User, string>> entry in Commands)
-            {
-                ret += "!" + entry.Key + " ";
-            }
+            var ret = Commands
+                .Select(x => "!" + entry.Key)
+                .Aggregate((a,b) => a + " " + b);
+
             Twitch.Instance.Chat.SendMessage("/me " + ret);
         }
 
