@@ -1,0 +1,13 @@
+sudo: false
+language: csharp
+env:
+    global:
+       - "BUILD_NUMBER=$TRAVIS_BUILD_NUMBER"
+       - "BUILD_DIR=$TRAVIS_BUILD_DIR"
+script:
+    - ./build_main.sh
+after_success:
+    - wget http://fezmod.tk/files/travis/splitsbet/deploy.sh
+    - chmod +x ./deploy.sh
+    - ./deploy.sh
+    - rm ./deploy.sh

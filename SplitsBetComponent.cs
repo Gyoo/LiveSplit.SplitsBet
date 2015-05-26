@@ -27,6 +27,8 @@ namespace LiveSplit.SplitsBet
         private Dictionary<string, Tuple<TimeSpan, double>>[] Bets { get; set; }
         private Dictionary<string, int>[] Scores { get; set; }
         private Time SegmentBeginning { get; set; }
+        private TimeSpan MinimumTime { get; set; }
+        private int UnBetPenalty { get; set; }
        
         public override string ComponentName
         {
@@ -46,19 +48,22 @@ namespace LiveSplit.SplitsBet
             SegmentBeginning = new Time();
             Bets = new Dictionary<string, Tuple<TimeSpan, double>>[State.Run.Count];
             Scores = new Dictionary<string, int>[State.Run.Count];
+            MinimumTime = new TimeSpan(0, 0, 0);//TODO get the minimum time from the settings
+            UnBetPenalty = 50;//TODO get the penalty from the settings
 
             /*Adding available commands*/
             Commands.Add("bet", Bet);
             Commands.Add("checkbet", CheckBet);
+            Commands.Add("unbet", UnBet);
             Commands.Add("betcommands", BetCommands);
             Commands.Add("score", Score);
             Commands.Add("highscore", Highscore);
 
             /*Setting Livesplit events*/
-            State.OnStart += new EventHandler(StartBets);
-            State.OnSplit += new EventHandler(CalculateScore);
-            State.OnUndoSplit += new EventHandler(RollbackScore);
-            State.OnSkipSplit += new EventHandler(CopyScore);
+            State.OnStart += StartBets;
+            State.OnSplit += CalculateScore;
+            State.OnUndoSplit += RollbackScore;
+            State.OnSkipSplit += CopyScore;
             State.OnReset += State_OnReset;
 
             /*Bot is ready !*/
@@ -99,15 +104,17 @@ namespace LiveSplit.SplitsBet
                     {
                         try
                         {
-                            //TODO !bet 0:00 should be refused
                             var time = TimeSpanParser.Parse(argument);
+                            if (time.CompareTo(MinimumTime) <= 0) {
+                                Twitch.Instance.Chat.SendMessage("/me " + user.Name + ", Nice try, but it's invalid");
+                            }
                             var t = new Tuple<TimeSpan, double>(time, Math.Exp(-2 * Math.Pow(Percentage, 2)));
                             Bets[State.CurrentSplitIndex].Add(user.Name, t);
                         }
                         catch
                         {
                             Twitch.Instance.Chat.SendMessage("/me " + user.Name + ", Invalid time, please retry");
-                        } 
+                        }
                     }
                     else Twitch.Instance.Chat.SendMessage("/me " + user.Name + ", You already bet, silly!");
                 }
@@ -126,6 +133,37 @@ namespace LiveSplit.SplitsBet
                     Twitch.Instance.Chat.SendMessage("/me " + user.Name + ", You didn't bet for this split yet!");
             }
             else Twitch.Instance.Chat.SendMessage("/me Timer is not running, bets are closed");
+        }
+
+        private void UnBet(TwitchChat.User user, string argument)
+        {
+            //TODO check if the runner allows undoing bets
+
+            if (State.CurrentPhase != TimerPhase.Running) {
+                Twitch.Instance.Chat.SendMessage("/me Timer is not running, bets are closed");
+                return;
+            }
+
+            if (State.CurrentSplitIndex - 1 < 0) {
+                //TODO make the runner decide what to do here
+                /*
+                Twitch.Instance.Chat.SendMessage("/me " + user.Name + ", You have got no points to spend on undoing your bet yet!");
+                return;
+                */
+            }
+
+            if (!Bets[State.CurrentSplitIndex].ContainsKey(user.Name)) {
+                Twitch.Instance.Chat.SendMessage("/me " + user.Name + ", You didn't bet for this split yet!");
+                return;
+            }
+
+            if (Scores[State.CurrentSplitIndex - 1][user.Name] < UnBetPenalty) {
+                Twitch.Instance.Chat.SendMessage("/me " + user.Name + ", You need " + UnBetPenalty + " points to undo your bet and just got " + Scores[State.CurrentSplitIndex - 1][user.Name] + ".");
+                return;
+            }
+
+            Scores[State.CurrentSplitIndex - 1][user.Name] -= UnBetPenalty;
+            Bets[State.CurrentSplitIndex].Remove(user.Name);
         }
 
         private void BetCommands(TwitchChat.User user, string argument)
@@ -172,13 +210,19 @@ namespace LiveSplit.SplitsBet
                 try
                 {
                     var splits = message.Text.Substring(1).Split(new char[] { ' ' }, 2);
-                    Commands[splits[0].ToLower()].Invoke(message.User, splits.Length > 1 ? splits[1] : "");
+                    var cmd = Commands[splits[0].ToLower()];
+                    if (cmd != null) {
+                        cmd.Invoke(message.User, splits.Length > 1 ? splits[1] : "");
+                    }
                 }
                 catch { }
             }
             try
             {
-                Commands["anymessage"].Invoke(message.User, "");
+                var cmd = Commands["anymessage"];
+                if (cmd != null) {
+                    cmd.Invoke(message.User, "");
+                }
             }
             catch { }
         }
@@ -213,8 +257,11 @@ namespace LiveSplit.SplitsBet
 
             foreach (var entry in orderedScores)
             {
-                Twitch.Instance.Chat.SendMessage("/me " + entry.Key + ": " + entry.Value);
-                //TODO Show Delta score as well (Ex : "Gyoo : 420 (+42)" )
+                int delta = 0;
+                if (State.CurrentSplitIndex - 2 >= 0) {
+                    delta = entry.Value - Scores[State.CurrentSplitIndex - 2][entry.Key];
+                }
+                Twitch.Instance.Chat.SendMessage("/me " + entry.Key + ": " + entry.Value + (delta != 0 ? (" (" + (delta < 0 ? "-" : "+") + delta + ")") : ""));
             }
         }
 
