@@ -31,7 +31,7 @@ namespace LiveSplit.SplitsBet
         private TimeSpan MinimumTime { get; set; }
         private int UnBetPenalty { get; set; }
         private TimingMethod? OverridenTimingMethod { get; set; }
-       
+
         public override string ComponentName
         {
             get { return "Splits Bet Bot"; }
@@ -91,10 +91,8 @@ namespace LiveSplit.SplitsBet
                 Twitch.Instance.ConnectToChat(Twitch.Instance.ChannelName);
             }
 
-            if (!Twitch.Instance.Chat.OnMessage.GetInvocationList().Contains((Action<object, TwitchChat.Message>) OnMessage))
-            {
-                Twitch.Instance.Chat.OnMessage += OnMessage;
-            }
+            Twitch.Instance.Chat.OnMessage += OnMessage;
+
         }
 
         #endregion
@@ -116,6 +114,7 @@ namespace LiveSplit.SplitsBet
                             var time = TimeSpanParser.Parse(argument);
                             if (time.CompareTo(MinimumTime) <= 0) {
                                 Twitch.Instance.Chat.SendMessage("/me " + user.Name + ", Nice try, but it's invalid");
+                                return;
                             }
                             var t = new Tuple<TimeSpan, double>(time, Math.Exp(-2 * Math.Pow(percentage, 2)));
                             Bets[State.CurrentSplitIndex].Add(user.Name, t);
@@ -258,6 +257,7 @@ namespace LiveSplit.SplitsBet
                 }
                 else Scores[State.CurrentSplitIndex - 1].Add(entry.Key, (int)(entry.Value.Item2 * (int)GetTime(segment).Value.TotalSeconds * Math.Exp(-(Math.Pow((int)GetTime(segment).Value.TotalSeconds - (int)entry.Value.Item1.TotalSeconds, 2) / (int)GetTime(segment).Value.TotalSeconds))));
             }
+            ShowScore();
             StartBets(sender, e);
         }
 
