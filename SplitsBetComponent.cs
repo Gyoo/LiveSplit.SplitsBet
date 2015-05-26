@@ -30,7 +30,7 @@ namespace LiveSplit.SplitsBet
         private Time SegmentBeginning { get; set; }
         private TimeSpan MinimumTime { get; set; }
         private int UnBetPenalty { get; set; }
-        private bool UseGameTime { get; set; }
+        private TimingMethod? OverridenTimingMethod { get; set; }
        
         public override string ComponentName
         {
@@ -52,7 +52,7 @@ namespace LiveSplit.SplitsBet
             Scores = new Dictionary<string, int>[State.Run.Count];
             MinimumTime = new TimeSpan(0, 0, 0);//TODO get the minimum time from the settings
             UnBetPenalty = 50;//TODO get the penalty from the settings
-            UseGameTime = false;//TODO get the value from the settings
+            OverridenTimingMethod = null;//TODO get the timing method from the settings
 
             /*Adding available commands*/
             Commands.Add("bet", Bet);
@@ -298,7 +298,7 @@ namespace LiveSplit.SplitsBet
         }
 
         private TimeSpan? GetTime(Time segment) {
-            return UseGameTime ? segment.GameTime : segment.RealTime;
+            return segment[OverridenTimingMethod ?? State.CurrentTimingMethod];
         }
 
         #endregion
