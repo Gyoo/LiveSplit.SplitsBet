@@ -113,12 +113,6 @@ namespace LiveSplit.SplitsBet
                     {
                         try
                         {
-                            if (argument.ToLower().Contains("Kappa"))
-                            {
-                                argument = "420:69";
-                                Twitch.Instance.Chat.SendMessage("/me " + user.Name + " bet 420:69 Kappa");
-                            }
-
                             var time = TimeSpanParser.Parse(argument);
                             if (time.CompareTo(MinimumTime) <= 0) {
                                 Twitch.Instance.Chat.SendMessage("/me " + user.Name + ", Nice try, but it's invalid");
@@ -178,7 +172,9 @@ namespace LiveSplit.SplitsBet
                 return;
             }
 
-            Scores[State.CurrentSplitIndex - 1][user.Name] -= UnBetPenalty;
+            if (State.CurrentSplitIndex - 1 >= 0) {
+                Scores[State.CurrentSplitIndex - 1][user.Name] -= UnBetPenalty;
+            }
             Bets[State.CurrentSplitIndex].Remove(user.Name);
         }
 
@@ -195,6 +191,10 @@ namespace LiveSplit.SplitsBet
         {
             if (State.CurrentPhase == TimerPhase.Running)
             {
+                if (State.CurrentSplitIndex - 1 < 0 || !Scores[State.CurrentSplitIndex - 1].ContainsKey(user.Name)) {
+                    Twitch.Instance.Chat.SendMessage("/me " + user.Name + "'s score is 0");
+                    return;
+                }
                 Twitch.Instance.Chat.SendMessage("/me " + user.Name + "'s score is " + Scores[State.CurrentSplitIndex - 1][user.Name]);
             }
             else Twitch.Instance.Chat.SendMessage("/me Timer is not running, no score available");
