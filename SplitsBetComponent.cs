@@ -113,6 +113,12 @@ namespace LiveSplit.SplitsBet
                     {
                         try
                         {
+                            if (argument.ToLower().Contains("Kappa"))
+                            {
+                                argument = "420:69";
+                                Twitch.Instance.Chat.SendMessage("/me " + user.Name + " bet 420:69 Kappa");
+                            }
+
                             var time = TimeSpanParser.Parse(argument);
                             if (time.CompareTo(MinimumTime) <= 0) {
                                 Twitch.Instance.Chat.SendMessage("/me " + user.Name + ", Nice try, but it's invalid");
