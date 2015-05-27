@@ -118,7 +118,7 @@ namespace LiveSplit.SplitsBet
                         {
                             try
                             {
-                                if (argument.ToLower().Contains("Kappa"))
+                            if (argument.ToLower().Contains("kappa"))
                                 {
                                     argument = "420:69";
                                     Twitch.Instance.Chat.SendMessage("/me " + user.Name + " bet 420:69 Kappa");
