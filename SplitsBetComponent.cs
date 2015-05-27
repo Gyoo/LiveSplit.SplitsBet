@@ -190,7 +190,9 @@ namespace LiveSplit.SplitsBet
                 return;
             }
 
-            Scores[State.CurrentSplitIndex - 1][user.Name] -= UnBetPenalty;
+            if (State.CurrentSplitIndex - 1 >= 0) {
+                Scores[State.CurrentSplitIndex - 1][user.Name] -= UnBetPenalty;
+            }
             Bets[State.CurrentSplitIndex].Remove(user.Name);
         }
 
