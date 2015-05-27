@@ -31,6 +31,7 @@ namespace LiveSplit.SplitsBet
         private TimeSpan MinimumTime { get; set; }
         private int UnBetPenalty { get; set; }
         private TimingMethod? OverridenTimingMethod { get; set; }
+        private bool CanBet { get; set; }
 
         public override string ComponentName
         {
@@ -53,6 +54,7 @@ namespace LiveSplit.SplitsBet
             MinimumTime = new TimeSpan(0, 0, 0);//TODO get the minimum time from the settings
             UnBetPenalty = 50;//TODO get the penalty from the settings
             OverridenTimingMethod = null;//TODO get the timing method from the settings
+            CanBet = false;
 
             /*Adding available commands*/
             Commands.Add("bet", Bet);
@@ -61,6 +63,9 @@ namespace LiveSplit.SplitsBet
             Commands.Add("betcommands", BetCommands);
             Commands.Add("score", Score);
             Commands.Add("highscore", Highscore);
+            Commands.Add("start", EnableBets);
+            Commands.Add("stop", DisableBets);
+            //TODO Command to start/stop the bot, admin only (Hotkey ?)
 
             /*Setting Livesplit events*/
             State.OnStart += StartBets;
@@ -98,80 +103,89 @@ namespace LiveSplit.SplitsBet
         #endregion
 
         #region Commands
-
+        //TODO Change the imbricate ifs to single ifs with returns (see UnBet() ) in all commands
         private void Bet(TwitchChat.User user, string argument)
         {
             //TODO Manage Game Time
-            if (State.CurrentPhase == TimerPhase.Running)
+            if (CanBet)
             {
-                var percentage = GetTime((State.CurrentTime - SegmentBeginning)).Value.TotalSeconds / GetTime(State.CurrentSplit.BestSegmentTime).Value.TotalSeconds;
-                if (percentage < 0.9)
+                if (State.CurrentPhase == TimerPhase.Running)
                 {
-                    if (!Bets[State.CurrentSplitIndex].ContainsKey(user.Name))
+                    var percentage = GetTime((State.CurrentTime - SegmentBeginning)).Value.TotalSeconds / GetTime(State.CurrentSplit.BestSegmentTime).Value.TotalSeconds;
+                    if (percentage < 0.9)
                     {
-                        try
+                        if (!Bets[State.CurrentSplitIndex].ContainsKey(user.Name))
                         {
-                            if (argument.ToLower().Contains("Kappa"))
+                            try
                             {
-                                argument = "420:69";
-                                Twitch.Instance.Chat.SendMessage("/me " + user.Name + " bet 420:69 Kappa");
-                            }
+                                if (argument.ToLower().Contains("Kappa"))
+                                {
+                                    argument = "420:69";
+                                    Twitch.Instance.Chat.SendMessage("/me " + user.Name + " bet 420:69 Kappa");
+                                }
 
-                            var time = TimeSpanParser.Parse(argument);
-                            if (time.CompareTo(MinimumTime) <= 0) {
-                                Twitch.Instance.Chat.SendMessage("/me " + user.Name + ", Nice try, but it's invalid");
-                                return;
+                                var time = TimeSpanParser.Parse(argument);
+                                if (time.CompareTo(MinimumTime) <= 0)
+                                {
+                                    Twitch.Instance.Chat.SendMessage("/me " + user.Name + ", Nice try, but it's invalid");
+                                    return;
+                                }
+                                var t = new Tuple<TimeSpan, double>(time, Math.Exp(-2 * Math.Pow(percentage, 2)));
+                                Bets[State.CurrentSplitIndex].Add(user.Name, t);
                             }
-                            var t = new Tuple<TimeSpan, double>(time, Math.Exp(-2 * Math.Pow(percentage, 2)));
-                            Bets[State.CurrentSplitIndex].Add(user.Name, t);
+                            catch
+                            {
+                                Twitch.Instance.Chat.SendMessage("/me " + user.Name + ", Invalid time, please retry");
+                            }
                         }
-                        catch
-                        {
-                            Twitch.Instance.Chat.SendMessage("/me " + user.Name + ", Invalid time, please retry");
-                        }
+                        else Twitch.Instance.Chat.SendMessage("/me " + user.Name + ", You already bet, silly!");
                     }
-                    else Twitch.Instance.Chat.SendMessage("/me " + user.Name + ", You already bet, silly!");
+                    else Twitch.Instance.Chat.SendMessage("/me Too late to bet for this split, wait for the next one!");
                 }
-                else Twitch.Instance.Chat.SendMessage("/me Too late to bet for this split, wait for the next one!");
+                else Twitch.Instance.Chat.SendMessage("/me Timer is not running, bets are closed");
             }
-            else Twitch.Instance.Chat.SendMessage("/me Timer is not running, bets are closed");
         }
 
         private void CheckBet(TwitchChat.User user, string argument)
         {
-            if (State.CurrentPhase == TimerPhase.Running)
+            if (CanBet)
             {
-                if (Bets[State.CurrentSplitIndex].ContainsKey(user.Name))
-                    Twitch.Instance.Chat.SendMessage("/me " + user.Name + ", Your bet for " + State.CurrentSplit.Name + " is " + Bets[State.CurrentSplitIndex][user.Name].Item1);
-                else
-                    Twitch.Instance.Chat.SendMessage("/me " + user.Name + ", You didn't bet for this split yet!");
+                if (State.CurrentPhase == TimerPhase.Running)
+                {
+                    if (Bets[State.CurrentSplitIndex].ContainsKey(user.Name))
+                        Twitch.Instance.Chat.SendMessage("/me " + user.Name + ", Your bet for " + State.CurrentSplit.Name + " is " + Bets[State.CurrentSplitIndex][user.Name].Item1);
+                    else
+                        Twitch.Instance.Chat.SendMessage("/me " + user.Name + ", You didn't bet for this split yet!");
+                }
+                else Twitch.Instance.Chat.SendMessage("/me Timer is not running, bets are closed");
             }
-            else Twitch.Instance.Chat.SendMessage("/me Timer is not running, bets are closed");
         }
 
         private void UnBet(TwitchChat.User user, string argument)
         {
             //TODO check if the runner allows undoing bets
-
-            if (State.CurrentPhase != TimerPhase.Running) {
+            //TODO Fix that shit
+            if (!CanBet) return;
+            if (State.CurrentPhase != TimerPhase.Running)
+            {
                 Twitch.Instance.Chat.SendMessage("/me Timer is not running, bets are closed");
                 return;
             }
 
-            if (State.CurrentSplitIndex - 1 < 0) {
-                //TODO make the runner decide what to do here
-                /*
+            if (State.CurrentSplitIndex - 1 < 0)
+            {
                 Twitch.Instance.Chat.SendMessage("/me " + user.Name + ", You have got no points to spend on undoing your bet yet!");
                 return;
-                */
             }
 
-            if (!Bets[State.CurrentSplitIndex].ContainsKey(user.Name)) {
+            if (!Bets[State.CurrentSplitIndex].ContainsKey(user.Name))
+            {
                 Twitch.Instance.Chat.SendMessage("/me " + user.Name + ", You didn't bet for this split yet!");
                 return;
             }
 
-            if (Scores[State.CurrentSplitIndex - 1][user.Name] < UnBetPenalty) {
+            if (Scores[State.CurrentSplitIndex-1].ContainsKey(user.Name) && Scores[State.CurrentSplitIndex - 1][user.Name] < UnBetPenalty)
+            {
                 Twitch.Instance.Chat.SendMessage("/me " + user.Name + ", You need " + UnBetPenalty + " points to undo your bet and just got " + Scores[State.CurrentSplitIndex - 1][user.Name] + ".");
                 return;
             }
@@ -191,25 +205,51 @@ namespace LiveSplit.SplitsBet
 
         private void Score(TwitchChat.User user, string argument)
         {
-            if (State.CurrentPhase == TimerPhase.Running)
+            if (CanBet)
             {
-                Twitch.Instance.Chat.SendMessage("/me " + user.Name + "'s score is " + Scores[State.CurrentSplitIndex - 1][user.Name]);
+                if (State.CurrentPhase == TimerPhase.Running)
+                {
+                    Twitch.Instance.Chat.SendMessage("/me " + user.Name + "'s score is " + Scores[State.CurrentSplitIndex - 1][user.Name]);
+                }
+                else Twitch.Instance.Chat.SendMessage("/me Timer is not running, no score available");
             }
-            else Twitch.Instance.Chat.SendMessage("/me Timer is not running, no score available");
         }
 
         private void Highscore(TwitchChat.User user, string argument)
         {
-            if (State.CurrentPhase == TimerPhase.Running)
+            if (CanBet)
             {
-                if (State.CurrentSplitIndex > 0)
+                if (State.CurrentPhase == TimerPhase.Running)
                 {
-                    var orderedScores = Scores[State.CurrentSplitIndex - 1].OrderByDescending(x => x.Value);
-                    Twitch.Instance.Chat.SendMessage("/me " + orderedScores.ToList()[0].Key + "'s score is " + orderedScores.ToList()[0].Value);
+                    if (State.CurrentSplitIndex > 0)
+                    {
+                        var orderedScores = Scores[State.CurrentSplitIndex - 1].OrderByDescending(x => x.Value);
+                        Twitch.Instance.Chat.SendMessage("/me " + orderedScores.ToList()[0].Key + "'s score is " + orderedScores.ToList()[0].Value);
+                    }
+                    else Twitch.Instance.Chat.SendMessage("/me No highscore yet!");
                 }
-                else Twitch.Instance.Chat.SendMessage("/me No highscore yet!");
+                else Twitch.Instance.Chat.SendMessage("/me Timer is not running, no score available");
             }
-            else Twitch.Instance.Chat.SendMessage("/me Timer is not running, no score available");
+        }
+
+        private void EnableBets(TwitchChat.User user, string argument)
+        {
+            if (user.Badges.HasFlag(TwitchChat.ChatBadges.Broadcaster))
+            {
+                if (!CanBet) CanBet = true;
+                else Twitch.Instance.Chat.SendMessage("/me SplitsBet already enabled");
+            }
+            else Twitch.Instance.Chat.SendMessage("/me You're not allowed to start the bets !");
+        }
+
+        private void DisableBets(TwitchChat.User user, string argument)
+        {
+            if (user.Badges.HasFlag(TwitchChat.ChatBadges.Broadcaster))
+            {
+                if (CanBet) CanBet = false;
+                else Twitch.Instance.Chat.SendMessage("/me SplitsBet already disabled");
+            }
+            else Twitch.Instance.Chat.SendMessage("/me You're not allowed to stop the bets !");
         }
 
         #endregion
@@ -240,56 +280,70 @@ namespace LiveSplit.SplitsBet
             catch { }
         }
 
+        /*The CanBet check might break stuff if you enable the bets in the middle of a run. If someone has a better solution, go for it*/
         private void StartBets(object sender, EventArgs e)
         {
-            SegmentBeginning = State.CurrentTime;
-            Bets[State.CurrentSplitIndex] = new Dictionary<string, Tuple<TimeSpan, double>>();
-            var timeFormatter = new ShortTimeFormatter();
-            var timeFormatted = timeFormatter.Format(GetTime(State.CurrentSplit.BestSegmentTime));
-            Twitch.Instance.Chat.SendMessage("/me Place your bets for " + State.CurrentSplit.Name + "! Best segment for this split is " + timeFormatted);
+            if (CanBet)
+            {
+                SegmentBeginning = State.CurrentTime;
+                Bets[State.CurrentSplitIndex] = new Dictionary<string, Tuple<TimeSpan, double>>();
+                var timeFormatter = new ShortTimeFormatter();
+                var timeFormatted = timeFormatter.Format(GetTime(State.CurrentSplit.BestSegmentTime));
+                Twitch.Instance.Chat.SendMessage("/me Place your bets for " + State.CurrentSplit.Name + "! Best segment for this split is " + timeFormatted);
+            }
         }
 
         private void CalculateScore(object sender, EventArgs e)
         {
-            var segment = State.CurrentTime - SegmentBeginning;
-            var timeFormatter = new ShortTimeFormatter();
-            Twitch.Instance.Chat.SendMessage("/me Time for this split was " + timeFormatter.Format(GetTime(segment)));
-            Scores[State.CurrentSplitIndex - 1] = State.CurrentSplitIndex > 1 ? new Dictionary<string, int>(Scores[State.CurrentSplitIndex - 2]) : new Dictionary<string, int>();
-            foreach (KeyValuePair<string, Tuple<TimeSpan, double>> entry in Bets[State.CurrentSplitIndex - 1])
+            if (CanBet)
             {
-                if (Scores[State.CurrentSplitIndex - 1].ContainsKey(entry.Key))
+                var segment = State.CurrentTime - SegmentBeginning;
+                var timeFormatter = new ShortTimeFormatter();
+                Twitch.Instance.Chat.SendMessage("/me Time for this split was " + timeFormatter.Format(GetTime(segment)));
+                Scores[State.CurrentSplitIndex - 1] = State.CurrentSplitIndex > 1 ? new Dictionary<string, int>(Scores[State.CurrentSplitIndex - 2]) : new Dictionary<string, int>();
+                foreach (KeyValuePair<string, Tuple<TimeSpan, double>> entry in Bets[State.CurrentSplitIndex - 1])
                 {
-                    Scores[State.CurrentSplitIndex - 1][entry.Key] += (int)(entry.Value.Item2 * (int)GetTime(segment).Value.TotalSeconds * Math.Exp(-(Math.Pow((int)GetTime(segment).Value.TotalSeconds - (int)entry.Value.Item1.TotalSeconds, 2) / (int)GetTime(segment).Value.TotalSeconds)));
+                    if (Scores[State.CurrentSplitIndex - 1].ContainsKey(entry.Key))
+                    {
+                        Scores[State.CurrentSplitIndex - 1][entry.Key] += (int)(entry.Value.Item2 * (int)GetTime(segment).Value.TotalSeconds * Math.Exp(-(Math.Pow((int)GetTime(segment).Value.TotalSeconds - (int)entry.Value.Item1.TotalSeconds, 2) / (int)GetTime(segment).Value.TotalSeconds)));
+                    }
+                    else Scores[State.CurrentSplitIndex - 1].Add(entry.Key, (int)(entry.Value.Item2 * (int)GetTime(segment).Value.TotalSeconds * Math.Exp(-(Math.Pow((int)GetTime(segment).Value.TotalSeconds - (int)entry.Value.Item1.TotalSeconds, 2) / (int)GetTime(segment).Value.TotalSeconds))));
                 }
-                else Scores[State.CurrentSplitIndex - 1].Add(entry.Key, (int)(entry.Value.Item2 * (int)GetTime(segment).Value.TotalSeconds * Math.Exp(-(Math.Pow((int)GetTime(segment).Value.TotalSeconds - (int)entry.Value.Item1.TotalSeconds, 2) / (int)GetTime(segment).Value.TotalSeconds))));
+                ShowScore();
+                StartBets(sender, e);
             }
-            ShowScore();
-            StartBets(sender, e);
         }
 
         private void ShowScore()
         {
-            var orderedScores = Scores[State.CurrentSplitIndex - 1].OrderByDescending(x => x.Value);
-
-            foreach (var entry in orderedScores)
+            if (CanBet)
             {
-                var delta = 0;
-                if (State.CurrentSplitIndex - 2 >= 0 && Scores[State.CurrentSplitIndex - 2].ContainsKey(entry.Key)) {
-                    delta = entry.Value - Scores[State.CurrentSplitIndex - 2][entry.Key];
+                var orderedScores = Scores[State.CurrentSplitIndex - 1].OrderByDescending(x => x.Value);
+
+                foreach (var entry in orderedScores)
+                {
+                    var delta = 0;
+                    if (State.CurrentSplitIndex - 2 >= 0 && Scores[State.CurrentSplitIndex - 2].ContainsKey(entry.Key))
+                    {
+                        delta = entry.Value - Scores[State.CurrentSplitIndex - 2][entry.Key];
+                    }
+                    Twitch.Instance.Chat.SendMessage("/me " + entry.Key + ": " + entry.Value + (delta != 0 ? (" (" + (delta < 0 ? "-" : "+") + delta + ")") : ""));
                 }
-                Twitch.Instance.Chat.SendMessage("/me " + entry.Key + ": " + entry.Value + (delta != 0 ? (" (" + (delta < 0 ? "-" : "+") + delta + ")") : ""));
             }
         }
 
         private void RollbackScore(object sender, EventArgs e)
         {
-            Scores[State.CurrentSplitIndex].Clear();
+            if(CanBet) Scores[State.CurrentSplitIndex].Clear();
         }
 
         private void CopyScore(object sender, EventArgs e)
         {
-            Scores[State.CurrentSplitIndex - 1] = new Dictionary<string, int>(Scores[State.CurrentSplitIndex - 2]);
-            Bets[State.CurrentSplitIndex] = new Dictionary<string, Tuple<TimeSpan, double>>();
+            if (CanBet)
+            {
+                Scores[State.CurrentSplitIndex - 1] = new Dictionary<string, int>(Scores[State.CurrentSplitIndex - 2]);
+                Bets[State.CurrentSplitIndex] = new Dictionary<string, Tuple<TimeSpan, double>>();
+            }
         }
 
         private void ResetSplitsBet()
@@ -300,7 +354,7 @@ namespace LiveSplit.SplitsBet
 
         void State_OnReset(object sender, TimerPhase value)
         {
-            ResetSplitsBet();
+            if(CanBet) ResetSplitsBet();
         }
 
         private TimeSpan? GetTime(Time segment) {
