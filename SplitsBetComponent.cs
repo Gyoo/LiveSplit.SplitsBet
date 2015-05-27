@@ -120,8 +120,8 @@ namespace LiveSplit.SplitsBet
                             {
                             if (argument.ToLower().Contains("kappa"))
                                 {
-                                    argument = "420:69";
-                                    Twitch.Instance.Chat.SendMessage("/me " + user.Name + " bet 420:69 Kappa");
+                                    argument = "4:20.69";
+                                    Twitch.Instance.Chat.SendMessage("/me " + user.Name + " bet 4:20.69 Kappa");
                                 }
 
                                 var time = TimeSpanParser.Parse(argument);
