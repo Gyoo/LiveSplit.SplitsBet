@@ -103,7 +103,8 @@ namespace LiveSplit.SplitsBet
         #endregion
 
         #region Commands
-        //TODO Change the imbricate ifs to single ifs with returns (see UnBet() ) in all commands
+        //TODO Errors management with Twitch messages, will be useful for alpha release in case of bugs
+        
         private void Bet(TwitchChat.User user, string argument)
         {
             //TODO Manage Game Time
