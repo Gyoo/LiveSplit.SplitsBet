@@ -195,8 +195,8 @@ namespace LiveSplit.SplitsBet
                 return;
             }
 
-            if (State.CurrentSplitIndex - 1 >= 0) {
-                Scores[State.CurrentSplitIndex - 1][user.Name] -= UnBetPenalty;
+            if (State.CurrentSplitIndex >= 0 && Scores[State.CurrentSplitIndex] != null) {
+                Scores[State.CurrentSplitIndex][user.Name] -= UnBetPenalty;
             }
             Bets[State.CurrentSplitIndex].Remove(user.Name);
         }
@@ -302,7 +302,7 @@ namespace LiveSplit.SplitsBet
                 var segment = State.CurrentTime - SegmentBeginning;
                 var timeFormatter = new ShortTimeFormatter();
                 Twitch.Instance.Chat.SendMessage("/me Time for this split was " + timeFormatter.Format(GetTime(segment)));
-                Scores[State.CurrentSplitIndex - 1] = State.CurrentSplitIndex > 1 ? new Dictionary<string, int>(Scores[State.CurrentSplitIndex - 2]) : new Dictionary<string, int>();
+                Scores[State.CurrentSplitIndex - 1] = Scores[State.CurrentSplitIndex - 1] ?? (State.CurrentSplitIndex > 1 ? new Dictionary<string, int>(Scores[State.CurrentSplitIndex - 2]) : new Dictionary<string, int>());
                 foreach (KeyValuePair<string, Tuple<TimeSpan, double>> entry in Bets[State.CurrentSplitIndex - 1])
                 {
                     if (Scores[State.CurrentSplitIndex - 1].ContainsKey(entry.Key))
@@ -311,6 +311,7 @@ namespace LiveSplit.SplitsBet
                     }
                     else Scores[State.CurrentSplitIndex - 1].Add(entry.Key, (int)(entry.Value.Item2 * (int)GetTime(segment).Value.TotalSeconds * Math.Exp(-(Math.Pow((int)GetTime(segment).Value.TotalSeconds - (int)entry.Value.Item1.TotalSeconds, 2) / (int)GetTime(segment).Value.TotalSeconds))));
                 }
+                Scores[State.CurrentSplitIndex] = new Dictionary<string, int>(Scores[State.CurrentSplitIndex - 1]);
                 ShowScore();
                 StartBets(sender, e);
             }
