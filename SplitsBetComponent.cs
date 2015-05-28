@@ -161,9 +161,16 @@ namespace LiveSplit.SplitsBet
                 return;
             }
             if (Bets[State.CurrentSplitIndex].ContainsKey(user.Name))
-                Twitch.Instance.Chat.SendMessage("/me " + user.Name + ", Your bet for " + State.CurrentSplit.Name + " is " + Bets[State.CurrentSplitIndex][user.Name].Item1);
+            {
+                var timeFormatter = new ShortTimeFormatter();
+                var time = Bets[State.CurrentSplitIndex][user.Name].Item1;
+                var formattedTime = timeFormatter.Format(time);
+                Twitch.Instance.Chat.SendMessage("/me " + user.Name + ", Your bet for " + State.CurrentSplit.Name + " is " + formattedTime);
+            }
             else
+            {
                 Twitch.Instance.Chat.SendMessage("/me " + user.Name + ", You didn't bet for this split yet!");
+            }
         }
 
         private void UnBet(TwitchChat.User user, string argument)
