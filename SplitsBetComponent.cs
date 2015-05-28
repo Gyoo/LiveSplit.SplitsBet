@@ -97,7 +97,6 @@ namespace LiveSplit.SplitsBet
             }
 
             Twitch.Instance.Chat.OnMessage += OnMessage;
-
         }
 
         #endregion
@@ -389,6 +388,7 @@ namespace LiveSplit.SplitsBet
 
         public override void Dispose()
         {
+            Twitch.Instance.Chat.OnMessage -= OnMessage;
         }
 
         #endregion
