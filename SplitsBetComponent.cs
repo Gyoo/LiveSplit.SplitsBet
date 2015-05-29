@@ -298,7 +298,11 @@ namespace LiveSplit.SplitsBet
                         cmd.Invoke(message.User, splits.Length > 1 ? splits[1] : "");
                     }
                 }
-                catch { }
+                catch (Exception e)
+                {
+                    Log.Error(e);
+                    Twitch.Instance.Chat.SendMessage("/me An error occured - please look into the system event log for details.");
+                }
             }
             try
             {
