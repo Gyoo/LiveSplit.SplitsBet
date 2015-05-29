@@ -37,4 +37,4 @@ and player, and possibly more !
 
 ## Download
 
-Check the [releases page](https://github.com/Gyoo/LiveSplit.SplitsBet/releases) to get the latest version !
+Check the [releases page](https://github.com/Gyoo/LiveSplit.SplitsBet/releases) to get the latest version or take the risk and download a [development build](https://fezmod.tk/files/travis/splitsbet/] !
