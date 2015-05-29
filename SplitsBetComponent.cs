@@ -65,7 +65,6 @@ namespace LiveSplit.SplitsBet
             Commands.Add("highscore", Highscore);
             Commands.Add("start", EnableBets);
             Commands.Add("stop", DisableBets);
-            //TODO Command to start/stop the bot, admin only (Hotkey ?)
 
             /*Setting Livesplit events*/
             State.OnStart += StartBets;
@@ -106,12 +105,18 @@ namespace LiveSplit.SplitsBet
         
         private void Bet(TwitchChat.User user, string argument)
         {
-            //TODO Manage Game Time
             if (!CanBet) return;
-            if (State.CurrentPhase != TimerPhase.Running)
+            switch (State.CurrentPhase)
             {
-                Twitch.Instance.Chat.SendMessage("/me Timer is not running, bets are closed");
-                return;
+                case TimerPhase.NotRunning:
+                    Twitch.Instance.Chat.SendMessage("/me Timer is not running, bets are closed");
+                    return;
+                case TimerPhase.Paused:
+                    Twitch.Instance.Chat.SendMessage("/me Timer is paused, bets are paused too");
+                    return;
+                case TimerPhase.Ended:
+                    Twitch.Instance.Chat.SendMessage("/me Run is ended, there is nothing to bet!");
+                    return;
             }
 
             if (Bets[State.CurrentSplitIndex].ContainsKey(user.Name))
@@ -154,11 +159,16 @@ namespace LiveSplit.SplitsBet
         private void CheckBet(TwitchChat.User user, string argument)
         {
             if (!CanBet) return;
-            if (State.CurrentPhase != TimerPhase.Running)
+            switch (State.CurrentPhase)
             {
-                Twitch.Instance.Chat.SendMessage("/me Timer is not running, bets are closed");
-                return;
+                case TimerPhase.NotRunning:
+                    Twitch.Instance.Chat.SendMessage("/me Timer is not running, bets are closed");
+                    return;
+                case TimerPhase.Ended:
+                    Twitch.Instance.Chat.SendMessage("/me The run has ended, nothing to check!");
+                    return;
             }
+
             if (Bets[State.CurrentSplitIndex].ContainsKey(user.Name))
             {
                 var timeFormatter = new ShortTimeFormatter();
@@ -177,10 +187,14 @@ namespace LiveSplit.SplitsBet
             //TODO check if the runner allows undoing bets
             //TODO Fix that shit
             if (!CanBet) return;
-            if (State.CurrentPhase != TimerPhase.Running)
+            switch (State.CurrentPhase)
             {
-                Twitch.Instance.Chat.SendMessage("/me Timer is not running, bets are closed");
-                return;
+                case TimerPhase.NotRunning:
+                    Twitch.Instance.Chat.SendMessage("/me Timer is not running, bets are closed");
+                    return;
+                case TimerPhase.Ended:
+                    Twitch.Instance.Chat.SendMessage("/me The run has ended, nothing to unbet!");
+                    return;
             }
 
             if (State.CurrentSplitIndex - 1 < 0)
@@ -219,15 +233,23 @@ namespace LiveSplit.SplitsBet
         private void Score(TwitchChat.User user, string argument)
         {
             if (!CanBet) return;
-            if (State.CurrentPhase == TimerPhase.Running)
-                Twitch.Instance.Chat.SendMessage("/me " + user.Name + "'s score is " + Scores[State.CurrentSplitIndex - 1][user.Name]);
-            else Twitch.Instance.Chat.SendMessage("/me Timer is not running, no score available");
+            if (State.CurrentPhase == TimerPhase.NotRunning)
+            {
+                Twitch.Instance.Chat.SendMessage("/me Timer is not running, no score available");
+                return;
+            }
+            if (State.CurrentSplitIndex == 0 || !Scores[State.CurrentSplitIndex - 1].ContainsKey(user.Name))
+            {
+                Twitch.Instance.Chat.SendMessage("/me " + user.Name + "'s score is 0");
+                return;
+            }
+            Twitch.Instance.Chat.SendMessage("/me " + user.Name + "'s score is " + Scores[State.CurrentSplitIndex - 1][user.Name]);
         }
 
         private void Highscore(TwitchChat.User user, string argument)
         {
             if (!CanBet) return;
-            if (State.CurrentPhase != TimerPhase.Running)
+            if (State.CurrentPhase == TimerPhase.NotRunning)
             {
                 Twitch.Instance.Chat.SendMessage("/me Timer is not running, no score available");
                 return;
