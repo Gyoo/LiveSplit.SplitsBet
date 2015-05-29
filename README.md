@@ -29,3 +29,12 @@ The current score system works so :
 
 These 2 parameters are managed with gaussians, which is, to me, the fairest way to calculate the score : it won't decrease too much if you're close enough, but will decrease kinda fast when you start being too far.
 However, the scoring system is most likely to be changed sooner or later
+
+### Long term
+
+When the plugin is stable enough, I want to go to the next level by offering a web platform where all the scores will be centralized, for every stream that uses SplitsBet. This site will show stats and ranks for each broadcaster
+and player, and possibly more !
+
+## Download
+
+Check the [releases page](https://github.com/Gyoo/LiveSplit.SplitsBet/releases) to get the latest version !
