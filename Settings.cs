@@ -6,47 +6,67 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using LiveSplit.Model;
+using System.Xml;
 
 namespace LiveSplit.SplitsBet
 {
     public partial class Settings : UserControl
     {
         public String Path { get; set; }
+        public LiveSplitState LivesplitState { get; set; }
+        public bool CanUnBet { get; set; }
+        public int UnBetPenalty { get; set; }
+        public TimeSpan MinimumTime { get; set; }
+        public TimingMethod? OverridenTimingMethod { get; set; }
 
         public Settings()
         {
             InitializeComponent();
-            txtPath.DataBindings.Add("Text", this, "Path", false, DataSourceUpdateMode.OnPropertyChanged);
-        }
-
-        private void btnPath_Click(object sender, EventArgs e)
-        {
-            var fbd = new FolderBrowserDialog()
-            {
-                SelectedPath = Path
-            };
-            var result = fbd.ShowDialog();
-            if (result == DialogResult.OK)
-            {
-                Path = fbd.SelectedPath;
-                txtPath.Text = Path;
-            }
+            checkBox1.DataBindings.Add("Checked", this, "CanUnBet", false, DataSourceUpdateMode.OnPropertyChanged);
+            textBox1.DataBindings.Add("Text", this, "UnBetPenalty", false, DataSourceUpdateMode.OnPropertyChanged);
+            textBox2.DataBindings.Add("Text", this, "MinimumTime", false, DataSourceUpdateMode.OnPropertyChanged);
+            //comboBox1.DataBindings.Add("SelectedValue", this, "OverridenTimingMethod", false, DataSourceUpdateMode.OnPropertyChanged);
         }
 
         public System.Xml.XmlNode GetSettings(System.Xml.XmlDocument document)
         {
             var settingsNode = document.CreateElement("Settings");
-
-            var pathNode = document.CreateElement("Path");
-            pathNode.InnerText = Path;
-            settingsNode.AppendChild(pathNode);
+            settingsNode.AppendChild(ToElement(document, "Version", "0.1"));
+            settingsNode.AppendChild(ToElement(document, "UnBet", CanUnBet));
+            settingsNode.AppendChild(ToElement(document, "UnbetPenalty", UnBetPenalty));
 
             return settingsNode;
         }
 
         public void SetSettings(System.Xml.XmlNode settings)
         {
-            Path = settings["Path"].InnerText;
+            CanUnBet = bool.Parse(settings["UnBet"].InnerText);
+            UnBetPenalty = int.Parse(settings["UnbetPenalty"].InnerText);
+        }
+
+        private XmlElement ToElement<T>(XmlDocument document, String name, T value)
+        {
+            var element = document.CreateElement(name);
+            element.InnerText = value.ToString();
+            return element;
+        }
+
+        private void textBox1_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!Char.IsDigit(e.KeyChar) && !Char.IsControl(e.KeyChar))
+                e.Handled = true;
+        }
+
+        private void textBox2_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!Char.IsDigit(e.KeyChar) && !Char.IsControl(e.KeyChar))
+                e.Handled = true;
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            textBox1.Enabled = checkBox1.Checked;
         }
     }
 }
