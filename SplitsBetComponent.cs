@@ -144,6 +144,7 @@ namespace LiveSplit.SplitsBet
                 }
 
                 var time = TimeSpanParser.Parse(argument);
+                if (Settings.UseGlobalTime) time -= GetTime(SegmentBeginning).Value;
                 if (time.CompareTo(Settings.MinimumTime) <= 0)
                 {
                     SendMessage(user.Name + ", Nice try, but it's invalid");
@@ -346,7 +347,7 @@ namespace LiveSplit.SplitsBet
                     Bets[State.CurrentSplitIndex] = new Dictionary<string, Tuple<TimeSpan, double>>();
                     var timeFormatter = new ShortTimeFormatter();
                     var timeFormatted = timeFormatter.Format(GetTime(State.CurrentSplit.BestSegmentTime));
-                    SendMessage("Place your bets for " + State.CurrentSplit.Name + "! Best segment for this split is " + timeFormatted);
+                    SendMessage("Place your bets for " + State.CurrentSplit.Name + "! Best segment for this split is " + timeFormatted + (Settings.UseGlobalTime?" but remember that global time is used !":""));
                 }
                 catch (Exception ex) { LogException(ex); }
             }

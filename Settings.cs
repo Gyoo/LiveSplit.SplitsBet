@@ -20,6 +20,7 @@ namespace LiveSplit.SplitsBet
         public TimeSpan MinimumTime { get; set; }
         public int NbScores { get; set; }
         public TimingMethod? OverridenTimingMethod { get; set; }
+        public bool UseGlobalTime { get; set; }
 
         public Settings()
         {
@@ -28,6 +29,7 @@ namespace LiveSplit.SplitsBet
             textBox1.DataBindings.Add("Text", this, "UnBetPenalty", false, DataSourceUpdateMode.OnPropertyChanged);
             textBox2.DataBindings.Add("Text", this, "MinimumTime", false, DataSourceUpdateMode.OnPropertyChanged);
             numericUpDown1.DataBindings.Add("Value", this, "NbScores", false, DataSourceUpdateMode.OnPropertyChanged);
+            checkBox2.DataBindings.Add("Checked", this, "UseGlobalTime", false, DataSourceUpdateMode.OnPropertyChanged);
             //comboBox1.DataBindings.Add("SelectedValue", this, "OverridenTimingMethod", false, DataSourceUpdateMode.OnPropertyChanged);
         }
 
@@ -35,19 +37,35 @@ namespace LiveSplit.SplitsBet
         {
             var settingsNode = document.CreateElement("Settings");
             settingsNode.AppendChild(ToElement(document, "Version", "0.2"));
+
             settingsNode.AppendChild(ToElement(document, "UnBet", CanUnBet));
             settingsNode.AppendChild(ToElement(document, "UnbetPenalty", UnBetPenalty));
             settingsNode.AppendChild(ToElement(document, "MinimumTime", MinimumTime));
             settingsNode.AppendChild(ToElement(document, "NbScores", NbScores));
+            settingsNode.AppendChild(ToElement(document, "UseGlobalTime", NbScores));
             return settingsNode;
         }
 
         public void SetSettings(System.Xml.XmlNode settings)
         {
-            CanUnBet = bool.Parse(settings["UnBet"].InnerText);
-            UnBetPenalty = int.Parse(settings["UnbetPenalty"].InnerText);
-            MinimumTime = TimeSpanParser.Parse(settings["MinimumTime"].InnerText);
-            NbScores = int.Parse(settings["NbScores"].InnerText);
+            if (settings["Version"] != null && settings["Version"].InnerText == "0.2")
+            {
+                CanUnBet = bool.Parse(settings["UnBet"].InnerText);
+                UnBetPenalty = int.Parse(settings["UnbetPenalty"].InnerText);
+                MinimumTime = TimeSpanParser.Parse(settings["MinimumTime"].InnerText);
+                NbScores = int.Parse(settings["NbScores"].InnerText);
+                UseGlobalTime = bool.Parse(settings["UseGlobalTime"].InnerText);
+            }
+            else
+            {
+                // Default values
+                CanUnBet = true;
+                UnBetPenalty = 50;
+                MinimumTime = new TimeSpan(0, 0, 1);
+                NbScores = 5;
+                UseGlobalTime = false;
+            }
+
         }
 
         private XmlElement ToElement<T>(XmlDocument document, String name, T value)
