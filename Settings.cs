@@ -19,18 +19,19 @@ namespace LiveSplit.SplitsBet
         public int UnBetPenalty { get; set; }
         public TimeSpan MinimumTime { get; set; }
         public int NbScores { get; set; }
-        public TimingMethod? OverridenTimingMethod { get; set; }
+        public TimingMethod? OverridenTimingMethod { get { return ParseTimingMethod(Method); } }
+        public String Method { get; set; }
         public bool UseGlobalTime { get; set; }
 
         public Settings()
         {
             InitializeComponent();
-            checkBox1.DataBindings.Add("Checked", this, "CanUnBet", false, DataSourceUpdateMode.OnPropertyChanged);
-            textBox1.DataBindings.Add("Text", this, "UnBetPenalty", false, DataSourceUpdateMode.OnPropertyChanged);
-            textBox2.DataBindings.Add("Text", this, "MinimumTime", false, DataSourceUpdateMode.OnPropertyChanged);
-            numericUpDown1.DataBindings.Add("Value", this, "NbScores", false, DataSourceUpdateMode.OnPropertyChanged);
-            checkBox2.DataBindings.Add("Checked", this, "UseGlobalTime", false, DataSourceUpdateMode.OnPropertyChanged);
-            //comboBox1.DataBindings.Add("SelectedValue", this, "OverridenTimingMethod", false, DataSourceUpdateMode.OnPropertyChanged);
+            chkCancelBets.DataBindings.Add("Checked", this, "CanUnBet", false, DataSourceUpdateMode.OnPropertyChanged);
+            txtCancelingPenalty.DataBindings.Add("Text", this, "UnBetPenalty", false, DataSourceUpdateMode.OnPropertyChanged);
+            txtMinBetTime.DataBindings.Add("Text", this, "MinimumTime", false, DataSourceUpdateMode.OnPropertyChanged);
+            numScores.DataBindings.Add("Value", this, "NbScores", false, DataSourceUpdateMode.OnPropertyChanged);
+            chkGlobalTime.DataBindings.Add("Checked", this, "UseGlobalTime", false, DataSourceUpdateMode.OnPropertyChanged);
+            cmbTimingMethod.DataBindings.Add("SelectedItem", this, "TimingMethod", false, DataSourceUpdateMode.OnPropertyChanged);
         }
 
         public System.Xml.XmlNode GetSettings(System.Xml.XmlDocument document)
@@ -43,6 +44,7 @@ namespace LiveSplit.SplitsBet
             settingsNode.AppendChild(ToElement(document, "MinimumTime", MinimumTime));
             settingsNode.AppendChild(ToElement(document, "NbScores", NbScores));
             settingsNode.AppendChild(ToElement(document, "UseGlobalTime", NbScores));
+            settingsNode.AppendChild(ToElement(document, "TimingMethod", Method));
             return settingsNode;
         }
 
@@ -55,6 +57,7 @@ namespace LiveSplit.SplitsBet
                 MinimumTime = TimeSpanParser.Parse(settings["MinimumTime"].InnerText);
                 NbScores = int.Parse(settings["NbScores"].InnerText);
                 UseGlobalTime = bool.Parse(settings["UseGlobalTime"].InnerText);
+                Method = settings["TimingMethod"].InnerText;
             }
             else
             {
@@ -64,8 +67,19 @@ namespace LiveSplit.SplitsBet
                 MinimumTime = new TimeSpan(0, 0, 1);
                 NbScores = 5;
                 UseGlobalTime = false;
+                Method = "Current Timing Method";
             }
 
+        }
+
+        private TimingMethod? ParseTimingMethod(String method)
+        {
+            TimingMethod? timingMethod = null;
+            if (method == "Real Time")
+                timingMethod = TimingMethod.RealTime;
+            else if (method == "Game Time")
+                timingMethod = TimingMethod.GameTime;
+            return timingMethod;
         }
 
         private XmlElement ToElement<T>(XmlDocument document, String name, T value)
@@ -89,7 +103,7 @@ namespace LiveSplit.SplitsBet
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
-            textBox1.Enabled = checkBox1.Checked;
+            txtCancelingPenalty.Enabled = chkCancelBets.Checked;
         }
     }
 }
