@@ -41,7 +41,7 @@ Check the [releases page](https://github.com/Gyoo/LiveSplit.SplitsBet/releases) 
 
 ### Install plugin
 
-Once you downloaded the plugin, unzip it in <LiveSplit folder>/Components
+Once you downloaded the plugin, unzip it in "path/to/LiveSplit"/Components
 
 Then, add it to your layout : Edit Layout/"+"/Control/Splits Bet Bot
 A window will show, asking for your Twitch credentials, fill it and it's good to go ! Don't forget to type !start in the chat otherwise the bets will be disabled :)
