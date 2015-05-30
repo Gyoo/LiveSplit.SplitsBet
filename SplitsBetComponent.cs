@@ -312,7 +312,7 @@ namespace LiveSplit.SplitsBet
                     cmd.Invoke(message.User, "");
                 }
             }
-            catch (Exception e) { LogException(e); }
+            catch (Exception e) { Log.Error(e); }
         }
 
         /*The CanBet check might break stuff if you enable the bets in the middle of a run. If someone has a better solution, go for it*/
