@@ -365,7 +365,8 @@ namespace LiveSplit.SplitsBet
                 try
                 {
                     var orderedScores = Scores[State.CurrentSplitIndex - 1].OrderByDescending(x => x.Value);
-
+                    int scoresShown = 0;
+                    SendMessage("Top " + ((Settings.NbScores > orderedScores.Count()) ? orderedScores.Count() : Settings.NbScores));
                     foreach (var entry in orderedScores)
                     {
                         var delta = 0;
@@ -374,6 +375,7 @@ namespace LiveSplit.SplitsBet
                             delta = entry.Value - Scores[State.CurrentSplitIndex - 2][entry.Key];
                         }
                         SendMessage(entry.Key + ": " + entry.Value + (delta != 0 ? (" (" + (delta < 0 ? "-" : "+") + delta + ")") : ""));
+                        if (++scoresShown >= Settings.NbScores) break;
                     }
                 }
                 catch (Exception ex) { LogException(ex); }
