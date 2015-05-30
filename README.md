@@ -2,6 +2,10 @@
 
 More fun for your viewers !
 
+Made by [@GyooRunsStuff](https://twitter.com/GyooRunsStuff)
+
+Many thanks to [@Cryze107](https://twitter.com/CryZe107) and [@0x0ade](https://twitter.com/0x0ade) !
+
 ## Summary
 
 SplitsBet is a plugin that adds a small bot to your chat (under your name). The goal of this bot is to allow viewers to guess what the time of your segments will be.
