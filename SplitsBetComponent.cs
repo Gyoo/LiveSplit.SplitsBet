@@ -129,7 +129,7 @@ namespace LiveSplit.SplitsBet
 
             var percentage = GetTime((State.CurrentTime - SegmentBeginning)).Value.TotalSeconds / GetTime(State.CurrentSplit.BestSegmentTime).Value.TotalSeconds;
             
-            if (percentage > 0.9)
+            if (percentage > 0.75)
             {
                 SendMessage("Too late to bet for this split, wait for the next one!");
                 return;
@@ -274,6 +274,7 @@ namespace LiveSplit.SplitsBet
                 if (!CanBet)
                 {
                     CanBet = true;
+                    SendMessage("SplitsBet enabled !");
                     if (State.CurrentPhase != TimerPhase.NotRunning)
                     {
                         for (int i = 0; i < State.CurrentSplitIndex - 1; i++)
@@ -295,7 +296,11 @@ namespace LiveSplit.SplitsBet
         {
             if (user.Badges.HasFlag(TwitchChat.ChatBadges.Broadcaster))
             {
-                if (CanBet) CanBet = false;
+                if (CanBet)
+                {
+                    CanBet = false;
+                    SendMessage("SplitsBet disabled !");
+                }
                 else SendMessage("SplitsBet already disabled");
             }
             else SendMessage("You're not allowed to stop the bets !");
