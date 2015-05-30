@@ -38,3 +38,9 @@ and player, and possibly more !
 ## Download
 
 Check the [releases page](https://github.com/Gyoo/LiveSplit.SplitsBet/releases) to get the latest version or take the risk and download a [development build](https://fezmod.tk/files/travis/splitsbet/) !
+
+### Install plugin
+
+Once you downloaded the plugin, unzip it in <LiveSplit folder>/Components
+Then, add it to your layout : Edit Layout/"+"/Control/Splits Bet Bot
+A window will show, asking for your Twitch credentials, fill it and it's good to go ! Don't forget to type !start in the chat otherwise the bets will be disabled :)
