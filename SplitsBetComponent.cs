@@ -271,7 +271,21 @@ namespace LiveSplit.SplitsBet
         {
             if (user.Badges.HasFlag(TwitchChat.ChatBadges.Broadcaster))
             {
-                if (!CanBet) CanBet = true;
+                if (!CanBet)
+                {
+                    CanBet = true;
+                    if (State.CurrentPhase != TimerPhase.NotRunning)
+                    {
+                        for (int i = 0; i < State.CurrentSplitIndex - 1; i++)
+                        {
+                            if (null == Scores[i])
+                            {
+                                Scores[i] = new Dictionary<string, int>(Scores[i - 1]);
+                                Bets[i] = new Dictionary<string, Tuple<TimeSpan, double>>();
+                            }
+                        }
+                    }
+                }
                 else SendMessage("SplitsBet already enabled");
             }
             else SendMessage("You're not allowed to start the bets !");
@@ -305,14 +319,15 @@ namespace LiveSplit.SplitsBet
                 }
                 catch (Exception e) { LogException(e); }
             }
-            else try
-            {
-                var cmd = Commands["anymessage"];
-                if (cmd != null) {
-                    cmd.Invoke(message.User, "");
-                }
-            }
-            catch (Exception e) { Log.Error(e); }
+            //else try
+            //{
+            //    var cmd = Commands["anymessage"];
+            //    if (cmd != null) {
+            //        cmd.Invoke(message.User, "");
+            //    }
+            //}
+            //catch (Exception e) { Log.Error(e); }
+            /* ^ Is this code really useful ? ^ */
         }
 
         /*The CanBet check might break stuff if you enable the bets in the middle of a run. If someone has a better solution, go for it*/
@@ -384,7 +399,12 @@ namespace LiveSplit.SplitsBet
 
         private void RollbackScore(object sender, EventArgs e)
         {
-            if(CanBet) try { Scores[State.CurrentSplitIndex].Clear(); } catch (Exception ex) { LogException(ex); };
+            try { 
+                Scores[State.CurrentSplitIndex].Clear(); 
+            } 
+            catch (Exception ex) { 
+                LogException(ex); 
+            };
         }
 
         private void CopyScore(object sender, EventArgs e)
