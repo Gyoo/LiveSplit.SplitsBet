@@ -69,9 +69,9 @@ A window will show, asking for your Twitch credentials (__WARNING__: If you alre
 
 ### Adds
 
-- Setting : Limit of scores to show at the end of a split (from 1 to 10)
-- Setting : Use global time as bet value instead of segment time
-- Setting : Use Game Time instead of Real Time
+- Setting: Limit of scores to show at the end of a split (from 1 to 10)
+- Setting: Use global time as bet value instead of segment time
+- Setting: Use Game Time instead of Real Time
 - SplitsBet should be auto-updated with the Update Manager from now on
 
 ### Known Bugs
