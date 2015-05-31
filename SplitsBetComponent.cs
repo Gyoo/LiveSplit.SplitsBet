@@ -346,7 +346,7 @@ namespace LiveSplit.SplitsBet
                     Bets[State.CurrentSplitIndex] = new Dictionary<string, Tuple<TimeSpan, double>>();
                     var timeFormatter = new ShortTimeFormatter();
                     var timeFormatted = timeFormatter.Format(GetTime(State.CurrentSplit.BestSegmentTime));
-                    SendMessage("Place your bets for " + State.CurrentSplit.Name + "! Best segment for this split is " + timeFormatted + (Settings.UseGlobalTime?" but remember that global time is used !":""));
+                    SendMessage("Place your bets for " + State.CurrentSplit.Name + "! Best segment for this split is " + timeFormatted + (Settings.UseGlobalTime?" but remember that global time is used!":""));
                 }
                 catch (Exception ex) { LogException(ex); }
             }
@@ -418,7 +418,8 @@ namespace LiveSplit.SplitsBet
             {
                 try
                 {
-                    Scores[State.CurrentSplitIndex - 1] = new Dictionary<string, int>(Scores[State.CurrentSplitIndex - 2]);
+                    if (State.CurrentSplitIndex > 1) Scores[State.CurrentSplitIndex - 1] = new Dictionary<string, int>(Scores[State.CurrentSplitIndex - 2]);
+                    else Scores[State.CurrentSplitIndex - 1] = new Dictionary<string, int>();
                     Bets[State.CurrentSplitIndex] = new Dictionary<string, Tuple<TimeSpan, double>>();
                 }
                 catch (Exception ex) { LogException(ex); }
