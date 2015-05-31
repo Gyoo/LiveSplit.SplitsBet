@@ -346,7 +346,10 @@ namespace LiveSplit.SplitsBet
                     Bets[State.CurrentSplitIndex] = new Dictionary<string, Tuple<TimeSpan, double>>();
                     var timeFormatter = new ShortTimeFormatter();
                     var timeFormatted = timeFormatter.Format(GetTime(State.CurrentSplit.BestSegmentTime));
-                    SendMessage("Place your bets for " + State.CurrentSplit.Name + "! Best segment for this split is " + timeFormatted + (Settings.UseGlobalTime?" but remember that global time is used!":""));
+                    SendMessage("Place your bets for " + State.CurrentSplit.Name + "!" + 
+                        (TimeSpanParser.Parse(timeFormatted)>new TimeSpan(0,0,0) ? 
+                            (" Best segment for this split is " + timeFormatted + (Settings.UseGlobalTime?" but remember that global time is used!":"")) 
+                            : " No best segment for this split :("));
                 }
                 catch (Exception ex) { LogException(ex); }
             }
