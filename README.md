@@ -15,14 +15,14 @@ The closer they are to reality, the more points!
 
 ### Commands
 
-- !start __(Broadcaster only)__: Starts the bot. Viewers can bet whenever a message inviting them to do so appears.
-- !stop __(Broadcaster only)__: Stops the bot. Viewers can't bet anymore.
-- !bet (hh:m)m:ss: Guess the time for the current split. Hours and first digit of minutes are optional (Example: 4:20 is a valid time). You can't change your bet after you set it.
-- !unbet: Cancels your bet for the current split. Watch out, there's a points penalty!
-- !checkbet: Verify your bet
-- !betcommands: Shows the available commands
-- !score: Shows your score during a run
-- !highscore: Shows the current highest score
+- `!start` __(Broadcaster only)__ Starts the bot. Viewers can bet whenever a message inviting them to do so appears.
+- `!stop` __(Broadcaster only)__ Stops the bot. Viewers can't bet anymore.
+- `!bet (hh:m)m:ss` Guess the time for the current split. Hours and first digit of minutes are optional (Example: 4:20 is a valid time). You can't change your bet after you set it.
+- `!unbet` Cancels your bet for the current split. Watch out, there's a points penalty!
+- `!checkbet` Verify your bet
+- `!betcommands` Shows the available commands
+- `!score` Shows your score during a run
+- `!highscore` Shows the current highest score
 
 ### Score system
 
@@ -45,7 +45,7 @@ Check the [releases page](https://github.com/Gyoo/LiveSplit.SplitsBet/releases) 
 
 ### Install plugin
 
-Once you downloaded the plugin, unzip it in "path/to/LiveSplit"/Components
+Once you downloaded the plugin, unzip it in `"path/to/LiveSplit"/Components`
 
 Then, add it to your layout:
 ```
