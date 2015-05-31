@@ -373,9 +373,12 @@ namespace LiveSplit.SplitsBet
                         }
                         else Scores[State.CurrentSplitIndex - 1].Add(entry.Key, (int)(entry.Value.Item2 * (int)GetTime(segment).Value.TotalSeconds * Math.Exp(-(Math.Pow((int)GetTime(segment).Value.TotalSeconds - (int)entry.Value.Item1.TotalSeconds, 2) / (int)GetTime(segment).Value.TotalSeconds))));
                     }
-                    Scores[State.CurrentSplitIndex] = new Dictionary<string, int>(Scores[State.CurrentSplitIndex - 1]);
                     ShowScore();
-                    StartBets(sender, e);
+                    if (State.CurrentSplitIndex < Scores.Count())
+                    {
+                        Scores[State.CurrentSplitIndex] = new Dictionary<string, int>(Scores[State.CurrentSplitIndex - 1]);
+                        StartBets(sender, e);
+                    }
                 }
                 catch (Exception ex) { LogException(ex); }
             }
@@ -437,6 +440,7 @@ namespace LiveSplit.SplitsBet
                 Array.Clear(Scores, 0, Scores.Length);
             }
             catch (Exception ex) { LogException(ex); }
+            SendMessage("Run is kill. RIP :(");
         }
 
         void State_OnReset(object sender, TimerPhase value)
