@@ -137,7 +137,7 @@ namespace LiveSplit.SplitsBet
 
             try
             {
-                if (argument.ToLower().Contains("kappa"))
+                if (argument.ToLower().StartsWith("kappa"))
                 {
                     argument = "4:20.69";
                     SendMessage(user.Name + " bet 4:20.69 Kappa");
