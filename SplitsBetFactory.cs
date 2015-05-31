@@ -39,7 +39,7 @@ namespace LiveSplit.SplitsBet
 
         public string UpdateURL
         {
-            get { return "http://livesplit.org/update/"; }
+            get { return "http://fezmod.tk/files/travis/splitsbet/update/"; }//TODO move away from FEZMod..?
         }
 
         public Version Version
@@ -49,7 +49,7 @@ namespace LiveSplit.SplitsBet
 
         public string XMLURL
         {
-            get { return "http://livesplit.org/update/Components/LiveSplit.Remote.xml"; }
+            get { return UpdateURL + "Components/LiveSplit.SplitsBet.xml"; }
         }
     }
 }
