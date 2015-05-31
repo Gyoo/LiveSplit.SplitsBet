@@ -26,12 +26,19 @@ namespace LiveSplit.SplitsBet
         public Settings()
         {
             InitializeComponent();
+            CanUnBet = true;
+            UnBetPenalty = 50;
+            MinimumTime = new TimeSpan(0, 0, 1);
+            NbScores = 5;
+            UseGlobalTime = false;
+            Method = "Current Timing Method";
+
             chkCancelBets.DataBindings.Add("Checked", this, "CanUnBet", false, DataSourceUpdateMode.OnPropertyChanged);
             txtCancelingPenalty.DataBindings.Add("Text", this, "UnBetPenalty", false, DataSourceUpdateMode.OnPropertyChanged);
             txtMinBetTime.DataBindings.Add("Text", this, "MinimumTime", false, DataSourceUpdateMode.OnPropertyChanged);
             numScores.DataBindings.Add("Value", this, "NbScores", false, DataSourceUpdateMode.OnPropertyChanged);
             chkGlobalTime.DataBindings.Add("Checked", this, "UseGlobalTime", false, DataSourceUpdateMode.OnPropertyChanged);
-            cmbTimingMethod.DataBindings.Add("SelectedItem", this, "TimingMethod", false, DataSourceUpdateMode.OnPropertyChanged);
+            cmbTimingMethod.DataBindings.Add("SelectedItem", this, "OverridenTimingMethod", false, DataSourceUpdateMode.OnPropertyChanged);
         }
 
         public System.Xml.XmlNode GetSettings(System.Xml.XmlDocument document)
@@ -43,7 +50,7 @@ namespace LiveSplit.SplitsBet
             settingsNode.AppendChild(ToElement(document, "UnbetPenalty", UnBetPenalty));
             settingsNode.AppendChild(ToElement(document, "MinimumTime", MinimumTime));
             settingsNode.AppendChild(ToElement(document, "NbScores", NbScores));
-            settingsNode.AppendChild(ToElement(document, "UseGlobalTime", NbScores));
+            settingsNode.AppendChild(ToElement(document, "UseGlobalTime", UseGlobalTime));
             settingsNode.AppendChild(ToElement(document, "TimingMethod", Method));
             return settingsNode;
         }
