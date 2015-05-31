@@ -318,9 +318,8 @@ namespace LiveSplit.SplitsBet
                 try
                 {
                     var splits = message.Text.Substring(1).Split(new char[] { ' ' }, 2);
-                    var cmd = Commands[splits[0].ToLower()];
-                    if (cmd != null) {
-                        cmd.Invoke(message.User, splits.Length > 1 ? splits[1] : "");
+                    if (Commands.ContainsKey(splits[0].ToLower())) {
+                        Commands[splits[0].ToLower()].Invoke(message.User, splits.Length > 1 ? splits[1] : "");
                     }
                 }
                 catch (Exception e) { LogException(e); }
