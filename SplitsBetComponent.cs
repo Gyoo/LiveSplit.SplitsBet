@@ -561,6 +561,12 @@ namespace LiveSplit.SplitsBet
         public override void Dispose()
         {
             Twitch.Instance.Chat.OnMessage -= OnMessage;
+
+            State.OnStart -= StartBets;
+            State.OnSplit -= CalculateScore;
+            State.OnUndoSplit -= RollbackScore;
+            State.OnSkipSplit -= CopyScore;
+            State.OnReset -= State_OnReset;
         }
 
         #endregion
