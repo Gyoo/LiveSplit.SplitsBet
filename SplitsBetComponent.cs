@@ -270,7 +270,7 @@ namespace LiveSplit.SplitsBet
 
         private void EnableBets(TwitchChat.User user, string argument)
         {
-            if (user.Badges.HasFlag(TwitchChat.ChatBadges.Broadcaster))
+            if (user.Badges.HasFlag(TwitchChat.ChatBadges.Broadcaster) || Settings.AllowMods && user.Badges.HasFlag(TwitchChat.ChatBadges.Moderator))
             {
                 if (!CanBet)
                 {
@@ -295,7 +295,7 @@ namespace LiveSplit.SplitsBet
 
         private void DisableBets(TwitchChat.User user, string argument)
         {
-            if (user.Badges.HasFlag(TwitchChat.ChatBadges.Broadcaster))
+            if (user.Badges.HasFlag(TwitchChat.ChatBadges.Broadcaster) || Settings.AllowMods && user.Badges.HasFlag(TwitchChat.ChatBadges.Moderator))
             {
                 if (CanBet)
                 {

@@ -22,6 +22,7 @@ namespace LiveSplit.SplitsBet
         public TimingMethod? OverridenTimingMethod { get { return ParseTimingMethod(Method); } }
         public String Method { get; set; }
         public bool UseGlobalTime { get; set; }
+        public bool AllowMods { get; set; }
 
         public Settings()
         {
@@ -32,6 +33,7 @@ namespace LiveSplit.SplitsBet
             NbScores = 5;
             UseGlobalTime = false;
             Method = "Current Timing Method";
+            AllowMods = false;
 
             chkCancelBets.DataBindings.Add("Checked", this, "CanUnBet", false, DataSourceUpdateMode.OnPropertyChanged);
             txtCancelingPenalty.DataBindings.Add("Text", this, "UnBetPenalty", false, DataSourceUpdateMode.OnPropertyChanged);
@@ -39,6 +41,7 @@ namespace LiveSplit.SplitsBet
             numScores.DataBindings.Add("Value", this, "NbScores", false, DataSourceUpdateMode.OnPropertyChanged);
             chkGlobalTime.DataBindings.Add("Checked", this, "UseGlobalTime", false, DataSourceUpdateMode.OnPropertyChanged);
             cmbTimingMethod.DataBindings.Add("SelectedItem", this, "OverridenTimingMethod", false, DataSourceUpdateMode.OnPropertyChanged);
+            chkAllowMods.DataBindings.Add("Checked", this, "AllowMods", false, DataSourceUpdateMode.OnPropertyChanged);
         }
 
         public System.Xml.XmlNode GetSettings(System.Xml.XmlDocument document)
@@ -52,6 +55,7 @@ namespace LiveSplit.SplitsBet
             settingsNode.AppendChild(ToElement(document, "NbScores", NbScores));
             settingsNode.AppendChild(ToElement(document, "UseGlobalTime", UseGlobalTime));
             settingsNode.AppendChild(ToElement(document, "TimingMethod", Method));
+            settingsNode.AppendChild(ToElement(document, "AllowMods", AllowMods));
             return settingsNode;
         }
 
@@ -65,6 +69,7 @@ namespace LiveSplit.SplitsBet
                 NbScores = int.Parse(settings["NbScores"].InnerText);
                 UseGlobalTime = bool.Parse(settings["UseGlobalTime"].InnerText);
                 Method = settings["TimingMethod"].InnerText;
+                AllowMods = bool.Parse(settings["AllowMods"].InnerText);
             }
             else
             {
@@ -75,6 +80,7 @@ namespace LiveSplit.SplitsBet
                 NbScores = 5;
                 UseGlobalTime = false;
                 Method = "Current Timing Method";
+                AllowMods = false;
             }
 
         }
