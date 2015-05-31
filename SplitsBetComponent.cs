@@ -26,9 +26,11 @@ namespace LiveSplit.SplitsBet
         protected LiveSplitState State { get; set; }
         public Dictionary<String, Action<TwitchChat.User, string>> Commands { get; set; }
         private Dictionary<string, Tuple<TimeSpan, double>>[] Bets { get; set; }
+        private Dictionary<string, TimeSpan> SpecialBets { get; set; }
         private Dictionary<string, int>[] Scores { get; set; }
         private Time SegmentBeginning { get; set; }
         private bool CanBet { get; set; }
+        private bool ActiveSpecialBets { get; set; }
 
         public override string ComponentName
         {
@@ -50,8 +52,10 @@ namespace LiveSplit.SplitsBet
             State = state;
             SegmentBeginning = new Time();
             Bets = new Dictionary<string, Tuple<TimeSpan, double>>[State.Run.Count];
+            SpecialBets = new Dictionary<string, TimeSpan>();
             Scores = new Dictionary<string, int>[State.Run.Count];
             CanBet = false;
+            ActiveSpecialBets = false;
 
             /*Adding available commands*/
             Commands.Add("bet", Bet);
@@ -62,6 +66,7 @@ namespace LiveSplit.SplitsBet
             Commands.Add("highscore", Highscore);
             Commands.Add("start", EnableBets);
             Commands.Add("stop", DisableBets);
+            Commands.Add("specialbet", SpecialBet);
 
             /*Setting Livesplit events*/
             State.OnStart += StartBets;
@@ -103,7 +108,6 @@ namespace LiveSplit.SplitsBet
         #endregion
 
         #region Commands
-        //TODO Errors management with Twitch messages, will be useful for alpha release in case of bugs
         
         private void Bet(TwitchChat.User user, string argument)
         {
@@ -305,6 +309,80 @@ namespace LiveSplit.SplitsBet
                 else SendMessage("SplitsBet already disabled");
             }
             else SendMessage("You're not allowed to stop the bets !");
+        }
+
+        private void SpecialBet(TwitchChat.User user, string argument) { 
+            if (!CanBet) return;
+            if (argument.ToLower().StartsWith("start")){
+                ActiveSpecialBets = true;
+                return;
+            }
+            if (argument.ToLower().StartsWith("end")){
+                var args = argument.Split(new string[] { " " }, StringSplitOptions.None);
+                if(args.Count()>1){
+                    try
+                    {
+                        //TODO Accuracy better than seconds, special events are meant to be short (OoT Dampe < 1 min iirc, SM64 Secret Slide between 12.5s and 13s generally...)
+                        var time = TimeSpanParser.Parse(args[1]);
+                        Scores[State.CurrentSplitIndex - 1] = Scores[State.CurrentSplitIndex - 1] ?? (State.CurrentSplitIndex > 1 ? new Dictionary<string, int>(Scores[State.CurrentSplitIndex - 2]) : new Dictionary<string, int>());
+                        foreach (KeyValuePair<string, TimeSpan> entry in SpecialBets)
+                        {
+                            if (Scores[State.CurrentSplitIndex - 1].ContainsKey(entry.Key))
+                            {
+                                Scores[State.CurrentSplitIndex - 1][entry.Key] += (int)(time.TotalSeconds * Math.Exp(-(Math.Pow((int)time.TotalSeconds - (int)entry.Value.TotalSeconds, 2) / (int)time.TotalSeconds)));
+                            }
+                            else Scores[State.CurrentSplitIndex - 1].Add(entry.Key, (int)(time.TotalSeconds * Math.Exp(-(Math.Pow((int)time.TotalSeconds - (int)entry.Value.TotalSeconds, 2) / (int)time.TotalSeconds))));
+                        }
+                        ShowScore();
+                        SpecialBets.Clear();
+                    }
+                    catch (Exception e)
+                    {
+                        LogException(e);
+                    }
+
+                }
+                
+                ActiveSpecialBets = false;
+                return;
+            }
+            if (!ActiveSpecialBets){
+                SendMessage("No special bet active");
+            }
+            switch (State.CurrentPhase)
+            {
+                case TimerPhase.NotRunning:
+                    SendMessage("Timer is not running, bets are closed");
+                    return;
+                case TimerPhase.Paused:
+                    SendMessage("Timer is paused, bets are paused too");
+                    return;
+                case TimerPhase.Ended:
+                    SendMessage("Run is ended, there is nothing to bet!");
+                    return;
+            }
+
+            if (SpecialBets.ContainsKey(user.Name))
+            {
+                SendMessage(user.Name + ", You already bet, silly!");
+                return;
+            }
+
+            try
+            {
+                var time = TimeSpanParser.Parse(argument);
+                if (Settings.UseGlobalTime) time -= GetTime(SegmentBeginning).Value;
+                if (time.CompareTo(Settings.MinimumTime) <= 0)
+                {
+                    SendMessage(user.Name + ", Nice try, but it's invalid");
+                    return;
+                }
+                SpecialBets.Add(user.Name, time);
+            }
+            catch
+            {
+                SendMessage(user.Name + ", Invalid time, please retry");
+            }
         }
 
         #endregion
