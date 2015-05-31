@@ -52,3 +52,28 @@ Then, add it to your layout:
 Edit Layout ➞ "+" ➞ Control ➞ Splits Bet Bot
 ```
 A window will show, asking for your Twitch credentials (__WARNING__: If you already linked your Twitch credentials to Livesplit, this window will not appear. The bot is ready to use), fill it and it's good to go! Don't forget to type !start in the chat otherwise the bets will be disabled. :smiley:
+
+# Changelog
+
+##v0.2
+
+### Fixes
+
+- Attempted to fix a bug that can occur when the bot is stopped in the middle of a run and restarted later
+- Changed the bet time limit from 90% of the best time of a segment to 75%
+- Fixed a crash in the settings
+- Fixed a message showing there is an error when someone writes a command that is not linked to SplitsBet (i.e. !emotes)
+- Fixed a bug happening if you skip the first split
+- SplitsBet will show a custom message if no best segment is set for a split
+- Fixed a bug not showing the scores at the end of a run
+
+### Adds
+
+- Setting : Limit of scores to show at the end of a split (from 1 to 10)
+- Setting : Use global time as bet value instead of segment time
+- Setting : Use Game Time instead of Real Time
+- SplitsBet should be auto-updated with the Update Manager from now on
+
+### Known Bugs
+
+- Minimum Bet Time isn't registered correctly in the settings
