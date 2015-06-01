@@ -23,6 +23,7 @@ namespace LiveSplit.SplitsBet
         public String Method { get; set; }
         public bool UseGlobalTime { get; set; }
         public bool AllowMods { get; set; }
+        public bool SingleLineScores { get; set; }
 
         public Settings()
         {
@@ -34,6 +35,7 @@ namespace LiveSplit.SplitsBet
             UseGlobalTime = false;
             Method = "Current Timing Method";
             AllowMods = false;
+            SingleLineScores = false;
 
             chkCancelBets.DataBindings.Add("Checked", this, "CanUnBet", false, DataSourceUpdateMode.OnPropertyChanged);
             txtCancelingPenalty.DataBindings.Add("Text", this, "UnBetPenalty", false, DataSourceUpdateMode.OnPropertyChanged);
@@ -42,12 +44,13 @@ namespace LiveSplit.SplitsBet
             chkGlobalTime.DataBindings.Add("Checked", this, "UseGlobalTime", false, DataSourceUpdateMode.OnPropertyChanged);
             cmbTimingMethod.DataBindings.Add("SelectedItem", this, "OverridenTimingMethod", false, DataSourceUpdateMode.OnPropertyChanged);
             chkAllowMods.DataBindings.Add("Checked", this, "AllowMods", false, DataSourceUpdateMode.OnPropertyChanged);
+            chkSingleLineScores.DataBindings.Add("Checked", this, "SingleLineScores", false, DataSourceUpdateMode.OnPropertyChanged);
         }
 
         public System.Xml.XmlNode GetSettings(System.Xml.XmlDocument document)
         {
             var settingsNode = document.CreateElement("Settings");
-            settingsNode.AppendChild(ToElement(document, "Version", "0.2"));
+            settingsNode.AppendChild(ToElement(document, "Version", "0.3"));
 
             settingsNode.AppendChild(ToElement(document, "UnBet", CanUnBet));
             settingsNode.AppendChild(ToElement(document, "UnbetPenalty", UnBetPenalty));
@@ -56,12 +59,13 @@ namespace LiveSplit.SplitsBet
             settingsNode.AppendChild(ToElement(document, "UseGlobalTime", UseGlobalTime));
             settingsNode.AppendChild(ToElement(document, "TimingMethod", Method));
             settingsNode.AppendChild(ToElement(document, "AllowMods", AllowMods));
+            settingsNode.AppendChild(ToElement(document, "SingleLineScores", SingleLineScores));
             return settingsNode;
         }
 
         public void SetSettings(System.Xml.XmlNode settings)
         {
-            if (settings["Version"] != null && settings["Version"].InnerText == "0.2")
+            if (settings["Version"] != null && settings["Version"].InnerText == "0.3")
             {
                 CanUnBet = bool.Parse(settings["UnBet"].InnerText);
                 UnBetPenalty = int.Parse(settings["UnbetPenalty"].InnerText);
@@ -70,6 +74,7 @@ namespace LiveSplit.SplitsBet
                 UseGlobalTime = bool.Parse(settings["UseGlobalTime"].InnerText);
                 Method = settings["TimingMethod"].InnerText;
                 AllowMods = bool.Parse(settings["AllowMods"].InnerText);
+                SingleLineScores = bool.Parse(settings["SingleLineScores"].InnerText);
             }
             else
             {
@@ -81,6 +86,7 @@ namespace LiveSplit.SplitsBet
                 UseGlobalTime = false;
                 Method = "Current Timing Method";
                 AllowMods = false;
+                SingleLineScores = false;
             }
 
         }

@@ -44,7 +44,7 @@ namespace LiveSplit.SplitsBet
 
         public Version Version
         {
-            get { return Version.Parse("0.2"); }
+            get { return Version.Parse("0.3"); }
         }
 
         public string XMLURL

@@ -38,10 +38,11 @@
             this.txtCancelingPenalty = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.numScores = new System.Windows.Forms.NumericUpDown();
-            this.label3 = new System.Windows.Forms.Label();
-            this.cmbTimingMethod = new System.Windows.Forms.ComboBox();
             this.chkGlobalTime = new System.Windows.Forms.CheckBox();
+            this.cmbTimingMethod = new System.Windows.Forms.ComboBox();
+            this.label3 = new System.Windows.Forms.Label();
             this.chkAllowMods = new System.Windows.Forms.CheckBox();
+            this.chkSingleLineScores = new System.Windows.Forms.CheckBox();
             this.tableLayoutPanel1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
@@ -58,22 +59,23 @@
             this.tableLayoutPanel1.Controls.Add(this.groupBox1, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.label4, 0, 2);
             this.tableLayoutPanel1.Controls.Add(this.numScores, 1, 2);
-            this.tableLayoutPanel1.Controls.Add(this.chkGlobalTime, 0, 3);
-            this.tableLayoutPanel1.Controls.Add(this.cmbTimingMethod, 1, 5);
-            this.tableLayoutPanel1.Controls.Add(this.label3, 0, 5);
-            this.tableLayoutPanel1.Controls.Add(this.chkAllowMods, 0, 4);
+            this.tableLayoutPanel1.Controls.Add(this.label3, 0, 6);
+            this.tableLayoutPanel1.Controls.Add(this.cmbTimingMethod, 1, 6);
+            this.tableLayoutPanel1.Controls.Add(this.chkAllowMods, 0, 5);
+            this.tableLayoutPanel1.Controls.Add(this.chkGlobalTime, 0, 4);
+            this.tableLayoutPanel1.Controls.Add(this.chkSingleLineScores, 0, 3);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(7, 7);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 6;
+            this.tableLayoutPanel1.RowCount = 7;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 29F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 29F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 29F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 29F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 29F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(462, 224);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(462, 286);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
             // txtMinBetTime
@@ -191,15 +193,18 @@
             0,
             0});
             // 
-            // label3
+            // chkGlobalTime
             // 
-            this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(3, 203);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(193, 13);
-            this.label3.TabIndex = 6;
-            this.label3.Text = "Timing Method:";
+            this.chkGlobalTime.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.chkGlobalTime.AutoSize = true;
+            this.tableLayoutPanel1.SetColumnSpan(this.chkGlobalTime, 2);
+            this.chkGlobalTime.Location = new System.Drawing.Point(7, 172);
+            this.chkGlobalTime.Margin = new System.Windows.Forms.Padding(7, 3, 3, 3);
+            this.chkGlobalTime.Name = "chkGlobalTime";
+            this.chkGlobalTime.Size = new System.Drawing.Size(452, 17);
+            this.chkGlobalTime.TabIndex = 11;
+            this.chkGlobalTime.Text = "Use Global Time Instead of Segment Time";
+            this.chkGlobalTime.UseVisualStyleBackColor = true;
             // 
             // cmbTimingMethod
             // 
@@ -209,36 +214,46 @@
             "Current Timing Method",
             "Real Time",
             "Game Time"});
-            this.cmbTimingMethod.Location = new System.Drawing.Point(202, 199);
+            this.cmbTimingMethod.Location = new System.Drawing.Point(202, 244);
             this.cmbTimingMethod.Name = "cmbTimingMethod";
             this.cmbTimingMethod.Size = new System.Drawing.Size(120, 21);
             this.cmbTimingMethod.TabIndex = 5;
             // 
-            // chkGlobalTime
+            // label3
             // 
-            this.chkGlobalTime.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.chkGlobalTime.AutoSize = true;
-            this.tableLayoutPanel1.SetColumnSpan(this.chkGlobalTime, 2);
-            this.chkGlobalTime.Location = new System.Drawing.Point(7, 143);
-            this.chkGlobalTime.Margin = new System.Windows.Forms.Padding(7, 3, 3, 3);
-            this.chkGlobalTime.Name = "chkGlobalTime";
-            this.chkGlobalTime.Size = new System.Drawing.Size(452, 17);
-            this.chkGlobalTime.TabIndex = 11;
-            this.chkGlobalTime.Text = "Use Global Time Instead of Segment Time";
-            this.chkGlobalTime.UseVisualStyleBackColor = true;
+            this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(3, 248);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(193, 13);
+            this.label3.TabIndex = 6;
+            this.label3.Text = "Timing Method:";
             // 
             // chkAllowMods
             // 
             this.chkAllowMods.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.chkAllowMods.AutoSize = true;
             this.tableLayoutPanel1.SetColumnSpan(this.chkAllowMods, 2);
-            this.chkAllowMods.Location = new System.Drawing.Point(7, 172);
+            this.chkAllowMods.Location = new System.Drawing.Point(7, 201);
             this.chkAllowMods.Margin = new System.Windows.Forms.Padding(7, 3, 3, 3);
             this.chkAllowMods.Name = "chkAllowMods";
             this.chkAllowMods.Size = new System.Drawing.Size(452, 17);
             this.chkAllowMods.TabIndex = 12;
             this.chkAllowMods.Text = "Allow mods to start and stop SplitsBet";
             this.chkAllowMods.UseVisualStyleBackColor = true;
+            // 
+            // chkSingleLineScores
+            // 
+            this.chkSingleLineScores.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.chkSingleLineScores.AutoSize = true;
+            this.tableLayoutPanel1.SetColumnSpan(this.chkSingleLineScores, 2);
+            this.chkSingleLineScores.Location = new System.Drawing.Point(7, 143);
+            this.chkSingleLineScores.Margin = new System.Windows.Forms.Padding(7, 3, 3, 3);
+            this.chkSingleLineScores.Name = "chkSingleLineScores";
+            this.chkSingleLineScores.Size = new System.Drawing.Size(452, 17);
+            this.chkSingleLineScores.TabIndex = 13;
+            this.chkSingleLineScores.Text = "Scores show on a single message instead of multiple lines";
+            this.chkSingleLineScores.UseVisualStyleBackColor = true;
             // 
             // Settings
             // 
@@ -247,7 +262,7 @@
             this.Controls.Add(this.tableLayoutPanel1);
             this.Name = "Settings";
             this.Padding = new System.Windows.Forms.Padding(7);
-            this.Size = new System.Drawing.Size(476, 238);
+            this.Size = new System.Drawing.Size(476, 300);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             this.groupBox1.ResumeLayout(false);
@@ -274,5 +289,6 @@
         private System.Windows.Forms.TextBox txtMinBetTime;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.CheckBox chkAllowMods;
+        private System.Windows.Forms.CheckBox chkSingleLineScores;
     }
 }

@@ -468,9 +468,13 @@ namespace LiveSplit.SplitsBet
             {
                 try
                 {
+                    string singleLine = "";
                     var orderedScores = Scores[State.CurrentSplitIndex - 1].OrderByDescending(x => x.Value);
                     int scoresShown = 0;
-                    SendMessage("Top " + ((Settings.NbScores > orderedScores.Count()) ? orderedScores.Count() : Settings.NbScores));
+                    if (!Settings.SingleLineScores)
+                        SendMessage("Top " + ((Settings.NbScores > orderedScores.Count()) ? orderedScores.Count() : Settings.NbScores));
+                    else
+                        singleLine += "Top " + ((Settings.NbScores > orderedScores.Count()) ? orderedScores.Count() : Settings.NbScores) + ": ";
                     foreach (var entry in orderedScores)
                     {
                         var delta = 0;
@@ -478,9 +482,13 @@ namespace LiveSplit.SplitsBet
                         {
                             delta = entry.Value - Scores[State.CurrentSplitIndex - 2][entry.Key];
                         }
-                        SendMessage(entry.Key + ": " + entry.Value + (delta != 0 ? (" (" + (delta < 0 ? "-" : "+") + delta + ")") : ""));
+                        if(!Settings.SingleLineScores)
+                            SendMessage(entry.Key + ": " + entry.Value + (delta != 0 ? (" (" + (delta < 0 ? "-" : "+") + delta + ")") : ""));
+                        else
+                            singleLine += entry.Key + ": " + entry.Value + (delta != 0 ? (" (" + (delta < 0 ? "-" : "+") + delta + ")") : "") + " || ";
                         if (++scoresShown >= Settings.NbScores) break;
                     }
+                    if (Settings.SingleLineScores) SendMessage(singleLine.Substring(0, singleLine.Length-4));
                 }
                 catch (Exception ex) { LogException(ex); }
             }
