@@ -133,8 +133,14 @@ namespace LiveSplit.SplitsBet
                 return;
             }
 
-            var percentage = GetTime((State.CurrentTime - SegmentBeginning)).Value.TotalSeconds / GetTime(State.CurrentSplit.BestSegmentTime).Value.TotalSeconds;
-            
+            double percentage;
+            //If no glod is set, percentage is kept to 0. There's no way to set a limit so better not fix an arbitrary one.
+            var timeFormatted = new ShortTimeFormatter().Format(GetTime(State.CurrentSplit.BestSegmentTime));
+            if (TimeSpanParser.Parse(timeFormatted) > new TimeSpan(0,0,0))
+                percentage = GetTime((State.CurrentTime - SegmentBeginning)).Value.TotalSeconds / GetTime(State.CurrentSplit.BestSegmentTime).Value.TotalSeconds;
+            else
+                percentage = 0;
+
             if (percentage > 0.75)
             {
                 SendMessage("Too late to bet for this split, wait for the next one!");
@@ -500,12 +506,17 @@ namespace LiveSplit.SplitsBet
 
         private void RollbackScore(object sender, EventArgs e)
         {
-            try { 
-                Scores[State.CurrentSplitIndex].Clear(); 
-            } 
-            catch (Exception ex) { 
-                LogException(ex); 
-            };
+            if (CanBet)
+            {
+                try
+                {
+                    Scores[State.CurrentSplitIndex].Clear();
+                }
+                catch (Exception ex)
+                {
+                    LogException(ex);
+                };
+            }
         }
 
         private void CopyScore(object sender, EventArgs e)
