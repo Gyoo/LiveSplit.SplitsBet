@@ -31,6 +31,7 @@ namespace LiveSplit.SplitsBet
         private Time SegmentBeginning { get; set; }
         private bool CanBet { get; set; }
         private bool ActiveSpecialBets { get; set; }
+        private bool EndOfRun { get; set; }
 
         public override string ComponentName
         {
@@ -56,6 +57,7 @@ namespace LiveSplit.SplitsBet
             Scores = new Dictionary<string, int>[State.Run.Count];
             CanBet = false;
             ActiveSpecialBets = false;
+            EndOfRun = false;
 
             /*Adding available commands*/
             Commands.Add("bet", Bet);
@@ -416,6 +418,7 @@ namespace LiveSplit.SplitsBet
         /*The CanBet check might break stuff if you enable the bets in the middle of a run. If someone has a better solution, go for it*/
         private void StartBets(object sender, EventArgs e)
         {
+            EndOfRun = false;
             if (CanBet)
             {
                 try
@@ -457,6 +460,7 @@ namespace LiveSplit.SplitsBet
                         Scores[State.CurrentSplitIndex] = new Dictionary<string, int>(Scores[State.CurrentSplitIndex - 1]);
                         StartBets(sender, e);
                     }
+                    else EndOfRun = true;
                 }
                 catch (Exception ex) { LogException(ex); }
             }
@@ -526,7 +530,7 @@ namespace LiveSplit.SplitsBet
                 Array.Clear(Scores, 0, Scores.Length);
             }
             catch (Exception ex) { LogException(ex); }
-            SendMessage("Run is kill. RIP :(");
+            if(!EndOfRun) SendMessage("Run is kill. RIP :(");
         }
 
         void State_OnReset(object sender, TimerPhase value)
