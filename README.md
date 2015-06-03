@@ -55,6 +55,8 @@ A window will show, asking for your Twitch credentials (__WARNING__: If you alre
 
 # Changelog
 
+See complete changelog [here](https://gist.github.com/Gyoo/5ea00ea18a26419731fe)
+
 ##v0.2
 
 ### Fixes
