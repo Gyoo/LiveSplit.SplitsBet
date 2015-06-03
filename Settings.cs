@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using LiveSplit.Model;
 using System.Xml;
+using LiveSplit.TimeFormatters;
 
 namespace LiveSplit.SplitsBet
 {
@@ -15,6 +16,7 @@ namespace LiveSplit.SplitsBet
     {
         public String Path { get; set; }
         public LiveSplitState LivesplitState { get; set; }
+
         public bool CanUnBet { get; set; }
         public int UnBetPenalty { get; set; }
         public TimeSpan MinimumTime { get; set; }
@@ -24,6 +26,8 @@ namespace LiveSplit.SplitsBet
         public bool UseGlobalTime { get; set; }
         public bool AllowMods { get; set; }
         public bool SingleLineScores { get; set; }
+
+        private ITimeFormatter Formatter { get; set; }
 
         public Settings()
         {
@@ -37,14 +41,23 @@ namespace LiveSplit.SplitsBet
             AllowMods = false;
             SingleLineScores = false;
 
+            Formatter = new RegularTimeFormatter();
+
             chkCancelBets.DataBindings.Add("Checked", this, "CanUnBet", false, DataSourceUpdateMode.OnPropertyChanged);
             txtCancelingPenalty.DataBindings.Add("Text", this, "UnBetPenalty", false, DataSourceUpdateMode.OnPropertyChanged);
-            txtMinBetTime.DataBindings.Add("Text", this, "MinimumTime", false, DataSourceUpdateMode.OnPropertyChanged);
+            //txtMinBetTime.DataBindings.Add("Text", this, "MinimumTimeText", false, DataSourceUpdateMode.OnPropertyChanged);
             numScores.DataBindings.Add("Value", this, "NbScores", false, DataSourceUpdateMode.OnPropertyChanged);
             chkGlobalTime.DataBindings.Add("Checked", this, "UseGlobalTime", false, DataSourceUpdateMode.OnPropertyChanged);
             cmbTimingMethod.DataBindings.Add("SelectedItem", this, "OverridenTimingMethod", false, DataSourceUpdateMode.OnPropertyChanged);
             chkAllowMods.DataBindings.Add("Checked", this, "AllowMods", false, DataSourceUpdateMode.OnPropertyChanged);
             chkSingleLineScores.DataBindings.Add("Checked", this, "SingleLineScores", false, DataSourceUpdateMode.OnPropertyChanged);
+
+            this.Load += Settings_Load;
+        }
+
+        void Settings_Load(object sender, EventArgs e)
+        {
+            txtMinBetTime.Text = Formatter.Format(MinimumTime);
         }
 
         public System.Xml.XmlNode GetSettings(System.Xml.XmlDocument document)
@@ -116,13 +129,25 @@ namespace LiveSplit.SplitsBet
 
         private void textBox2_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if (!Char.IsDigit(e.KeyChar) && !Char.IsControl(e.KeyChar))
+            if (!Char.IsDigit(e.KeyChar) && !Char.IsControl(e.KeyChar) && !e.KeyChar.Equals(':'))
                 e.Handled = true;
         }
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
             txtCancelingPenalty.Enabled = chkCancelBets.Checked;
+        }
+
+        private void txtMinBetTime_Leave(object sender, EventArgs e)
+        {
+            try
+            {
+                MinimumTime = TimeSpanParser.Parse(txtMinBetTime.Text);
+            }
+            finally
+            {
+                txtMinBetTime.Text = Formatter.Format(MinimumTime);
+            }
         }
     }
 }
