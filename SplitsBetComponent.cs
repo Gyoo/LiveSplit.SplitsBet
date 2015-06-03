@@ -264,7 +264,6 @@ namespace LiveSplit.SplitsBet
             if (user.Badges.HasFlag(TwitchChat.ChatBadges.Broadcaster) || Settings.AllowMods && user.Badges.HasFlag(TwitchChat.ChatBadges.Moderator))
             {
                 /*Adding bet related commands*/
-                Commands.Add("bet", Bet);
                 Commands.Add("checkbet", CheckBet);
                 Commands.Add("unbet", UnBet);
                 Commands.Add("score", Score);
@@ -283,14 +282,15 @@ namespace LiveSplit.SplitsBet
                 SendMessage("SplitsBet enabled !");
                 if (State.CurrentPhase != TimerPhase.NotRunning)
                 {
-                    for (int i = 0; i < State.CurrentSplitIndex - 1; i++)
+                    for (int i = 0; i < State.CurrentSplitIndex; i++)
                     {
                         if (null == Scores[i])
                         {
-                            Scores[i] = new Dictionary<string, int>((i==0)?null:Scores[i - 1]);
-                            Bets[i] = new Dictionary<string, Tuple<TimeSpan, double>>();
+                            Scores[i] = (i==0?new Dictionary<string, int>():new Dictionary<string, int>(Scores[i - 1]));
                         }
                     }
+                    for (int i = 0; i <= State.CurrentSplitIndex; i++) Bets[i] = new Dictionary<string, Tuple<TimeSpan, double>>();
+                    
                 }
             }
             else SendMessage("You're not allowed to start the bets !");
@@ -412,21 +412,12 @@ namespace LiveSplit.SplitsBet
                 }
                 catch (Exception e) { LogException(e); }
             }
-            //else try
-            //{
-            //    var cmd = Commands["anymessage"];
-            //    if (cmd != null) {
-            //        cmd.Invoke(message.User, "");
-            //    }
-            //}
-            //catch (Exception e) { Log.Error(e); }
-            /* ^ Is this code really useful ? ^ */
         }
 
-        /*The CanBet check might break stuff if you enable the bets in the middle of a run. If someone has a better solution, go for it*/
         private void StartBets(object sender, EventArgs e)
         {
             EndOfRun = false;
+            if (!Commands.ContainsKey("bet")) Commands.Add("bet", Bet); //Prevents players from betting between a !start and the next split, if !start is made during the run.
             try
             {
                 SegmentBeginning = State.CurrentTime;
@@ -445,6 +436,7 @@ namespace LiveSplit.SplitsBet
         {
             try
             {
+                //TODO Hide the "Time for this split was..." message if the segment time is <= 0 (yes it can happen)
                 var segment = State.CurrentTime - SegmentBeginning;
                 var timeFormatter = new ShortTimeFormatter();
                 SendMessage("Time for this split was " + timeFormatter.Format(GetTime(segment)));
