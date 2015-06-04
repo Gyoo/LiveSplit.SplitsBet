@@ -327,23 +327,25 @@ namespace LiveSplit.SplitsBet
                 ActiveSpecialBets = true;
                 return;
             }
-            if (argument.ToLower().StartsWith("end")){
+            if (argument.ToLower().StartsWith("end") || argument.ToLower().StartsWith("stop"))
+            {
                 var args = argument.Split(new string[] { " " }, StringSplitOptions.None);
                 if(args.Count()>1){
                     try
                     {
                         //TODO Accuracy better than seconds, special events are meant to be short (OoT Dampe < 1 min iirc, SM64 Secret Slide between 12.5s and 13s generally...)
                         var time = TimeSpanParser.Parse(args[1]);
-                        Scores[State.CurrentSplitIndex - 1] = Scores[State.CurrentSplitIndex - 1] ?? (State.CurrentSplitIndex > 1 ? new Dictionary<string, int>(Scores[State.CurrentSplitIndex - 2]) : new Dictionary<string, int>());
+                        Scores[State.CurrentSplitIndex] = Scores[State.CurrentSplitIndex] ?? (State.CurrentSplitIndex > 0 ? new Dictionary<string, int>(Scores[State.CurrentSplitIndex - 1]) : new Dictionary<string, int>());
                         foreach (KeyValuePair<string, TimeSpan> entry in SpecialBets)
                         {
-                            if (Scores[State.CurrentSplitIndex - 1].ContainsKey(entry.Key))
+                            if (Scores[State.CurrentSplitIndex].ContainsKey(entry.Key))
                             {
-                                Scores[State.CurrentSplitIndex - 1][entry.Key] += (int)(time.TotalSeconds * Math.Exp(-(Math.Pow((int)time.TotalSeconds - (int)entry.Value.TotalSeconds, 2) / (int)time.TotalSeconds)));
+                                Scores[State.CurrentSplitIndex][entry.Key] += (int)(time.TotalSeconds * Math.Exp(-(Math.Pow((int)time.TotalSeconds - (int)entry.Value.TotalSeconds, 2) / (int)time.TotalSeconds)));
                             }
-                            else Scores[State.CurrentSplitIndex - 1].Add(entry.Key, (int)(time.TotalSeconds * Math.Exp(-(Math.Pow((int)time.TotalSeconds - (int)entry.Value.TotalSeconds, 2) / (int)time.TotalSeconds))));
+                            else Scores[State.CurrentSplitIndex].Add(entry.Key, (int)(time.TotalSeconds * Math.Exp(-(Math.Pow((int)time.TotalSeconds - (int)entry.Value.TotalSeconds, 2) / (int)time.TotalSeconds))));
                         }
-                        ShowScore();
+                        SendMessage("Scores will be shown next split !");
+                        //TODO Special ShowScore() for special bets ?
                         SpecialBets.Clear();
                     }
                     catch (Exception e)
@@ -518,6 +520,7 @@ namespace LiveSplit.SplitsBet
             {
                 Array.Clear(Bets, 0, Bets.Length);
                 Array.Clear(Scores, 0, Scores.Length);
+                SpecialBets.Clear();
             }
             catch (Exception ex) { LogException(ex); }
             if(!EndOfRun) SendMessage("Run is kill. RIP :(");
