@@ -120,7 +120,7 @@ namespace LiveSplit.SplitsBet
             //If no glod is set, percentage is kept to 0. There's no way to set a limit so better not fix an arbitrary one.
             var timeFormatted = new ShortTimeFormatter().Format(GetTime(State.CurrentSplit.BestSegmentTime));
             if (TimeSpanParser.Parse(timeFormatted) > new TimeSpan(0,0,0))
-                percentage = GetTime((State.CurrentTime - SegmentBeginning)).Value.TotalSeconds / GetTime(State.CurrentSplit.BestSegmentTime).Value.TotalSeconds;
+                percentage = (GetTime(State.CurrentTime - SegmentBeginning)+(State.CurrentSplitIndex==0 ? State.Run.Offset : new TimeSpan(0,0,0))).Value.TotalSeconds / GetTime(State.CurrentSplit.BestSegmentTime).Value.TotalSeconds;
             else
                 percentage = 0;
 
@@ -279,6 +279,7 @@ namespace LiveSplit.SplitsBet
                 State.OnUndoSplit += RollbackScore;
                 State.OnSkipSplit += CopyScore;
                 State.OnReset += State_OnReset;
+
                 SendMessage("SplitsBet enabled !");
                 if (State.CurrentPhase != TimerPhase.NotRunning)
                 {
@@ -441,15 +442,16 @@ namespace LiveSplit.SplitsBet
                 //TODO Hide the "Time for this split was..." message if the segment time is <= 0 (yes it can happen)
                 var segment = State.CurrentTime - SegmentBeginning;
                 var timeFormatter = new ShortTimeFormatter();
-                SendMessage("Time for this split was " + timeFormatter.Format(GetTime(segment)));
+                TimeSpan? segmentTimeSpan = GetTime(segment) + (State.CurrentSplitIndex == 1 ? State.Run.Offset : new TimeSpan(0, 0, 0));
+                SendMessage("Time for this split was " + timeFormatter.Format(segmentTimeSpan));
                 Scores[State.CurrentSplitIndex - 1] = Scores[State.CurrentSplitIndex - 1] ?? (State.CurrentSplitIndex > 1 ? new Dictionary<string, int>(Scores[State.CurrentSplitIndex - 2]) : new Dictionary<string, int>());
                 foreach (KeyValuePair<string, Tuple<TimeSpan, double>> entry in Bets[State.CurrentSplitIndex - 1])
                 {
                     if (Scores[State.CurrentSplitIndex - 1].ContainsKey(entry.Key))
                     {
-                        Scores[State.CurrentSplitIndex - 1][entry.Key] += (int)(entry.Value.Item2 * (int)GetTime(segment).Value.TotalSeconds * Math.Exp(-(Math.Pow((int)GetTime(segment).Value.TotalSeconds - (int)entry.Value.Item1.TotalSeconds, 2) / (int)GetTime(segment).Value.TotalSeconds)));
+                        Scores[State.CurrentSplitIndex - 1][entry.Key] += (int)(entry.Value.Item2 * (int)segmentTimeSpan.Value.TotalSeconds * Math.Exp(-(Math.Pow((int)segmentTimeSpan.Value.TotalSeconds - (int)entry.Value.Item1.TotalSeconds, 2) / (int)segmentTimeSpan.Value.TotalSeconds)));
                     }
-                    else Scores[State.CurrentSplitIndex - 1].Add(entry.Key, (int)(entry.Value.Item2 * (int)GetTime(segment).Value.TotalSeconds * Math.Exp(-(Math.Pow((int)GetTime(segment).Value.TotalSeconds - (int)entry.Value.Item1.TotalSeconds, 2) / (int)GetTime(segment).Value.TotalSeconds))));
+                    else Scores[State.CurrentSplitIndex - 1].Add(entry.Key, (int)(entry.Value.Item2 * (int)segmentTimeSpan.Value.TotalSeconds * Math.Exp(-(Math.Pow((int)segmentTimeSpan.Value.TotalSeconds - (int)entry.Value.Item1.TotalSeconds, 2) / (int)segmentTimeSpan.Value.TotalSeconds))));
                 }
                 ShowScore();
                 if (State.CurrentSplitIndex < Scores.Count())
