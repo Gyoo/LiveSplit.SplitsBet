@@ -87,7 +87,7 @@
             this.txtMinBetTime.TabIndex = 2;
             this.txtMinBetTime.Text = "00:00:01";
             this.txtMinBetTime.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.txtMinBetTime.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox2_KeyPress);
+            this.txtMinBetTime.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtMinBetTime_KeyPress);
             this.txtMinBetTime.Leave += new System.EventHandler(this.txtMinBetTime_Leave);
             // 
             // label2
@@ -160,7 +160,7 @@
             this.txtCancelingPenalty.TabIndex = 1;
             this.txtCancelingPenalty.Text = "50";
             this.txtCancelingPenalty.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.txtCancelingPenalty.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox1_KeyPress);
+            this.txtCancelingPenalty.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtCancelingPenalty_KeyPress);
             // 
             // label4
             // 

@@ -119,8 +119,8 @@ namespace LiveSplit.SplitsBet
             double percentage;
             //If no glod is set, percentage is kept to 0. There's no way to set a limit so better not fix an arbitrary one.
             var timeFormatted = new ShortTimeFormatter().Format(GetTime(State.CurrentSplit.BestSegmentTime));
-            if (TimeSpanParser.Parse(timeFormatted) > new TimeSpan(0,0,0))
-                percentage = (GetTime(State.CurrentTime - SegmentBeginning)+(State.CurrentSplitIndex==0 ? State.Run.Offset : new TimeSpan(0,0,0))).Value.TotalSeconds / GetTime(State.CurrentSplit.BestSegmentTime).Value.TotalSeconds;
+            if (TimeSpanParser.Parse(timeFormatted) > TimeSpan.Zero)
+                percentage = (GetTime(State.CurrentTime - SegmentBeginning)+(State.CurrentSplitIndex==0 ? State.Run.Offset : TimeSpan.Zero)).Value.TotalSeconds / GetTime(State.CurrentSplit.BestSegmentTime).Value.TotalSeconds;
             else
                 percentage = 0;
 
@@ -427,9 +427,9 @@ namespace LiveSplit.SplitsBet
                 Bets[State.CurrentSplitIndex] = new Dictionary<string, Tuple<TimeSpan, double>>();
                 var timeFormatter = new ShortTimeFormatter();
                 var timeFormatted = timeFormatter.Format(GetTime(State.CurrentSplit.BestSegmentTime));
-                SendMessage("Place your bets for " + State.CurrentSplit.Name + "!" + 
-                    (TimeSpanParser.Parse(timeFormatted)>new TimeSpan(0,0,0) ? 
-                        (" Best segment for this split is " + timeFormatted + (Settings.UseGlobalTime?" but remember that global time is used!":"")) 
+                SendMessage("Place your bets for " + State.CurrentSplit.Name + "!" +
+                    (TimeSpanParser.Parse(timeFormatted) > TimeSpan.Zero ?
+                        (" Best segment for this split is " + timeFormatted + (Settings.UseGlobalTime ? " but remember that global time is used!" : ""))
                         : " No best segment for this split :("));
             }
             catch (Exception ex) { LogException(ex); }
@@ -442,7 +442,7 @@ namespace LiveSplit.SplitsBet
                 //TODO Hide the "Time for this split was..." message if the segment time is <= 0 (yes it can happen)
                 var segment = State.CurrentTime - SegmentBeginning;
                 var timeFormatter = new ShortTimeFormatter();
-                TimeSpan? segmentTimeSpan = GetTime(segment) + (State.CurrentSplitIndex == 1 ? State.Run.Offset : new TimeSpan(0, 0, 0));
+                TimeSpan? segmentTimeSpan = GetTime(segment) + (State.CurrentSplitIndex == 1 ? State.Run.Offset : TimeSpan.Zero);
                 SendMessage("Time for this split was " + timeFormatter.Format(segmentTimeSpan));
                 Scores[State.CurrentSplitIndex - 1] = Scores[State.CurrentSplitIndex - 1] ?? (State.CurrentSplitIndex > 1 ? new Dictionary<string, int>(Scores[State.CurrentSplitIndex - 2]) : new Dictionary<string, int>());
                 foreach (KeyValuePair<string, Tuple<TimeSpan, double>> entry in Bets[State.CurrentSplitIndex - 1])
