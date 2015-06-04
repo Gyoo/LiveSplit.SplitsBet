@@ -100,19 +100,19 @@ namespace LiveSplit.SplitsBet
             switch (State.CurrentPhase)
             {
                 case TimerPhase.NotRunning:
-                    SendMessage("Timer is not running, bets are closed");
+                    SendMessage("Timer is not running; bets are closed.");
                     return;
                 case TimerPhase.Paused:
-                    SendMessage("Timer is paused, bets are paused too");
+                    SendMessage("Timer is paused; bets are paused too.");
                     return;
                 case TimerPhase.Ended:
-                    SendMessage("Run is ended, there is nothing to bet!");
+                    SendMessage("Run is over; there is nothing to bet!");
                     return;
             }
 
             if (Bets[State.CurrentSplitIndex].ContainsKey(user.Name))
             {
-                SendMessage(user.Name + ", You already bet, silly!");
+                SendMessage(user.Name + ": You already bet, silly!");
                 return;
             }
 
@@ -126,7 +126,7 @@ namespace LiveSplit.SplitsBet
 
             if (percentage > 0.75)
             {
-                SendMessage("Too late to bet for this split, wait for the next one!");
+                SendMessage("Too late to bet for this split; wait for the next one!");
                 return;
             }
 
@@ -142,7 +142,7 @@ namespace LiveSplit.SplitsBet
                 if (Settings.UseGlobalTime) time -= GetTime(SegmentBeginning).Value;
                 if (time.CompareTo(Settings.MinimumTime) <= 0)
                 {
-                    SendMessage(user.Name + ", Nice try, but it's invalid");
+                    SendMessage(user.Name + ": Invalid time, please retry.");
                     return;
                 }
                 var t = new Tuple<TimeSpan, double>(time, Math.Exp(-2 * Math.Pow(percentage, 2)));
@@ -150,7 +150,7 @@ namespace LiveSplit.SplitsBet
             }
             catch
             {
-                SendMessage(user.Name + ", Invalid time, please retry");
+                SendMessage(user.Name + ": Invalid time, please retry.");
             }
         }
 
@@ -159,10 +159,10 @@ namespace LiveSplit.SplitsBet
             switch (State.CurrentPhase)
             {
                 case TimerPhase.NotRunning:
-                    SendMessage("Timer is not running, bets are closed");
+                    SendMessage("Timer is not running; bets are closed.");
                     return;
                 case TimerPhase.Ended:
-                    SendMessage("The run has ended, nothing to check!");
+                    SendMessage("The run has ended; nothing to check!");
                     return;
             }
 
@@ -171,11 +171,11 @@ namespace LiveSplit.SplitsBet
                 var timeFormatter = new ShortTimeFormatter();
                 var time = Bets[State.CurrentSplitIndex][user.Name].Item1;
                 var formattedTime = timeFormatter.Format(time);
-                SendMessage(user.Name + ", Your bet for " + State.CurrentSplit.Name + " is " + formattedTime);
+                SendMessage(user.Name + ": Your bet for " + State.CurrentSplit.Name + " is " + formattedTime);
             }
             else
             {
-                SendMessage(user.Name + ", You didn't bet for this split yet!");
+                SendMessage(user.Name + ": You didn't bet for this split yet!");
             }
         }
 
@@ -189,7 +189,7 @@ namespace LiveSplit.SplitsBet
             switch (State.CurrentPhase)
             {
                 case TimerPhase.NotRunning:
-                    SendMessage("Timer is not running, bets are closed");
+                    SendMessage("Timer is not running; bets are closed.");
                     return;
                 case TimerPhase.Ended:
                     SendMessage("The run has ended, nothing to unbet!");
@@ -198,19 +198,19 @@ namespace LiveSplit.SplitsBet
 
             if (State.CurrentSplitIndex - 1 < 0)
             {
-                SendMessage(user.Name + ", You have got no points to spend on undoing your bet yet!");
+                SendMessage(user.Name + ": You have no points to spend on undoing your bet yet!");
                 return;
             }
 
             if (!Bets[State.CurrentSplitIndex].ContainsKey(user.Name))
             {
-                SendMessage(user.Name + ", You didn't bet for this split yet!");
+                SendMessage(user.Name + ": You didn't bet for this split yet!");
                 return;
             }
 
             if (Scores[State.CurrentSplitIndex-1].ContainsKey(user.Name) && Scores[State.CurrentSplitIndex - 1][user.Name] < Settings.UnBetPenalty)
             {
-                SendMessage(user.Name + ", You need " + Settings.UnBetPenalty + " points to undo your bet and just got " + Scores[State.CurrentSplitIndex - 1][user.Name] + ".");
+                SendMessage(user.Name + ": You need " + Settings.UnBetPenalty + " points to undo your bet but only have " + Scores[State.CurrentSplitIndex - 1][user.Name] + ".");
                 return;
             }
 
@@ -233,7 +233,7 @@ namespace LiveSplit.SplitsBet
         {
             if (State.CurrentPhase == TimerPhase.NotRunning)
             {
-                SendMessage("Timer is not running, no score available");
+                SendMessage("Timer is not running; no score available.");
                 return;
             }
             if (State.CurrentSplitIndex == 0 || !Scores[State.CurrentSplitIndex - 1].ContainsKey(user.Name))
@@ -248,7 +248,7 @@ namespace LiveSplit.SplitsBet
         {
             if (State.CurrentPhase == TimerPhase.NotRunning)
             {
-                SendMessage("Timer is not running, no score available");
+                SendMessage("Timer is not running; no score available.");
                 return;
             }
             if (State.CurrentSplitIndex > 0)
@@ -280,7 +280,7 @@ namespace LiveSplit.SplitsBet
                 State.OnSkipSplit += CopyScore;
                 State.OnReset += State_OnReset;
 
-                SendMessage("SplitsBet enabled !");
+                SendMessage("SplitsBet enabled!");
                 if (State.CurrentPhase != TimerPhase.NotRunning)
                 {
                     for (int i = 0; i < State.CurrentSplitIndex; i++)
@@ -294,7 +294,7 @@ namespace LiveSplit.SplitsBet
                     
                 }
             }
-            else SendMessage("You're not allowed to start the bets !");
+            else SendMessage("You're not allowed to start the bets!");
         }
 
         private void DisableBets(TwitchChat.User user, string argument)
@@ -318,9 +318,9 @@ namespace LiveSplit.SplitsBet
                 State.OnUndoSplit -= RollbackScore;
                 State.OnSkipSplit -= CopyScore;
                 State.OnReset -= State_OnReset;
-                SendMessage("SplitsBet disabled !");
+                SendMessage("SplitsBet disabled!");
             }
-            else SendMessage("You're not allowed to stop the bets !");
+            else SendMessage("You're not allowed to stop the bets!");
         }
 
         private void SpecialBet(TwitchChat.User user, string argument) { 
@@ -345,7 +345,7 @@ namespace LiveSplit.SplitsBet
                             }
                             else Scores[State.CurrentSplitIndex].Add(entry.Key, (int)(time.TotalSeconds * Math.Exp(-(Math.Pow((int)time.TotalSeconds - (int)entry.Value.TotalSeconds, 2) / (int)time.TotalSeconds))));
                         }
-                        SendMessage("Scores will be shown next split !");
+                        SendMessage("Scores will be shown at the next split!");
                         //TODO Special ShowScore() for special bets ?
                         SpecialBets.Clear();
                     }
@@ -360,24 +360,24 @@ namespace LiveSplit.SplitsBet
                 return;
             }
             if (!ActiveSpecialBets){
-                SendMessage("No special bet active");
+                SendMessage("No special bet active.");
             }
             switch (State.CurrentPhase)
             {
                 case TimerPhase.NotRunning:
-                    SendMessage("Timer is not running, bets are closed");
+                    SendMessage("Timer is not running; bets are closed;");
                     return;
                 case TimerPhase.Paused:
-                    SendMessage("Timer is paused, bets are paused too");
+                    SendMessage("Timer is paused; bets are paused too.");
                     return;
                 case TimerPhase.Ended:
-                    SendMessage("Run is ended, there is nothing to bet!");
+                    SendMessage("Run is over; there is nothing to bet!");
                     return;
             }
 
             if (SpecialBets.ContainsKey(user.Name))
             {
-                SendMessage(user.Name + ", You already bet, silly!");
+                SendMessage(user.Name + ": You already bet, silly!");
                 return;
             }
 
@@ -387,14 +387,14 @@ namespace LiveSplit.SplitsBet
                 if (Settings.UseGlobalTime) time -= GetTime(SegmentBeginning).Value;
                 if (time.CompareTo(Settings.MinimumTime) <= 0)
                 {
-                    SendMessage(user.Name + ", Nice try, but it's invalid");
+                    SendMessage(user.Name + ": Invalid time, please retry.");
                     return;
                 }
                 SpecialBets.Add(user.Name, time);
             }
             catch
             {
-                SendMessage(user.Name + ", Invalid time, please retry");
+                SendMessage(user.Name + ": Invalid time, please retry.");
             }
         }
 
@@ -429,7 +429,7 @@ namespace LiveSplit.SplitsBet
                 var timeFormatted = timeFormatter.Format(GetTime(State.CurrentSplit.BestSegmentTime));
                 SendMessage("Place your bets for " + State.CurrentSplit.Name + "!" +
                     (TimeSpanParser.Parse(timeFormatted) > TimeSpan.Zero ?
-                        (" Best segment for this split is " + timeFormatted + (Settings.UseGlobalTime ? " but remember that global time is used!" : ""))
+                        (" Best segment for this split is " + timeFormatted + (Settings.UseGlobalTime ? ", but remember that global time is used!" : ""))
                         : " No best segment for this split :("));
             }
             catch (Exception ex) { LogException(ex); }
@@ -443,7 +443,7 @@ namespace LiveSplit.SplitsBet
                 var segment = State.CurrentTime - SegmentBeginning;
                 var timeFormatter = new ShortTimeFormatter();
                 TimeSpan? segmentTimeSpan = GetTime(segment) + (State.CurrentSplitIndex == 1 ? State.Run.Offset : TimeSpan.Zero);
-                SendMessage("Time for this split was " + timeFormatter.Format(segmentTimeSpan));
+                SendMessage("The time for this split was " + timeFormatter.Format(segmentTimeSpan));
                 Scores[State.CurrentSplitIndex - 1] = Scores[State.CurrentSplitIndex - 1] ?? (State.CurrentSplitIndex > 1 ? new Dictionary<string, int>(Scores[State.CurrentSplitIndex - 2]) : new Dictionary<string, int>());
                 foreach (KeyValuePair<string, Tuple<TimeSpan, double>> entry in Bets[State.CurrentSplitIndex - 1])
                 {
