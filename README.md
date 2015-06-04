@@ -65,15 +65,15 @@ See complete changelog [here](https://gist.github.com/Gyoo/5ea00ea18a26419731fe)
 - Fix show of message "RIP run" after the run is completed
 - Fix show of error when unsplitting while bets are disabled
 - Fix crashes when no best segment is set
-- Better management of !start and !stop
+- Better management of `!start` and `!stop`
 - MinimumTime setting is now saved correctly
-- !start and !stop are now managed correctly when done during a run
+- `!start` and `!stop` are now managed correctly when done during a run
 - If the run starts with an offset (positive or negative) the first split shows the correct time (The offset wasn't taken in consideration before)
 
 ###Adds
 
 - Added settings for scores to be shown in a single message
 - Added special bets :
-  - !specialbet start to start a special bet
-  - !specialbet (time) to bet for this special bet
-  - !specialbet stop (time) to close the special bet, and you must input the end time by hand
+  - `!specialbet start` to start a special bet
+  - `!specialbet (time)` to bet for this special bet
+  - `!specialbet stop (time)` to close the special bet, and you must input the end time by hand
