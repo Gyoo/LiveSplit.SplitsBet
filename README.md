@@ -57,25 +57,23 @@ A window will show, asking for your Twitch credentials (__WARNING__: If you alre
 
 See complete changelog [here](https://gist.github.com/Gyoo/5ea00ea18a26419731fe)
 
-##v0.2
+##v0.3
 
-### Fixes
+###Fixes
 
-- Attempted to fix a bug that can occur when the bot is stopped in the middle of a run and restarted later
-- Changed the bet time limit from 90% of the best time of a segment to 75%
-- Fixed a crash in the settings
-- Fixed a message showing there is an error when someone writes a command that is not linked to SplitsBet (i.e. !emotes)
-- Fixed a bug happening if you skip the first split
-- SplitsBet will show a custom message if no best segment is set for a split
-- Fixed a bug not showing the scores at the end of a run
+- Fix disposal of Livesplit events
+- Fix show of message "RIP run" after the run is completed
+- Fix show of error when unsplitting while bets are disabled
+- Fix crashes when no best segment is set
+- Better management of !start and !stop
+- MinimumTime setting is now saved correctly
+- !start and !stop are now managed correctly when done during a run
+- If the run starts with an offset (positive or negative) the first split shows the correct time (The offset wasn't taken in consideration before)
 
-### Adds
+###Adds
 
-- Setting: Limit of scores to show at the end of a split (from 1 to 10)
-- Setting: Use global time as bet value instead of segment time
-- Setting: Use Game Time instead of Real Time
-- SplitsBet should be auto-updated with the Update Manager from now on
-
-### Known Bugs
-
-- Minimum Bet Time isn't registered correctly in the settings
+- Added settings for scores to be shown in a single message
+- Added special bets :
+  - !specialbet start to start a special bet
+  - !specialbet (time) to bet for this special bet
+  - !specialbet stop (time) to close the special bet, and you must input the end time by hand
