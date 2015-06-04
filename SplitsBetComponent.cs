@@ -120,7 +120,7 @@ namespace LiveSplit.SplitsBet
             //If no glod is set, percentage is kept to 0. There's no way to set a limit so better not fix an arbitrary one.
             var timeFormatted = new ShortTimeFormatter().Format(GetTime(State.CurrentSplit.BestSegmentTime));
             if (TimeSpanParser.Parse(timeFormatted) > new TimeSpan(0,0,0))
-                percentage = GetTime((State.CurrentTime - SegmentBeginning)).Value.TotalSeconds / GetTime(State.CurrentSplit.BestSegmentTime).Value.TotalSeconds;
+                percentage = (GetTime(State.CurrentTime - SegmentBeginning)+(State.CurrentSplitIndex==0 ? State.Run.Offset : new TimeSpan(0,0,0))).Value.TotalSeconds / GetTime(State.CurrentSplit.BestSegmentTime).Value.TotalSeconds;
             else
                 percentage = 0;
 
@@ -264,7 +264,6 @@ namespace LiveSplit.SplitsBet
             if (user.Badges.HasFlag(TwitchChat.ChatBadges.Broadcaster) || Settings.AllowMods && user.Badges.HasFlag(TwitchChat.ChatBadges.Moderator))
             {
                 /*Adding bet related commands*/
-                Commands.Add("bet", Bet);
                 Commands.Add("checkbet", CheckBet);
                 Commands.Add("unbet", UnBet);
                 Commands.Add("score", Score);
@@ -280,17 +279,19 @@ namespace LiveSplit.SplitsBet
                 State.OnUndoSplit += RollbackScore;
                 State.OnSkipSplit += CopyScore;
                 State.OnReset += State_OnReset;
+
                 SendMessage("SplitsBet enabled !");
                 if (State.CurrentPhase != TimerPhase.NotRunning)
                 {
-                    for (int i = 0; i < State.CurrentSplitIndex - 1; i++)
+                    for (int i = 0; i < State.CurrentSplitIndex; i++)
                     {
                         if (null == Scores[i])
                         {
-                            Scores[i] = new Dictionary<string, int>((i==0)?null:Scores[i - 1]);
-                            Bets[i] = new Dictionary<string, Tuple<TimeSpan, double>>();
+                            Scores[i] = (i==0?new Dictionary<string, int>():new Dictionary<string, int>(Scores[i - 1]));
                         }
                     }
+                    for (int i = 0; i <= State.CurrentSplitIndex; i++) Bets[i] = new Dictionary<string, Tuple<TimeSpan, double>>();
+                    
                 }
             }
             else SendMessage("You're not allowed to start the bets !");
@@ -327,23 +328,25 @@ namespace LiveSplit.SplitsBet
                 ActiveSpecialBets = true;
                 return;
             }
-            if (argument.ToLower().StartsWith("end")){
+            if (argument.ToLower().StartsWith("end") || argument.ToLower().StartsWith("stop"))
+            {
                 var args = argument.Split(new string[] { " " }, StringSplitOptions.None);
                 if(args.Count()>1){
                     try
                     {
                         //TODO Accuracy better than seconds, special events are meant to be short (OoT Dampe < 1 min iirc, SM64 Secret Slide between 12.5s and 13s generally...)
                         var time = TimeSpanParser.Parse(args[1]);
-                        Scores[State.CurrentSplitIndex - 1] = Scores[State.CurrentSplitIndex - 1] ?? (State.CurrentSplitIndex > 1 ? new Dictionary<string, int>(Scores[State.CurrentSplitIndex - 2]) : new Dictionary<string, int>());
+                        Scores[State.CurrentSplitIndex] = Scores[State.CurrentSplitIndex] ?? (State.CurrentSplitIndex > 0 ? new Dictionary<string, int>(Scores[State.CurrentSplitIndex - 1]) : new Dictionary<string, int>());
                         foreach (KeyValuePair<string, TimeSpan> entry in SpecialBets)
                         {
-                            if (Scores[State.CurrentSplitIndex - 1].ContainsKey(entry.Key))
+                            if (Scores[State.CurrentSplitIndex].ContainsKey(entry.Key))
                             {
-                                Scores[State.CurrentSplitIndex - 1][entry.Key] += (int)(time.TotalSeconds * Math.Exp(-(Math.Pow((int)time.TotalSeconds - (int)entry.Value.TotalSeconds, 2) / (int)time.TotalSeconds)));
+                                Scores[State.CurrentSplitIndex][entry.Key] += (int)(time.TotalSeconds * Math.Exp(-(Math.Pow((int)time.TotalSeconds - (int)entry.Value.TotalSeconds, 2) / (int)time.TotalSeconds)));
                             }
-                            else Scores[State.CurrentSplitIndex - 1].Add(entry.Key, (int)(time.TotalSeconds * Math.Exp(-(Math.Pow((int)time.TotalSeconds - (int)entry.Value.TotalSeconds, 2) / (int)time.TotalSeconds))));
+                            else Scores[State.CurrentSplitIndex].Add(entry.Key, (int)(time.TotalSeconds * Math.Exp(-(Math.Pow((int)time.TotalSeconds - (int)entry.Value.TotalSeconds, 2) / (int)time.TotalSeconds))));
                         }
-                        ShowScore();
+                        SendMessage("Scores will be shown next split !");
+                        //TODO Special ShowScore() for special bets ?
                         SpecialBets.Clear();
                     }
                     catch (Exception e)
@@ -412,21 +415,12 @@ namespace LiveSplit.SplitsBet
                 }
                 catch (Exception e) { LogException(e); }
             }
-            //else try
-            //{
-            //    var cmd = Commands["anymessage"];
-            //    if (cmd != null) {
-            //        cmd.Invoke(message.User, "");
-            //    }
-            //}
-            //catch (Exception e) { Log.Error(e); }
-            /* ^ Is this code really useful ? ^ */
         }
 
-        /*The CanBet check might break stuff if you enable the bets in the middle of a run. If someone has a better solution, go for it*/
         private void StartBets(object sender, EventArgs e)
         {
             EndOfRun = false;
+            if (!Commands.ContainsKey("bet")) Commands.Add("bet", Bet); //Prevents players from betting between a !start and the next split, if !start is made during the run.
             try
             {
                 SegmentBeginning = State.CurrentTime;
@@ -445,17 +439,19 @@ namespace LiveSplit.SplitsBet
         {
             try
             {
+                //TODO Hide the "Time for this split was..." message if the segment time is <= 0 (yes it can happen)
                 var segment = State.CurrentTime - SegmentBeginning;
                 var timeFormatter = new ShortTimeFormatter();
-                SendMessage("Time for this split was " + timeFormatter.Format(GetTime(segment)));
+                TimeSpan? segmentTimeSpan = GetTime(segment) + (State.CurrentSplitIndex == 1 ? State.Run.Offset : new TimeSpan(0, 0, 0));
+                SendMessage("Time for this split was " + timeFormatter.Format(segmentTimeSpan));
                 Scores[State.CurrentSplitIndex - 1] = Scores[State.CurrentSplitIndex - 1] ?? (State.CurrentSplitIndex > 1 ? new Dictionary<string, int>(Scores[State.CurrentSplitIndex - 2]) : new Dictionary<string, int>());
                 foreach (KeyValuePair<string, Tuple<TimeSpan, double>> entry in Bets[State.CurrentSplitIndex - 1])
                 {
                     if (Scores[State.CurrentSplitIndex - 1].ContainsKey(entry.Key))
                     {
-                        Scores[State.CurrentSplitIndex - 1][entry.Key] += (int)(entry.Value.Item2 * (int)GetTime(segment).Value.TotalSeconds * Math.Exp(-(Math.Pow((int)GetTime(segment).Value.TotalSeconds - (int)entry.Value.Item1.TotalSeconds, 2) / (int)GetTime(segment).Value.TotalSeconds)));
+                        Scores[State.CurrentSplitIndex - 1][entry.Key] += (int)(entry.Value.Item2 * (int)segmentTimeSpan.Value.TotalSeconds * Math.Exp(-(Math.Pow((int)segmentTimeSpan.Value.TotalSeconds - (int)entry.Value.Item1.TotalSeconds, 2) / (int)segmentTimeSpan.Value.TotalSeconds)));
                     }
-                    else Scores[State.CurrentSplitIndex - 1].Add(entry.Key, (int)(entry.Value.Item2 * (int)GetTime(segment).Value.TotalSeconds * Math.Exp(-(Math.Pow((int)GetTime(segment).Value.TotalSeconds - (int)entry.Value.Item1.TotalSeconds, 2) / (int)GetTime(segment).Value.TotalSeconds))));
+                    else Scores[State.CurrentSplitIndex - 1].Add(entry.Key, (int)(entry.Value.Item2 * (int)segmentTimeSpan.Value.TotalSeconds * Math.Exp(-(Math.Pow((int)segmentTimeSpan.Value.TotalSeconds - (int)entry.Value.Item1.TotalSeconds, 2) / (int)segmentTimeSpan.Value.TotalSeconds))));
                 }
                 ShowScore();
                 if (State.CurrentSplitIndex < Scores.Count())
@@ -526,6 +522,7 @@ namespace LiveSplit.SplitsBet
             {
                 Array.Clear(Bets, 0, Bets.Length);
                 Array.Clear(Scores, 0, Scores.Length);
+                SpecialBets.Clear();
             }
             catch (Exception ex) { LogException(ex); }
             if(!EndOfRun) SendMessage("Run is kill. RIP :(");
