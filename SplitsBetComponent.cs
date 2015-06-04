@@ -60,6 +60,7 @@ namespace LiveSplit.SplitsBet
             /*Adding global commands*/
             Commands.Add("betcommands", BetCommands);
             Commands.Add("start", EnableBets);
+            Commands.Add("version", Version);
 
             /*Bot is ready !*/
             Start();
@@ -396,6 +397,11 @@ namespace LiveSplit.SplitsBet
             {
                 SendMessage(user.Name + ": Invalid time, please retry.");
             }
+        }
+
+        private void Version(TwitchChat.User user, string argument)
+        {
+            SendMessage("LiveSplit version " + SplitsBetFactory.VersionString + (SplitsBetFactory.VersionPostfix ?? ""));
         }
 
         #endregion
