@@ -121,13 +121,13 @@ namespace LiveSplit.SplitsBet
             return element;
         }
 
-        private void textBox1_KeyPress(object sender, KeyPressEventArgs e)
+        private void txtCancelingPenalty_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (!Char.IsDigit(e.KeyChar) && !Char.IsControl(e.KeyChar))
                 e.Handled = true;
         }
 
-        private void textBox2_KeyPress(object sender, KeyPressEventArgs e)
+        private void txtMinBetTime_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (!Char.IsDigit(e.KeyChar) && !Char.IsControl(e.KeyChar) && !e.KeyChar.Equals(':'))
                 e.Handled = true;
