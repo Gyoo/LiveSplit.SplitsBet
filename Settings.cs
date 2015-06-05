@@ -63,7 +63,7 @@ namespace LiveSplit.SplitsBet
         public System.Xml.XmlNode GetSettings(System.Xml.XmlDocument document)
         {
             var settingsNode = document.CreateElement("Settings");
-            settingsNode.AppendChild(ToElement(document, "Version", "0.3"));
+            settingsNode.AppendChild(ToElement(document, "Version", SplitsBetFactory.VersionString));
 
             settingsNode.AppendChild(ToElement(document, "UnBet", CanUnBet));
             settingsNode.AppendChild(ToElement(document, "UnbetPenalty", UnBetPenalty));
@@ -78,7 +78,7 @@ namespace LiveSplit.SplitsBet
 
         public void SetSettings(System.Xml.XmlNode settings)
         {
-            if (settings["Version"] != null && settings["Version"].InnerText == "0.3")
+            if (settings["Version"] != null && settings["Version"].InnerText == SplitsBetFactory.VersionString)
             {
                 CanUnBet = bool.Parse(settings["UnBet"].InnerText);
                 UnBetPenalty = int.Parse(settings["UnbetPenalty"].InnerText);
