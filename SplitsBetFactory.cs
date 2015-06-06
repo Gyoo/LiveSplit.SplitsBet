@@ -12,6 +12,13 @@ namespace LiveSplit.SplitsBet
 {
     public class SplitsBetFactory : IComponentFactory
     {
+        public readonly static string VersionString = "0.3";
+        #if DEBUG
+        public readonly static string VersionPostfix = "-debug";
+        #else
+        public readonly static string VersionPostfix = "";
+        #endif
+
         public ComponentCategory Category
         {
             get { return ComponentCategory.Control; }
@@ -44,7 +51,7 @@ namespace LiveSplit.SplitsBet
 
         public Version Version
         {
-            get { return Version.Parse("0.3"); }
+            get { return Version.Parse(VersionString); }
         }
 
         public string XMLURL

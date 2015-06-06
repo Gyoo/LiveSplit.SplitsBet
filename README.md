@@ -15,10 +15,14 @@ The closer they are to reality, the more points!
 
 ### Commands
 
-- `!start` __(Broadcaster only)__ Starts the bot. Viewers can bet whenever a message inviting them to do so appears.
-- `!stop` __(Broadcaster only)__ Stops the bot. Viewers can't bet anymore.
-- `!bet (hh:m)m:ss` Guess the time for the current split. Hours and first digit of minutes are optional (Example: 4:20 is a valid time). You can't change your bet after you set it.
+- `!start` __(Broadcaster only)__ Starts the bot. Viewers can bet whenever a message inviting them to do so appears. Moderators can be allowed to use it if the option is set in the settings.
+- `!stop` __(Broadcaster only)__ Stops the bot. Viewers can't bet anymore. Moderators can be allowed to use it if the option is set in the settings.
+- `!bet (hh:m)m:ss` Guess the time for the current split. Hours and first digit of minutes are optional (Example: 4:20 is a valid time).
 - `!unbet` Cancels your bet for the current split. Watch out, there's a points penalty!
+- __Special bets__: They are used for mini events in the middle of a run, for instance the Secret Slide in Mario 64 or Dampe's time attack in OoT. 3 subcommands are available :
+  - `!specialbet start` __(Broadcaster/Mods only)__ Starts a special bet. It can be done anytime as long as the run is already started
+  - `!specialbet (hh:m)m:ss` Guess the time for the special bet. You can't cancel a special bet
+  - `!specialbet stop (hh:m)m:ss` __(Broadcaster/Mods only)__ Ends the special bet. Can be done anytime as long as the run is still going. Yhen you type this, you must input manually the time that has been done (i.e you do Dampe in 47 seconds, then you must type `!specialbet stop 47`
 - `!checkbet` Verify your bet
 - `!betcommands` Shows the available commands
 - `!score` Shows your score during a run
@@ -65,15 +69,15 @@ See complete changelog [here](https://gist.github.com/Gyoo/5ea00ea18a26419731fe)
 - Fix show of message "RIP run" after the run is completed
 - Fix show of error when unsplitting while bets are disabled
 - Fix crashes when no best segment is set
-- Better management of !start and !stop
+- Better management of `!start` and `!stop`
 - MinimumTime setting is now saved correctly
-- !start and !stop are now managed correctly when done during a run
+- `!start` and `!stop` are now managed correctly when done during a run
 - If the run starts with an offset (positive or negative) the first split shows the correct time (The offset wasn't taken in consideration before)
 
 ###Adds
 
 - Added settings for scores to be shown in a single message
 - Added special bets :
-  - !specialbet start to start a special bet
-  - !specialbet (time) to bet for this special bet
-  - !specialbet stop (time) to close the special bet, and you must input the end time by hand
+  - `!specialbet start` to start a special bet
+  - `!specialbet (time)` to bet for this special bet
+  - `!specialbet stop (time)` to close the special bet, and you must input the end time by hand

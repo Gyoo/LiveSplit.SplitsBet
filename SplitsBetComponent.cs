@@ -60,6 +60,7 @@ namespace LiveSplit.SplitsBet
             /*Adding global commands*/
             Commands.Add("betcommands", BetCommands);
             Commands.Add("start", EnableBets);
+            Commands.Add("version", Version);
 
             /*Bot is ready !*/
             Start();
@@ -251,7 +252,7 @@ namespace LiveSplit.SplitsBet
                 SendMessage("Timer is not running; no score available.");
                 return;
             }
-            if (State.CurrentSplitIndex > 0)
+            if (State.CurrentSplitIndex > 0 && Scores[State.CurrentSplitIndex - 1].Count > 0)
             {
                 var orderedScores = Scores[State.CurrentSplitIndex - 1].OrderByDescending(x => x.Value);
                 SendMessage(orderedScores.ToList()[0].Key + "'s score is " + orderedScores.ToList()[0].Value);
@@ -396,6 +397,11 @@ namespace LiveSplit.SplitsBet
             {
                 SendMessage(user.Name + ": Invalid time, please retry.");
             }
+        }
+
+        private void Version(TwitchChat.User user, string argument)
+        {
+            SendMessage("LiveSplit version " + SplitsBetFactory.VersionString + (SplitsBetFactory.VersionPostfix ?? ""));
         }
 
         #endregion
