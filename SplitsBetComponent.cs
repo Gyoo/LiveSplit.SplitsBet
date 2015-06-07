@@ -28,7 +28,7 @@ namespace LiveSplit.SplitsBet
         private Dictionary<string, Tuple<TimeSpan, double>>[] Bets { get; set; }
         private Dictionary<string, TimeSpan> SpecialBets { get; set; }
         private Dictionary<string, int>[] Scores { get; set; }
-        private Time SegmentBeginning { get; set; }
+        private Time[] SegmentBeginning { get; set; }
         private bool ActiveSpecialBets { get; set; }
         private bool EndOfRun { get; set; }
 
@@ -50,7 +50,7 @@ namespace LiveSplit.SplitsBet
             };
             Commands = new Dictionary<string, Action<TwitchChat.User, string>>();
             State = state;
-            SegmentBeginning = new Time();
+            SegmentBeginning = new Time[State.Run.Count];
             Bets = new Dictionary<string, Tuple<TimeSpan, double>>[State.Run.Count];
             SpecialBets = new Dictionary<string, TimeSpan>();
             Scores = new Dictionary<string, int>[State.Run.Count];
@@ -121,7 +121,7 @@ namespace LiveSplit.SplitsBet
             //If no glod is set, percentage is kept to 0. There's no way to set a limit so better not fix an arbitrary one.
             var timeFormatted = new ShortTimeFormatter().Format(GetTime(State.CurrentSplit.BestSegmentTime));
             if (TimeSpanParser.Parse(timeFormatted) > TimeSpan.Zero)
-                percentage = (GetTime(State.CurrentTime - SegmentBeginning)+(State.CurrentSplitIndex==0 ? State.Run.Offset : TimeSpan.Zero)).Value.TotalSeconds / GetTime(State.CurrentSplit.BestSegmentTime).Value.TotalSeconds;
+                percentage = (GetTime(State.CurrentTime - SegmentBeginning[State.CurrentSplitIndex])+(State.CurrentSplitIndex==0 ? State.Run.Offset : TimeSpan.Zero)).Value.TotalSeconds / GetTime(State.CurrentSplit.BestSegmentTime).Value.TotalSeconds;
             else
                 percentage = 0;
 
@@ -140,7 +140,7 @@ namespace LiveSplit.SplitsBet
                 }
 
                 var time = TimeSpanParser.Parse(argument);
-                if (Settings.UseGlobalTime) time -= GetTime(SegmentBeginning).Value;
+                if (Settings.UseGlobalTime) time -= GetTime(SegmentBeginning[State.CurrentSplitIndex]).Value;
                 if (time.CompareTo(Settings.MinimumTime) <= 0)
                 {
                     SendMessage(user.Name + ": Invalid time, please retry.");
@@ -385,7 +385,6 @@ namespace LiveSplit.SplitsBet
             try
             {
                 var time = TimeSpanParser.Parse(argument);
-                if (Settings.UseGlobalTime) time -= GetTime(SegmentBeginning).Value;
                 if (time.CompareTo(Settings.MinimumTime) <= 0)
                 {
                     SendMessage(user.Name + ": Invalid time, please retry.");
@@ -429,7 +428,7 @@ namespace LiveSplit.SplitsBet
             if (!Commands.ContainsKey("bet")) Commands.Add("bet", Bet); //Prevents players from betting between a !start and the next split, if !start is made during the run.
             try
             {
-                SegmentBeginning = State.CurrentTime;
+                SegmentBeginning[State.CurrentSplitIndex] = State.CurrentTime;
                 Bets[State.CurrentSplitIndex] = new Dictionary<string, Tuple<TimeSpan, double>>();
                 var timeFormatter = new ShortTimeFormatter();
                 var timeFormatted = timeFormatter.Format(GetTime(State.CurrentSplit.BestSegmentTime));
@@ -446,7 +445,7 @@ namespace LiveSplit.SplitsBet
             try
             {
                 //TODO Hide the "Time for this split was..." message if the segment time is <= 0 (yes it can happen)
-                var segment = State.CurrentTime - SegmentBeginning;
+                var segment = State.CurrentTime - SegmentBeginning[State.CurrentSplitIndex-1];
                 var timeFormatter = new ShortTimeFormatter();
                 TimeSpan? segmentTimeSpan = GetTime(segment) + (State.CurrentSplitIndex == 1 ? State.Run.Offset : TimeSpan.Zero);
                 SendMessage("The time for this split was " + timeFormatter.Format(segmentTimeSpan));
@@ -503,7 +502,10 @@ namespace LiveSplit.SplitsBet
         {
             try
             {
-                Scores[State.CurrentSplitIndex].Clear();
+                Scores[State.CurrentSplitIndex + 1] = null;
+                Scores[State.CurrentSplitIndex] = null;
+                if (State.CurrentSplitIndex > 0) Scores[State.CurrentSplitIndex] = new Dictionary<string,int>(Scores[State.CurrentSplitIndex - 1]);
+                else Scores[State.CurrentSplitIndex] = new Dictionary<string, int>();
             }
             catch (Exception ex)
             {
@@ -515,6 +517,7 @@ namespace LiveSplit.SplitsBet
         {
             try
             {
+                if (Commands.ContainsKey("bet")) Commands.Remove("bet"); //It's pointless to try to bet after a skipped split since no segment time will be set. Maybe only if you use split time instead of segment time ?
                 if (State.CurrentSplitIndex > 1) Scores[State.CurrentSplitIndex - 1] = new Dictionary<string, int>(Scores[State.CurrentSplitIndex - 2]);
                 else Scores[State.CurrentSplitIndex - 1] = new Dictionary<string, int>();
                 Bets[State.CurrentSplitIndex] = new Dictionary<string, Tuple<TimeSpan, double>>();
