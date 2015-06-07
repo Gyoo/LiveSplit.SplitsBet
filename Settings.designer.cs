@@ -84,7 +84,7 @@
             this.txtMinBetTime.Location = new System.Drawing.Point(202, 83);
             this.txtMinBetTime.Name = "txtMinBetTime";
             this.txtMinBetTime.Size = new System.Drawing.Size(120, 20);
-            this.txtMinBetTime.TabIndex = 2;
+            this.txtMinBetTime.TabIndex = 1;
             this.txtMinBetTime.Text = "00:00:01";
             this.txtMinBetTime.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.txtMinBetTime.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtMinBetTime_KeyPress);
@@ -107,7 +107,7 @@
             this.groupBox1.Location = new System.Drawing.Point(3, 3);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(456, 73);
-            this.groupBox1.TabIndex = 7;
+            this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Canceling Bets";
             // 
@@ -146,7 +146,7 @@
             this.chkCancelBets.Margin = new System.Windows.Forms.Padding(7, 3, 3, 3);
             this.chkCancelBets.Name = "chkCancelBets";
             this.chkCancelBets.Size = new System.Drawing.Size(183, 17);
-            this.chkCancelBets.TabIndex = 0;
+            this.chkCancelBets.TabIndex = 1;
             this.chkCancelBets.Text = "Allow Players to Cancel Bets";
             this.chkCancelBets.UseVisualStyleBackColor = true;
             this.chkCancelBets.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
@@ -157,7 +157,7 @@
             this.txtCancelingPenalty.Location = new System.Drawing.Point(196, 3);
             this.txtCancelingPenalty.Name = "txtCancelingPenalty";
             this.txtCancelingPenalty.Size = new System.Drawing.Size(120, 20);
-            this.txtCancelingPenalty.TabIndex = 1;
+            this.txtCancelingPenalty.TabIndex = 0;
             this.txtCancelingPenalty.Text = "50";
             this.txtCancelingPenalty.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.txtCancelingPenalty.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtCancelingPenalty_KeyPress);
@@ -187,7 +187,7 @@
             0});
             this.numScores.Name = "numScores";
             this.numScores.Size = new System.Drawing.Size(120, 20);
-            this.numScores.TabIndex = 9;
+            this.numScores.TabIndex = 2;
             this.numScores.Value = new decimal(new int[] {
             5,
             0,
@@ -215,7 +215,7 @@
             this.cmbTimingMethod.Location = new System.Drawing.Point(202, 227);
             this.cmbTimingMethod.Name = "cmbTimingMethod";
             this.cmbTimingMethod.Size = new System.Drawing.Size(120, 21);
-            this.cmbTimingMethod.TabIndex = 5;
+            this.cmbTimingMethod.TabIndex = 6;
             // 
             // chkAllowMods
             // 
@@ -226,7 +226,7 @@
             this.chkAllowMods.Margin = new System.Windows.Forms.Padding(7, 3, 3, 3);
             this.chkAllowMods.Name = "chkAllowMods";
             this.chkAllowMods.Size = new System.Drawing.Size(452, 17);
-            this.chkAllowMods.TabIndex = 12;
+            this.chkAllowMods.TabIndex = 5;
             this.chkAllowMods.Text = "Allow Mods to Start and Stop SplitsBet";
             this.chkAllowMods.UseVisualStyleBackColor = true;
             // 
@@ -239,7 +239,7 @@
             this.chkGlobalTime.Margin = new System.Windows.Forms.Padding(7, 3, 3, 3);
             this.chkGlobalTime.Name = "chkGlobalTime";
             this.chkGlobalTime.Size = new System.Drawing.Size(452, 17);
-            this.chkGlobalTime.TabIndex = 11;
+            this.chkGlobalTime.TabIndex = 4;
             this.chkGlobalTime.Text = "Use Global Time Instead of Segment Time";
             this.chkGlobalTime.UseVisualStyleBackColor = true;
             // 
@@ -252,7 +252,7 @@
             this.chkSingleLineScores.Margin = new System.Windows.Forms.Padding(7, 3, 3, 3);
             this.chkSingleLineScores.Name = "chkSingleLineScores";
             this.chkSingleLineScores.Size = new System.Drawing.Size(452, 17);
-            this.chkSingleLineScores.TabIndex = 13;
+            this.chkSingleLineScores.TabIndex = 3;
             this.chkSingleLineScores.Text = "Scores Show on a Single Message Instead of Multiple Lines";
             this.chkSingleLineScores.UseVisualStyleBackColor = true;
             // 
