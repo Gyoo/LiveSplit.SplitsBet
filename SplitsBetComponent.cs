@@ -24,7 +24,11 @@ namespace LiveSplit.SplitsBet
 
         public Settings Settings { get; set; }
         protected LiveSplitState State { get; set; }
+
+        //Commands : where the commands starting with an excalamation mark are stored. Key is the command, Value is the related method
         public Dictionary<String, Action<TwitchChat.User, string>> Commands { get; set; }
+
+        //Bets : Array of dictionaries that contains all the bets from all the players for every segment. The array's length is the number of segments, and the dictionary contains the name of the player as a key, and a tuple with the time of the bet and the score coefficient
         private Dictionary<string, Tuple<TimeSpan, double>>[] Bets { get; set; }
         private Dictionary<string, TimeSpan> SpecialBets { get; set; }
         private Dictionary<string, int>[] Scores { get; set; }
@@ -70,6 +74,9 @@ namespace LiveSplit.SplitsBet
 
         #region Methods
 
+        /**
+         * Connection of the bot to Twitch
+         */
         public void Start()
         {
             if (!Twitch.Instance.IsLoggedIn)
@@ -87,6 +94,9 @@ namespace LiveSplit.SplitsBet
             Twitch.Instance.Chat.OnMessage += OnMessage;
         }
 
+        /**
+         * Use this method to send a message with the bot
+         */ 
         private void SendMessage(string message)
         {
             Twitch.Instance.Chat.SendMessage("/me " + message);
@@ -95,9 +105,14 @@ namespace LiveSplit.SplitsBet
         #endregion
 
         #region Commands
-        
+        //Commands usually have self explaining names
+
+        /**
+         * Register a bet for the player "user"
+         */ 
         private void Bet(TwitchChat.User user, string argument)
         {
+            //Check the state of the timer. It must be running to set a bet
             switch (State.CurrentPhase)
             {
                 case TimerPhase.NotRunning:
@@ -111,6 +126,7 @@ namespace LiveSplit.SplitsBet
                     return;
             }
 
+            //You can't bet again if you have already bet once, unless you type !unbet, which erases your bet (and some of your points)
             if (Bets[State.CurrentSplitIndex].ContainsKey(user.Name))
             {
                 SendMessage(user.Name + ": You already bet, silly!");
@@ -118,13 +134,14 @@ namespace LiveSplit.SplitsBet
             }
 
             double percentage;
-            //If no glod is set, percentage is kept to 0. There's no way to set a limit so better not fix an arbitrary one.
             var timeFormatted = new ShortTimeFormatter().Format(GetTime(State.CurrentSplit.BestSegmentTime));
+            //If no glod is set, percentage is kept to 0. There's no way to set a limit so better not fix an arbitrary one.
             if (TimeSpanParser.Parse(timeFormatted) > TimeSpan.Zero)
                 percentage = (GetTime(State.CurrentTime - SegmentBeginning[State.CurrentSplitIndex])+(State.CurrentSplitIndex==0 ? State.Run.Offset : TimeSpan.Zero)).Value.TotalSeconds / GetTime(State.CurrentSplit.BestSegmentTime).Value.TotalSeconds;
             else
                 percentage = 0;
 
+            //Forbids the bets if the time of the segment reaches over 75% of the best segment
             if (percentage > 0.75)
             {
                 SendMessage("Too late to bet for this split; wait for the next one!");
@@ -133,12 +150,14 @@ namespace LiveSplit.SplitsBet
 
             try
             {
+                //nice meme
                 if (argument.ToLower().StartsWith("kappa"))
                 {
                     argument = "4:20.69";
                     SendMessage(user.Name + " bet 4:20.69 Kappa");
                 }
 
+                //Parsing the time and checking if it's valid
                 var time = TimeSpanParser.Parse(argument);
                 if (Settings.UseGlobalTime) time -= GetTime(SegmentBeginning[State.CurrentSplitIndex]).Value;
                 if (time.CompareTo(Settings.MinimumTime) <= 0)
@@ -146,6 +165,8 @@ namespace LiveSplit.SplitsBet
                     SendMessage(user.Name + ": Invalid time, please retry.");
                     return;
                 }
+
+                //Add the bet to its Dictionary
                 var t = new Tuple<TimeSpan, double>(time, Math.Exp(-2 * Math.Pow(percentage, 2)));
                 Bets[State.CurrentSplitIndex].Add(user.Name, t);
             }
