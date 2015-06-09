@@ -167,7 +167,7 @@ namespace LiveSplit.SplitsBet
                 }
 
                 //Add the bet to its Dictionary
-                var t = new Tuple<TimeSpan, double>(time, Math.Exp(-2 * Math.Pow(percentage, 2)));
+                var t = new Tuple<TimeSpan, double>(time, Math.Exp(-2 * Math.Pow(percentage, 4)));
                 Bets[State.CurrentSplitIndex].Add(user.Name, t);
             }
             catch
