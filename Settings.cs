@@ -26,6 +26,7 @@ namespace LiveSplit.SplitsBet
         public bool UseGlobalTime { get; set; }
         public bool AllowMods { get; set; }
         public bool SingleLineScores { get; set; }
+        public string TimeToShow { get; set; }
 
         private ITimeFormatter Formatter { get; set; }
 
@@ -40,6 +41,7 @@ namespace LiveSplit.SplitsBet
             Method = "Current Timing Method";
             AllowMods = false;
             SingleLineScores = false;
+            TimeToShow = "Best Segments";
 
             Formatter = new RegularTimeFormatter();
 
@@ -51,6 +53,7 @@ namespace LiveSplit.SplitsBet
             cmbTimingMethod.DataBindings.Add("SelectedItem", this, "OverridenTimingMethod", false, DataSourceUpdateMode.OnPropertyChanged);
             chkAllowMods.DataBindings.Add("Checked", this, "AllowMods", false, DataSourceUpdateMode.OnPropertyChanged);
             chkSingleLineScores.DataBindings.Add("Checked", this, "SingleLineScores", false, DataSourceUpdateMode.OnPropertyChanged);
+            cmbTimeToShow.DataBindings.Add("SelectedItem", this, "TimeToShow", false, DataSourceUpdateMode.OnPropertyChanged);
 
             this.Load += Settings_Load;
         }
@@ -73,6 +76,7 @@ namespace LiveSplit.SplitsBet
             settingsNode.AppendChild(ToElement(document, "TimingMethod", Method));
             settingsNode.AppendChild(ToElement(document, "AllowMods", AllowMods));
             settingsNode.AppendChild(ToElement(document, "SingleLineScores", SingleLineScores));
+            settingsNode.AppendChild(ToElement(document, "TimeToShow", TimeToShow));
             return settingsNode;
         }
 
@@ -88,6 +92,7 @@ namespace LiveSplit.SplitsBet
                 Method = settings["TimingMethod"].InnerText;
                 AllowMods = bool.Parse(settings["AllowMods"].InnerText);
                 SingleLineScores = bool.Parse(settings["SingleLineScores"].InnerText);
+                TimeToShow = settings["TimeToShow"].InnerText;
             }
             else
             {
@@ -100,6 +105,7 @@ namespace LiveSplit.SplitsBet
                 Method = "Current Timing Method";
                 AllowMods = false;
                 SingleLineScores = false;
+                TimeToShow = "Best Segments";
             }
 
         }

@@ -452,11 +452,29 @@ namespace LiveSplit.SplitsBet
                 SegmentBeginning[State.CurrentSplitIndex] = State.CurrentTime;
                 Bets[State.CurrentSplitIndex] = new Dictionary<string, Tuple<TimeSpan, double>>();
                 var timeFormatter = new ShortTimeFormatter();
-                var timeFormatted = timeFormatter.Format(GetTime(State.CurrentSplit.BestSegmentTime));
-                SendMessage("Place your bets for " + State.CurrentSplit.Name + "!" +
-                    (TimeSpanParser.Parse(timeFormatted) > TimeSpan.Zero ?
-                        (" Best segment for this split is " + timeFormatted + (Settings.UseGlobalTime ? ", but remember that global time is used!" : ""))
-                        : " No best segment for this split :("));
+                var timeFormatted = timeFormatter.Format(GetTime(State.CurrentSplit.Comparisons[Settings.TimeToShow]));
+                string ret = "Place your bets for " + State.CurrentSplit.Name + "! ";
+                if(TimeSpanParser.Parse(timeFormatted) > TimeSpan.Zero){
+                    switch (Settings.TimeToShow)
+                    {
+                        case "Personal Best":
+                            ret += "PB segment for this split is " + timeFormatted + " ";
+                            break;
+                        case "Best Segments":
+                            ret += "Best segment for this split is " + timeFormatted + " ";
+                            break;
+                        case "Best Split Times":
+                            ret += "Best splits segemnt time for this split is " + timeFormatted + " ";
+                            break;
+                        case "Average Segments":
+                            ret += "Average segment for this split is " + timeFormatted + " ";
+                            break;
+                        // If "None" is selected, no need to show a message
+                    }
+                }
+                if (Settings.UseGlobalTime) ret += "And remember that global time is used to bet!";
+
+                SendMessage(ret);
             }
             catch (Exception ex) { LogException(ex); }
         }
