@@ -464,7 +464,7 @@ namespace LiveSplit.SplitsBet
                             ret += "Best segment for this split is " + timeFormatted + " ";
                             break;
                         case "Best Split Times":
-                            ret += "Best splits segemnt time for this split is " + timeFormatted + " ";
+                            ret += "Best splits segment time for this split is " + timeFormatted + " ";
                             break;
                         case "Average Segments":
                             ret += "Average segment for this split is " + timeFormatted + " ";
