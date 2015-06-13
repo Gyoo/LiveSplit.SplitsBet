@@ -82,32 +82,24 @@ namespace LiveSplit.SplitsBet
 
         public void SetSettings(System.Xml.XmlNode settings)
         {
-            if (settings["Version"] != null && settings["Version"].InnerText == SplitsBetFactory.VersionString)
-            {
-                CanUnBet = bool.Parse(settings["UnBet"].InnerText);
-                UnBetPenalty = int.Parse(settings["UnbetPenalty"].InnerText);
-                MinimumTime = TimeSpanParser.Parse(settings["MinimumTime"].InnerText);
-                NbScores = int.Parse(settings["NbScores"].InnerText);
-                UseGlobalTime = bool.Parse(settings["UseGlobalTime"].InnerText);
-                Method = settings["TimingMethod"].InnerText;
-                AllowMods = bool.Parse(settings["AllowMods"].InnerText);
-                SingleLineScores = bool.Parse(settings["SingleLineScores"].InnerText);
-                TimeToShow = settings["TimeToShow"].InnerText;
-            }
-            else
-            {
-                // Default values
-                CanUnBet = true;
-                UnBetPenalty = 50;
-                MinimumTime = new TimeSpan(0, 0, 1);
-                NbScores = 5;
-                UseGlobalTime = false;
-                Method = "Current Timing Method";
-                AllowMods = false;
-                SingleLineScores = false;
-                TimeToShow = "Best Segments";
-            }
-
+            if(settings["UnBet"] != null) CanUnBet = bool.Parse(settings["UnBet"].InnerText);
+            else CanUnBet = true;
+            if(settings["UnbetPenalty"] != null) UnBetPenalty = int.Parse(settings["UnbetPenalty"].InnerText);
+            else UnBetPenalty = 50;
+            if(settings["MinimumTime"] != null) MinimumTime = TimeSpanParser.Parse(settings["MinimumTime"].InnerText);
+            else MinimumTime = new TimeSpan(0, 0, 1);
+            if(settings["NbScores"] != null) NbScores = int.Parse(settings["NbScores"].InnerText);
+            else NbScores = 5;
+            if(settings["UseGlobalTime"] != null) UseGlobalTime = bool.Parse(settings["UseGlobalTime"].InnerText);
+            else UseGlobalTime = false;
+            if(settings["TimingMethod"] != null) Method = settings["TimingMethod"].InnerText;
+            else Method = "Current Timing Method";
+            if(settings["AllowMods"] != null) AllowMods = bool.Parse(settings["AllowMods"].InnerText);
+            else AllowMods = false;
+            if(settings["SingleLineScores"] != null) SingleLineScores = bool.Parse(settings["SingleLineScores"].InnerText);
+            else SingleLineScores = false;
+            if(settings["TimeToShow"] != null) TimeToShow = settings["TimeToShow"].InnerText;
+            else TimeToShow = "Best Segments"; 
         }
 
         private TimingMethod? ParseTimingMethod(String method)
