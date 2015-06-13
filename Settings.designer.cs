@@ -45,6 +45,8 @@
             this.chkSingleLineScores = new System.Windows.Forms.CheckBox();
             this.label5 = new System.Windows.Forms.Label();
             this.cmbTimeToShow = new System.Windows.Forms.ComboBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.txtDelay = new System.Windows.Forms.TextBox();
             this.tableLayoutPanel1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
@@ -68,10 +70,12 @@
             this.tableLayoutPanel1.Controls.Add(this.chkSingleLineScores, 0, 3);
             this.tableLayoutPanel1.Controls.Add(this.label5, 0, 7);
             this.tableLayoutPanel1.Controls.Add(this.cmbTimeToShow, 1, 7);
+            this.tableLayoutPanel1.Controls.Add(this.label6, 0, 8);
+            this.tableLayoutPanel1.Controls.Add(this.txtDelay, 1, 8);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(7, 7);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 8;
+            this.tableLayoutPanel1.RowCount = 9;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 29F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 29F));
@@ -80,7 +84,8 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 29F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 29F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 29F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(462, 284);
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 29F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(462, 312);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
             // txtMinBetTime
@@ -265,7 +270,7 @@
             // 
             this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(3, 255);
+            this.label5.Location = new System.Drawing.Point(3, 254);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(193, 26);
             this.label5.TabIndex = 9;
@@ -281,10 +286,31 @@
             "Best Split Times",
             "Average Segments",
             "None"});
-            this.cmbTimeToShow.Location = new System.Drawing.Point(202, 258);
+            this.cmbTimeToShow.Location = new System.Drawing.Point(202, 257);
             this.cmbTimeToShow.Name = "cmbTimeToShow";
             this.cmbTimeToShow.Size = new System.Drawing.Size(120, 21);
             this.cmbTimeToShow.TabIndex = 10;
+            // 
+            // label6
+            // 
+            this.label6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(3, 290);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(193, 13);
+            this.label6.TabIndex = 11;
+            this.label6.Text = "Delay (in seconds)";
+            // 
+            // txtDelay
+            // 
+            this.txtDelay.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.txtDelay.Location = new System.Drawing.Point(202, 287);
+            this.txtDelay.Name = "txtDelay";
+            this.txtDelay.Size = new System.Drawing.Size(120, 20);
+            this.txtDelay.TabIndex = 12;
+            this.txtDelay.Text = "0";
+            this.txtDelay.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.txtDelay.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtDelay_KeyPress);
             // 
             // Settings
             // 
@@ -293,7 +319,7 @@
             this.Controls.Add(this.tableLayoutPanel1);
             this.Name = "Settings";
             this.Padding = new System.Windows.Forms.Padding(7);
-            this.Size = new System.Drawing.Size(476, 298);
+            this.Size = new System.Drawing.Size(476, 326);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             this.groupBox1.ResumeLayout(false);
@@ -323,5 +349,7 @@
         private System.Windows.Forms.CheckBox chkSingleLineScores;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.ComboBox cmbTimeToShow;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.TextBox txtDelay;
     }
 }

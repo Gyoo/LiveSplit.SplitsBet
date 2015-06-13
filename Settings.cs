@@ -27,6 +27,7 @@ namespace LiveSplit.SplitsBet
         public bool AllowMods { get; set; }
         public bool SingleLineScores { get; set; }
         public string TimeToShow { get; set; }
+        public int Delay { get; set; }
 
         private ITimeFormatter Formatter { get; set; }
 
@@ -42,6 +43,7 @@ namespace LiveSplit.SplitsBet
             AllowMods = false;
             SingleLineScores = false;
             TimeToShow = "Best Segments";
+            Delay = 0;
 
             Formatter = new RegularTimeFormatter();
 
@@ -54,6 +56,7 @@ namespace LiveSplit.SplitsBet
             chkAllowMods.DataBindings.Add("Checked", this, "AllowMods", false, DataSourceUpdateMode.OnPropertyChanged);
             chkSingleLineScores.DataBindings.Add("Checked", this, "SingleLineScores", false, DataSourceUpdateMode.OnPropertyChanged);
             cmbTimeToShow.DataBindings.Add("SelectedItem", this, "TimeToShow", false, DataSourceUpdateMode.OnPropertyChanged);
+            txtDelay.DataBindings.Add("Text", this, "Delay", false, DataSourceUpdateMode.OnPropertyChanged);
 
             this.Load += Settings_Load;
         }
@@ -77,6 +80,7 @@ namespace LiveSplit.SplitsBet
             settingsNode.AppendChild(ToElement(document, "AllowMods", AllowMods));
             settingsNode.AppendChild(ToElement(document, "SingleLineScores", SingleLineScores));
             settingsNode.AppendChild(ToElement(document, "TimeToShow", TimeToShow));
+            settingsNode.AppendChild(ToElement(document, "Delay", Delay));
             return settingsNode;
         }
 
@@ -99,7 +103,9 @@ namespace LiveSplit.SplitsBet
             if(settings["SingleLineScores"] != null) SingleLineScores = bool.Parse(settings["SingleLineScores"].InnerText);
             else SingleLineScores = false;
             if(settings["TimeToShow"] != null) TimeToShow = settings["TimeToShow"].InnerText;
-            else TimeToShow = "Best Segments"; 
+            else TimeToShow = "Best Segments";
+            if (settings["Delay"] != null) Delay = int.Parse(settings["Delay"].InnerText);
+            else Delay = 0;
         }
 
         private TimingMethod? ParseTimingMethod(String method)
@@ -146,6 +152,12 @@ namespace LiveSplit.SplitsBet
             {
                 txtMinBetTime.Text = Formatter.Format(MinimumTime);
             }
+        }
+
+        private void txtDelay_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!Char.IsDigit(e.KeyChar) && !Char.IsControl(e.KeyChar))
+                e.Handled = true;
         }
     }
 }
