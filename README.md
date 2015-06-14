@@ -27,6 +27,7 @@ The closer they are to reality, the more points!
 - `!betcommands` Shows the available commands
 - `!score` Shows your score during a run
 - `!highscore` Shows the current highest score
+- `!version` Shows the current version of SplitsBet in use
 
 ### Score system
 
