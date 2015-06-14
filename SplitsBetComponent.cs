@@ -58,7 +58,7 @@ namespace LiveSplit.SplitsBet
             SpecialBets = new Dictionary<string, TimeSpan>();
             ActiveSpecialBets = false;
             EndOfRun = false;
-            // Arrays are initialized in a separate method so the
+            // Arrays are initialized in a separate method so their size can be updated in the Update() method when new splits are loaded.
             initArrays();
 
             /*Adding global commands*/

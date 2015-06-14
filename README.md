@@ -61,23 +61,27 @@ A window will show, asking for your Twitch credentials (__WARNING__: If you alre
 
 See complete changelog [here](https://gist.github.com/Gyoo/5ea00ea18a26419731fe)
 
-##v0.3
+##v0.4
 
 ###Fixes
 
-- Fix disposal of Livesplit events
-- Fix show of message "RIP run" after the run is completed
-- Fix show of error when unsplitting while bets are disabled
-- Fix crashes when no best segment is set
-- Better management of `!start` and `!stop`
-- MinimumTime setting is now saved correctly
-- `!start` and `!stop` are now managed correctly when done during a run
-- If the run starts with an offset (positive or negative) the first split shows the correct time (The offset wasn't taken in consideration before)
+- Fixed error when there is no highscore in the middle of a run
+- Fixed bugs with the scores when unsplitting then resplitting
+- Changed settings management to prevent settings from being completely reset from a version to another
+- Fixed a bug related to loading new splits without reloading SplitsBet
 
-###Adds
+###Features
 
-- Added settings for scores to be shown in a single message
-- Added special bets :
-  - `!specialbet start` to start a special bet
-  - `!specialbet (time)` to bet for this special bet
-  - `!specialbet stop (time)` to close the special bet, and you must input the end time by hand
+- Added `!version` to see which version is running
+- Added setting to choose which comparison is shown in the chat at the beginning of a split (either Best segment, average segment, best split times segment, PB segment, or none)
+- Added setting to set a delay between your split and the messages showing in the chat. This is done to prevent spoiling the run because of the stream delay
+
+
+###Misc
+- Refactoring of some code (you won't see that as a user)
+- Changed the phrasing of the bot
+- Changed the time coefficient formula, because users felt like it's more rewarding to bet fast than to bet accurate. From now on, the coef will start decreasing at around 30% of the time of the best segment, and at the latest (aka 75% of the time of the best segment) the coef will be around 0.5, which means you'll only earn 50% of what you would've earned if you bet at the beginning.
+
+###Known Bugs
+
+- If your segment time is shorter than the delay you set, SplitsBet will be completely rekt until you reset your run. This is mostly because the current method used for the delay is a bit dirty, but hey it does the job. This will be refactored at some point.
