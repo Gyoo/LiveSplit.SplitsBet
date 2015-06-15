@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using LiveSplit.TimeFormatters;
 using System.Windows.Forms;
 using System.ComponentModel;
+using LiveSplit.Model.Comparisons;
 
 namespace LiveSplit.SplitsBet
 {
@@ -111,24 +112,9 @@ namespace LiveSplit.SplitsBet
                 var timeFormatter = new ShortTimeFormatter();
                 var timeFormatted = timeFormatter.Format(GetTime(State.CurrentSplit.Comparisons[Settings.TimeToShow]));
                 string ret = "Place your bets for " + State.CurrentSplit.Name + "! ";
-                if (TimeSpanParser.Parse(timeFormatted) > TimeSpan.Zero)
+                if (TimeSpanParser.Parse(timeFormatted) > TimeSpan.Zero && Settings.TimeToShow != "None")
                 {
-                    switch (Settings.TimeToShow)
-                    {
-                        case "Personal Best":
-                            ret += "PB segment for this split is " + timeFormatted + " ";
-                            break;
-                        case "Best Segments":
-                            ret += "Best segment for this split is " + timeFormatted + " ";
-                            break;
-                        case "Best Split Times":
-                            ret += "Best splits segment time for this split is " + timeFormatted + " ";
-                            break;
-                        case "Average Segments":
-                            ret += "Average segment for this split is " + timeFormatted + " ";
-                            break;
-                        // If "None" is selected, no need to show a message
-                    }
+                    ret += CompositeComparisons.GetShortComparisonName(Settings.TimeToShow.ToString()) + " segment for this split is " + timeFormatted + " ";
                 }
                 if (Settings.UseGlobalTime) ret += "And remember that global time is used to bet!";
 

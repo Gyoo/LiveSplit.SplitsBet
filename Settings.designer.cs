@@ -280,12 +280,6 @@
             // 
             this.cmbTimeToShow.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.cmbTimeToShow.FormattingEnabled = true;
-            this.cmbTimeToShow.Items.AddRange(new object[] {
-            "Personal Best",
-            "Best Segments",
-            "Best Split Times",
-            "Average Segments",
-            "None"});
             this.cmbTimeToShow.Location = new System.Drawing.Point(202, 257);
             this.cmbTimeToShow.Name = "cmbTimeToShow";
             this.cmbTimeToShow.Size = new System.Drawing.Size(120, 21);
