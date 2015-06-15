@@ -109,7 +109,10 @@ namespace LiveSplit.SplitsBet
                 SegmentBeginning[State.CurrentSplitIndex] = State.CurrentTime;
                 Bets[State.CurrentSplitIndex] = new Dictionary<string, Tuple<TimeSpan, double>>();
                 var timeFormatter = new ShortTimeFormatter();
-                var timeFormatted = timeFormatter.Format(GetTime(State.CurrentSplit.Comparisons[Settings.TimeToShow]));
+                var previousTime = State.CurrentSplitIndex > 0 
+                    ? GetTime(State.Run[State.CurrentSplitIndex - 1].Comparisons[Settings.TimeToShow]) 
+                    : TimeSpan.Zero;
+                var timeFormatted = timeFormatter.Format(GetTime(State.CurrentSplit.Comparisons[Settings.TimeToShow]) - previousTime);
                 string ret = "Place your bets for " + State.CurrentSplit.Name + "! ";
                 if (TimeSpanParser.Parse(timeFormatted) > TimeSpan.Zero)
                 {
