@@ -17,6 +17,7 @@ using LiveSplit.TimeFormatters;
 using System.Windows.Forms;
 using System.ComponentModel;
 using LiveSplit.Model.Comparisons;
+using LiveSplit.UI;
 
 namespace LiveSplit.SplitsBet
 {
@@ -56,6 +57,7 @@ namespace LiveSplit.SplitsBet
             };
             Commands = new Dictionary<string, Action<TwitchChat.User, string>>();
             State = state;
+            State.ComparisonRenamed += State_ComparisonRenamed;
             SpecialBets = new Dictionary<string, TimeSpan>();
             ActiveSpecialBets = false;
             EndOfRun = false;
@@ -511,6 +513,16 @@ namespace LiveSplit.SplitsBet
         #endregion
 
         #region Events
+
+        void State_ComparisonRenamed(object sender, EventArgs e)
+        {
+            var args = (RenameEventArgs)e;
+            if (Settings.TimeToShow == args.OldName)
+            {
+                Settings.TimeToShow = args.NewName;
+                ((LiveSplitState)sender).Layout.HasChanged = true;
+            }
+        }
 
         private void OnMessage(object sender, TwitchChat.Message message)
         {
