@@ -110,14 +110,15 @@ namespace LiveSplit.SplitsBet
                 SegmentBeginning[State.CurrentSplitIndex] = State.CurrentTime;
                 Bets[State.CurrentSplitIndex] = new Dictionary<string, Tuple<TimeSpan, double>>();
                 var timeFormatter = new ShortTimeFormatter();
+                var comparison = State.Run.Comparisons.Contains(Settings.TimeToShow) ? Settings.TimeToShow : Run.PersonalBestComparisonName;
                 var previousTime = State.CurrentSplitIndex > 0 
-                    ? GetTime(State.Run[State.CurrentSplitIndex - 1].Comparisons[Settings.TimeToShow]) 
+                    ? GetTime(State.Run[State.CurrentSplitIndex - 1].Comparisons[comparison]) 
                     : TimeSpan.Zero;
-                var timeFormatted = timeFormatter.Format(GetTime(State.CurrentSplit.Comparisons[Settings.TimeToShow]) - previousTime);
+                var timeFormatted = timeFormatter.Format(GetTime(State.CurrentSplit.Comparisons[comparison]) - previousTime);
                 string ret = "Place your bets for " + State.CurrentSplit.Name + "! ";
-                if (TimeSpanParser.Parse(timeFormatted) > TimeSpan.Zero && Settings.TimeToShow != "None")
+                if (TimeSpanParser.Parse(timeFormatted) > TimeSpan.Zero && comparison != "None")
                 {
-                    ret += CompositeComparisons.GetShortComparisonName(Settings.TimeToShow.ToString()) + " segment for this split is " + timeFormatted + " ";
+                    ret += CompositeComparisons.GetShortComparisonName(comparison) + " segment for this split is " + timeFormatted + " ";
                 }
                 if (Settings.UseGlobalTime) ret += "And remember that global time is used to bet!";
 

@@ -66,7 +66,8 @@ namespace LiveSplit.SplitsBet
             txtMinBetTime.Text = Formatter.Format(MinimumTime);
             cmbTimeToShow.Items.Clear();
             cmbTimeToShow.Items.AddRange(LivesplitState.Run.Comparisons.Where(x => x != BestSplitTimesComparisonGenerator.ComparisonName).ToArray());
-            
+            if (!cmbTimeToShow.Items.Contains(TimeToShow))
+                cmbTimeToShow.Items.Add(TimeToShow);
         }
 
         public System.Xml.XmlNode GetSettings(System.Xml.XmlDocument document)
