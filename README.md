@@ -62,6 +62,20 @@ A window will show, asking for your Twitch credentials (__WARNING__: If you alre
 
 See complete changelog [here](https://gist.github.com/Gyoo/5ea00ea18a26419731fe)
 
+##v0.4.1
+
+### Fixes
+
+- Time to show at the beginning of a split is now correct, and not the sum since the beginning
+ 
+### Features
+
+- Added support for custom comparisons for the time to show at the beginning of a split
+ 
+### Known bugs
+
+- Delay is still buggy, but if you don't abuse it it works fine. Just don't make another action while an event is delayed.
+
 ##v0.4
 
 ###Fixes
