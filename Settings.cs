@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using LiveSplit.Model;
 using System.Xml;
 using LiveSplit.TimeFormatters;
+using LiveSplit.Model.Comparisons;
 
 namespace LiveSplit.SplitsBet
 {
@@ -49,7 +50,6 @@ namespace LiveSplit.SplitsBet
 
             chkCancelBets.DataBindings.Add("Checked", this, "CanUnBet", false, DataSourceUpdateMode.OnPropertyChanged);
             txtCancelingPenalty.DataBindings.Add("Text", this, "UnBetPenalty", false, DataSourceUpdateMode.OnPropertyChanged);
-            //txtMinBetTime.DataBindings.Add("Text", this, "MinimumTimeText", false, DataSourceUpdateMode.OnPropertyChanged);
             numScores.DataBindings.Add("Value", this, "NbScores", false, DataSourceUpdateMode.OnPropertyChanged);
             chkGlobalTime.DataBindings.Add("Checked", this, "UseGlobalTime", false, DataSourceUpdateMode.OnPropertyChanged);
             cmbTimingMethod.DataBindings.Add("SelectedItem", this, "OverridenTimingMethod", false, DataSourceUpdateMode.OnPropertyChanged);
@@ -64,6 +64,10 @@ namespace LiveSplit.SplitsBet
         void Settings_Load(object sender, EventArgs e)
         {
             txtMinBetTime.Text = Formatter.Format(MinimumTime);
+            cmbTimeToShow.Items.Clear();
+            cmbTimeToShow.Items.AddRange(LivesplitState.Run.Comparisons.Where(x => x != BestSplitTimesComparisonGenerator.ComparisonName).ToArray());
+            if (!cmbTimeToShow.Items.Contains(TimeToShow))
+                cmbTimeToShow.Items.Add(TimeToShow);
         }
 
         public System.Xml.XmlNode GetSettings(System.Xml.XmlDocument document)

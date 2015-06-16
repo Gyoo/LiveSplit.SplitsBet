@@ -16,6 +16,8 @@ using System.Threading.Tasks;
 using LiveSplit.TimeFormatters;
 using System.Windows.Forms;
 using System.ComponentModel;
+using LiveSplit.Model.Comparisons;
+using LiveSplit.UI;
 
 namespace LiveSplit.SplitsBet
 {
@@ -55,6 +57,7 @@ namespace LiveSplit.SplitsBet
             };
             Commands = new Dictionary<string, Action<TwitchChat.User, string>>();
             State = state;
+            State.ComparisonRenamed += State_ComparisonRenamed;
             SpecialBets = new Dictionary<string, TimeSpan>();
             ActiveSpecialBets = false;
             EndOfRun = false;
@@ -109,26 +112,15 @@ namespace LiveSplit.SplitsBet
                 SegmentBeginning[State.CurrentSplitIndex] = State.CurrentTime;
                 Bets[State.CurrentSplitIndex] = new Dictionary<string, Tuple<TimeSpan, double>>();
                 var timeFormatter = new ShortTimeFormatter();
-                var timeFormatted = timeFormatter.Format(GetTime(State.CurrentSplit.Comparisons[Settings.TimeToShow]));
+                var comparison = State.Run.Comparisons.Contains(Settings.TimeToShow) ? Settings.TimeToShow : Run.PersonalBestComparisonName;
+                var previousTime = State.CurrentSplitIndex > 0 
+                    ? GetTime(State.Run[State.CurrentSplitIndex - 1].Comparisons[comparison]) 
+                    : TimeSpan.Zero;
+                var timeFormatted = timeFormatter.Format(GetTime(State.CurrentSplit.Comparisons[comparison]) - previousTime);
                 string ret = "Place your bets for " + State.CurrentSplit.Name + "! ";
-                if (TimeSpanParser.Parse(timeFormatted) > TimeSpan.Zero)
+                if (TimeSpanParser.Parse(timeFormatted) > TimeSpan.Zero && comparison != "None")
                 {
-                    switch (Settings.TimeToShow)
-                    {
-                        case "Personal Best":
-                            ret += "PB segment for this split is " + timeFormatted + " ";
-                            break;
-                        case "Best Segments":
-                            ret += "Best segment for this split is " + timeFormatted + " ";
-                            break;
-                        case "Best Split Times":
-                            ret += "Best splits segment time for this split is " + timeFormatted + " ";
-                            break;
-                        case "Average Segments":
-                            ret += "Average segment for this split is " + timeFormatted + " ";
-                            break;
-                        // If "None" is selected, no need to show a message
-                    }
+                    ret += CompositeComparisons.GetShortComparisonName(comparison) + " segment for this split is " + timeFormatted + " ";
                 }
                 if (Settings.UseGlobalTime) ret += "And remember that global time is used to bet!";
 
@@ -521,6 +513,16 @@ namespace LiveSplit.SplitsBet
         #endregion
 
         #region Events
+
+        void State_ComparisonRenamed(object sender, EventArgs e)
+        {
+            var args = (RenameEventArgs)e;
+            if (Settings.TimeToShow == args.OldName)
+            {
+                Settings.TimeToShow = args.NewName;
+                ((LiveSplitState)sender).Layout.HasChanged = true;
+            }
+        }
 
         private void OnMessage(object sender, TwitchChat.Message message)
         {
