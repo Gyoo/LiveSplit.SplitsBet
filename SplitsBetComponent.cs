@@ -27,6 +27,8 @@ namespace LiveSplit.SplitsBet
 
         public Settings Settings { get; set; }
         protected LiveSplitState State { get; set; }
+        protected int SplitIndex { get; set; }
+        protected TimeSpan RunOffset { get; set; }
 
         //Commands : where the commands starting with an excalamation mark are stored. Key is the command, Value is the related method
         public Dictionary<String, Action<TwitchChat.User, string>> Commands { get; set; }
@@ -109,15 +111,15 @@ namespace LiveSplit.SplitsBet
             if (!Commands.ContainsKey("bet")) Commands.Add("bet", Bet); //Prevents players from betting between a !start and the next split, if !start is made during the run.
             try
             {
-                SegmentBeginning[State.CurrentSplitIndex] = State.CurrentTime;
-                Bets[State.CurrentSplitIndex] = new Dictionary<string, Tuple<TimeSpan, double>>();
+                SegmentBeginning[SplitIndex] = State.CurrentTime;
+                Bets[SplitIndex] = new Dictionary<string, Tuple<TimeSpan, double>>();
                 var timeFormatter = new ShortTimeFormatter();
                 var comparison = State.Run.Comparisons.Contains(Settings.TimeToShow) ? Settings.TimeToShow : Run.PersonalBestComparisonName;
-                var previousTime = State.CurrentSplitIndex > 0 
-                    ? GetTime(State.Run[State.CurrentSplitIndex - 1].Comparisons[comparison]) 
+                var previousTime = SplitIndex > 0 
+                    ? GetTime(State.Run[SplitIndex - 1].Comparisons[comparison]) 
                     : TimeSpan.Zero;
-                var timeFormatted = timeFormatter.Format(GetTime(State.CurrentSplit.Comparisons[comparison]) - previousTime);
-                string ret = "Place your bets for " + State.CurrentSplit.Name + "! ";
+                var timeFormatted = timeFormatter.Format(GetTime(State.Run[SplitIndex].Comparisons[comparison]) - previousTime);
+                string ret = "Place your bets for " + State.Run[SplitIndex].Name + "! ";
                 if (TimeSpanParser.Parse(timeFormatted) > TimeSpan.Zero && comparison != "None")
                 {
                     ret += CompositeComparisons.GetShortComparisonName(comparison) + " segment for this split is " + timeFormatted + " ";
@@ -134,7 +136,7 @@ namespace LiveSplit.SplitsBet
             try
             {
                 string singleLine = "";
-                var orderedScores = Scores[State.CurrentSplitIndex - 1].OrderByDescending(x => x.Value);
+                var orderedScores = Scores[SplitIndex - 1].OrderByDescending(x => x.Value);
                 int scoresShown = 0;
                 if (orderedScores.Count() > 0)
                 {
@@ -145,9 +147,9 @@ namespace LiveSplit.SplitsBet
                     foreach (var entry in orderedScores)
                     {
                         var delta = 0;
-                        if (State.CurrentSplitIndex - 2 >= 0 && Scores[State.CurrentSplitIndex - 2].ContainsKey(entry.Key))
+                        if (SplitIndex - 2 >= 0 && Scores[SplitIndex - 2].ContainsKey(entry.Key))
                         {
-                            delta = entry.Value - Scores[State.CurrentSplitIndex - 2][entry.Key];
+                            delta = entry.Value - Scores[SplitIndex - 2][entry.Key];
                         }
                         if (!Settings.SingleLineScores)
                             SendMessage(entry.Key + ": " + entry.Value + (delta != 0 ? (" (" + (delta < 0 ? "-" : "+") + delta + ")") : ""));
@@ -199,31 +201,34 @@ namespace LiveSplit.SplitsBet
         private void Bet(TwitchChat.User user, string argument)
         {
             //Check the state of the timer. It must be running to set a bet
-            switch (State.CurrentPhase)
+            if (SplitIndex < 0)
             {
-                case TimerPhase.NotRunning:
-                    SendMessage("Timer is not running; bets are closed.");
-                    return;
-                case TimerPhase.Paused:
-                    SendMessage("Timer is paused; bets are paused too.");
-                    return;
-                case TimerPhase.Ended:
-                    SendMessage("Run is over; there is nothing to bet!");
-                    return;
+                SendMessage("Timer is not running; bets are closed.");
+                return;
+            }
+            if (State.CurrentPhase == TimerPhase.Paused)
+            {
+                SendMessage("Timer is paused; bets are paused too.");
+                return;
+            }
+            if (SplitIndex >= State.Run.Count)
+            {
+                SendMessage("Run is over; there is nothing to bet!");
+                return;
             }
 
             //You can't bet again if you have already bet once, unless you type !unbet, which erases your bet (and some of your points)
-            if (Bets[State.CurrentSplitIndex].ContainsKey(user.Name))
+            if (Bets[SplitIndex].ContainsKey(user.Name))
             {
                 SendMessage(user.Name + ": You already bet, silly!");
                 return;
             }
 
             double percentage;
-            var timeFormatted = new ShortTimeFormatter().Format(GetTime(State.CurrentSplit.BestSegmentTime));
+            var timeFormatted = new ShortTimeFormatter().Format(GetTime(State.Run[SplitIndex].BestSegmentTime));
             //If no glod is set, percentage is kept to 0. There's no way to set a limit so better not fix an arbitrary one.
             if (TimeSpanParser.Parse(timeFormatted) > TimeSpan.Zero)
-                percentage = (GetTime(State.CurrentTime - SegmentBeginning[State.CurrentSplitIndex])+(State.CurrentSplitIndex==0 ? State.Run.Offset : TimeSpan.Zero)).Value.TotalSeconds / GetTime(State.CurrentSplit.BestSegmentTime).Value.TotalSeconds;
+                percentage = (GetTime(State.CurrentTime - SegmentBeginning[SplitIndex]) + (SplitIndex == 0 ? RunOffset : TimeSpan.Zero)).Value.TotalSeconds / GetTime(State.Run[SplitIndex].BestSegmentTime).Value.TotalSeconds;
             else
                 percentage = 0;
 
@@ -245,7 +250,7 @@ namespace LiveSplit.SplitsBet
 
                 //Parsing the time and checking if it's valid
                 var time = TimeSpanParser.Parse(argument);
-                if (Settings.UseGlobalTime) time -= GetTime(SegmentBeginning[State.CurrentSplitIndex]).Value;
+                if (Settings.UseGlobalTime) time -= GetTime(SegmentBeginning[SplitIndex]).Value;
                 if (time.CompareTo(Settings.MinimumTime) <= 0)
                 {
                     SendMessage(user.Name + ": Invalid time, please retry.");
@@ -254,7 +259,7 @@ namespace LiveSplit.SplitsBet
 
                 //Add the bet to its Dictionary
                 var t = new Tuple<TimeSpan, double>(time, Math.Exp(-2 * Math.Pow(percentage, 4)));
-                Bets[State.CurrentSplitIndex].Add(user.Name, t);
+                Bets[SplitIndex].Add(user.Name, t);
             }
             catch
             {
@@ -264,22 +269,23 @@ namespace LiveSplit.SplitsBet
 
         private void CheckBet(TwitchChat.User user, string argument)
         {
-            switch (State.CurrentPhase)
+            if (SplitIndex < 0)
             {
-                case TimerPhase.NotRunning:
-                    SendMessage("Timer is not running; bets are closed.");
-                    return;
-                case TimerPhase.Ended:
-                    SendMessage("The run has ended; nothing to check!");
-                    return;
+                SendMessage("Timer is not running; bets are closed.");
+                return;
+            }
+            if (SplitIndex >= State.Run.Count)
+            {
+                SendMessage("The run has ended; nothing to check!");
+                return;
             }
 
-            if (Bets[State.CurrentSplitIndex].ContainsKey(user.Name))
+            if (Bets[SplitIndex].ContainsKey(user.Name))
             {
                 var timeFormatter = new ShortTimeFormatter();
-                var time = Bets[State.CurrentSplitIndex][user.Name].Item1;
+                var time = Bets[SplitIndex][user.Name].Item1;
                 var formattedTime = timeFormatter.Format(time);
-                SendMessage(user.Name + ": Your bet for " + State.CurrentSplit.Name + " is " + formattedTime);
+                SendMessage(user.Name + ": Your bet for " + State.Run[SplitIndex].Name + " is " + formattedTime);
             }
             else
             {
@@ -294,38 +300,40 @@ namespace LiveSplit.SplitsBet
                 SendMessage("You can't unbet :(");
                 return;
             }
-            switch (State.CurrentPhase)
+
+            if (SplitIndex < 0)
             {
-                case TimerPhase.NotRunning:
-                    SendMessage("Timer is not running; bets are closed.");
-                    return;
-                case TimerPhase.Ended:
-                    SendMessage("The run has ended, nothing to unbet!");
-                    return;
+                SendMessage("Timer is not running; bets are closed.");
+                return;
+            }
+            if (SplitIndex >= State.Run.Count)
+            {
+                SendMessage("The run has ended, nothing to unbet!");
+                return;
             }
 
-            if (State.CurrentSplitIndex - 1 < 0)
+            if (SplitIndex - 1 < 0)
             {
                 SendMessage(user.Name + ": You have no points to spend on undoing your bet yet!");
                 return;
             }
 
-            if (!Bets[State.CurrentSplitIndex].ContainsKey(user.Name))
+            if (!Bets[SplitIndex].ContainsKey(user.Name))
             {
                 SendMessage(user.Name + ": You didn't bet for this split yet!");
                 return;
             }
 
-            if (Scores[State.CurrentSplitIndex-1].ContainsKey(user.Name) && Scores[State.CurrentSplitIndex - 1][user.Name] < Settings.UnBetPenalty)
+            if (Scores[SplitIndex-1].ContainsKey(user.Name) && Scores[SplitIndex - 1][user.Name] < Settings.UnBetPenalty)
             {
-                SendMessage(user.Name + ": You need " + Settings.UnBetPenalty + " points to undo your bet but only have " + Scores[State.CurrentSplitIndex - 1][user.Name] + ".");
+                SendMessage(user.Name + ": You need " + Settings.UnBetPenalty + " points to undo your bet but only have " + Scores[SplitIndex - 1][user.Name] + ".");
                 return;
             }
 
-            if (State.CurrentSplitIndex >= 0 && Scores[State.CurrentSplitIndex] != null) {
-                Scores[State.CurrentSplitIndex][user.Name] -= Settings.UnBetPenalty;
+            if (SplitIndex >= 0 && Scores[SplitIndex] != null) {
+                Scores[SplitIndex][user.Name] -= Settings.UnBetPenalty;
             }
-            Bets[State.CurrentSplitIndex].Remove(user.Name);
+            Bets[SplitIndex].Remove(user.Name);
         }
 
         private void BetCommands(TwitchChat.User user, string argument)
@@ -339,29 +347,29 @@ namespace LiveSplit.SplitsBet
 
         private void Score(TwitchChat.User user, string argument)
         {
-            if (State.CurrentPhase == TimerPhase.NotRunning)
+            if (SplitIndex < 0)
             {
                 SendMessage("Timer is not running; no score available.");
                 return;
             }
-            if (State.CurrentSplitIndex == 0 || !Scores[State.CurrentSplitIndex - 1].ContainsKey(user.Name))
+            if (SplitIndex == 0 || !Scores[SplitIndex - 1].ContainsKey(user.Name))
             {
                 SendMessage(user.Name + "'s score is 0");
                 return;
             }
-            SendMessage(user.Name + "'s score is " + Scores[State.CurrentSplitIndex - 1][user.Name]);
+            SendMessage(user.Name + "'s score is " + Scores[SplitIndex - 1][user.Name]);
         }
 
         private void Highscore(TwitchChat.User user, string argument)
         {
-            if (State.CurrentPhase == TimerPhase.NotRunning)
+            if (SplitIndex < 0)
             {
                 SendMessage("Timer is not running; no score available.");
                 return;
             }
-            if (State.CurrentSplitIndex > 0 && Scores[State.CurrentSplitIndex - 1].Count > 0)
+            if (SplitIndex > 0 && Scores[SplitIndex - 1].Count > 0)
             {
-                var orderedScores = Scores[State.CurrentSplitIndex - 1].OrderByDescending(x => x.Value);
+                var orderedScores = Scores[SplitIndex - 1].OrderByDescending(x => x.Value);
                 SendMessage(orderedScores.ToList()[0].Key + "'s score is " + orderedScores.ToList()[0].Value);
             }
             else SendMessage("No highscore yet!");
@@ -388,17 +396,19 @@ namespace LiveSplit.SplitsBet
                 State.OnSkipSplit += CopyScore;
                 State.OnReset += ResetSplitsBet;
 
+                SplitIndex = State.CurrentSplitIndex;
+
                 SendMessage("SplitsBet enabled!");
                 if (State.CurrentPhase != TimerPhase.NotRunning)
                 {
-                    for (int i = 0; i < State.CurrentSplitIndex; i++)
+                    for (int i = 0; i < SplitIndex; i++)
                     {
                         if (null == Scores[i])
                         {
                             Scores[i] = (i==0?new Dictionary<string, int>():new Dictionary<string, int>(Scores[i - 1]));
                         }
                     }
-                    for (int i = 0; i <= State.CurrentSplitIndex; i++) Bets[i] = new Dictionary<string, Tuple<TimeSpan, double>>();
+                    for (int i = 0; i <= SplitIndex; i++) Bets[i] = new Dictionary<string, Tuple<TimeSpan, double>>();
                     
                 }
             }
@@ -444,14 +454,14 @@ namespace LiveSplit.SplitsBet
                     {
                         //TODO Accuracy better than seconds, special events are meant to be short (OoT Dampe < 1 min iirc, SM64 Secret Slide between 12.5s and 13s generally...)
                         var time = TimeSpanParser.Parse(args[1]);
-                        Scores[State.CurrentSplitIndex] = Scores[State.CurrentSplitIndex] ?? (State.CurrentSplitIndex > 0 ? new Dictionary<string, int>(Scores[State.CurrentSplitIndex - 1]) : new Dictionary<string, int>());
+                        Scores[SplitIndex] = Scores[SplitIndex] ?? (SplitIndex > 0 ? new Dictionary<string, int>(Scores[SplitIndex - 1]) : new Dictionary<string, int>());
                         foreach (KeyValuePair<string, TimeSpan> entry in SpecialBets)
                         {
-                            if (Scores[State.CurrentSplitIndex].ContainsKey(entry.Key))
+                            if (Scores[SplitIndex].ContainsKey(entry.Key))
                             {
-                                Scores[State.CurrentSplitIndex][entry.Key] += (int)(time.TotalSeconds * Math.Exp(-(Math.Pow((int)time.TotalSeconds - (int)entry.Value.TotalSeconds, 2) / (int)time.TotalSeconds)));
+                                Scores[SplitIndex][entry.Key] += (int)(time.TotalSeconds * Math.Exp(-(Math.Pow((int)time.TotalSeconds - (int)entry.Value.TotalSeconds, 2) / (int)time.TotalSeconds)));
                             }
-                            else Scores[State.CurrentSplitIndex].Add(entry.Key, (int)(time.TotalSeconds * Math.Exp(-(Math.Pow((int)time.TotalSeconds - (int)entry.Value.TotalSeconds, 2) / (int)time.TotalSeconds))));
+                            else Scores[SplitIndex].Add(entry.Key, (int)(time.TotalSeconds * Math.Exp(-(Math.Pow((int)time.TotalSeconds - (int)entry.Value.TotalSeconds, 2) / (int)time.TotalSeconds))));
                         }
                         SendMessage("Scores will be shown at the next split!");
                         //TODO Special ShowScore() for special bets ?
@@ -545,6 +555,8 @@ namespace LiveSplit.SplitsBet
             invoker.DoWork += delegate
             {
                 Thread.Sleep(TimeSpan.FromSeconds(Settings.Delay));
+                SplitIndex = 0;
+                RunOffset = State.Run.Offset;
                 newSplit();
             };
             invoker.RunWorkerAsync();
@@ -556,28 +568,29 @@ namespace LiveSplit.SplitsBet
             invoker.DoWork += delegate
             {
                 Thread.Sleep(TimeSpan.FromSeconds(Settings.Delay));
+                SplitIndex++;
                 try
                 {
                     //TODO Hide the "Time for this split was..." message if the segment time is <= 0 (yes it can happen)
-                    var segment = State.CurrentTime - SegmentBeginning[State.CurrentSplitIndex - 1];
-                    if (State.CurrentSplitIndex >= State.Run.Count())
+                    var segment = State.CurrentTime - SegmentBeginning[SplitIndex - 1];
+                    if (SplitIndex >= State.Run.Count())
                     {
                         segment += new Time(new TimeSpan(0, 0, Settings.Delay), new TimeSpan(0, 0, Settings.Delay));
                     }
                     var timeFormatter = new ShortTimeFormatter();
-                    TimeSpan? segmentTimeSpan = GetTime(segment) + (State.CurrentSplitIndex == 1 ? State.Run.Offset : TimeSpan.Zero);
+                    TimeSpan? segmentTimeSpan = GetTime(segment) + (SplitIndex == 1 ? RunOffset : TimeSpan.Zero);
                     SendMessage("The time for this split was " + timeFormatter.Format(segmentTimeSpan));
-                    Scores[State.CurrentSplitIndex - 1] = Scores[State.CurrentSplitIndex - 1] ?? (State.CurrentSplitIndex > 1 ? new Dictionary<string, int>(Scores[State.CurrentSplitIndex - 2]) : new Dictionary<string, int>());
-                    foreach (KeyValuePair<string, Tuple<TimeSpan, double>> entry in Bets[State.CurrentSplitIndex - 1])
+                    Scores[SplitIndex - 1] = Scores[SplitIndex - 1] ?? (SplitIndex > 1 ? new Dictionary<string, int>(Scores[SplitIndex - 2]) : new Dictionary<string, int>());
+                    foreach (KeyValuePair<string, Tuple<TimeSpan, double>> entry in Bets[SplitIndex - 1])
                     {
-                        if (Scores[State.CurrentSplitIndex - 1].ContainsKey(entry.Key))
+                        if (Scores[SplitIndex - 1].ContainsKey(entry.Key))
                         {
-                            Scores[State.CurrentSplitIndex - 1][entry.Key] += (int)(entry.Value.Item2 * (int)segmentTimeSpan.Value.TotalSeconds * Math.Exp(-(Math.Pow((int)segmentTimeSpan.Value.TotalSeconds - (int)entry.Value.Item1.TotalSeconds, 2) / (int)segmentTimeSpan.Value.TotalSeconds)));
+                            Scores[SplitIndex - 1][entry.Key] += (int)(entry.Value.Item2 * (int)segmentTimeSpan.Value.TotalSeconds * Math.Exp(-(Math.Pow((int)segmentTimeSpan.Value.TotalSeconds - (int)entry.Value.Item1.TotalSeconds, 2) / (int)segmentTimeSpan.Value.TotalSeconds)));
                         }
-                        else Scores[State.CurrentSplitIndex - 1].Add(entry.Key, (int)(entry.Value.Item2 * (int)segmentTimeSpan.Value.TotalSeconds * Math.Exp(-(Math.Pow((int)segmentTimeSpan.Value.TotalSeconds - (int)entry.Value.Item1.TotalSeconds, 2) / (int)segmentTimeSpan.Value.TotalSeconds))));
+                        else Scores[SplitIndex - 1].Add(entry.Key, (int)(entry.Value.Item2 * (int)segmentTimeSpan.Value.TotalSeconds * Math.Exp(-(Math.Pow((int)segmentTimeSpan.Value.TotalSeconds - (int)entry.Value.Item1.TotalSeconds, 2) / (int)segmentTimeSpan.Value.TotalSeconds))));
                     }
                     ShowScore();
-                    if (State.CurrentSplitIndex < Scores.Count())
+                    if (SplitIndex < Scores.Count())
                     {
                         newSplit();
                     }
@@ -594,12 +607,13 @@ namespace LiveSplit.SplitsBet
             invoker.DoWork += delegate
             {
                 Thread.Sleep(TimeSpan.FromSeconds(Settings.Delay));
+                SplitIndex--;
                 try
                 {
-                    Scores[State.CurrentSplitIndex + 1] = null;
-                    Scores[State.CurrentSplitIndex] = null;
-                    if (State.CurrentSplitIndex > 0) Scores[State.CurrentSplitIndex] = new Dictionary<string, int>(Scores[State.CurrentSplitIndex - 1]);
-                    else Scores[State.CurrentSplitIndex] = new Dictionary<string, int>();
+                    Scores[SplitIndex + 1] = null;
+                    Scores[SplitIndex] = null;
+                    if (SplitIndex > 0) Scores[SplitIndex] = new Dictionary<string, int>(Scores[SplitIndex - 1]);
+                    else Scores[SplitIndex] = new Dictionary<string, int>();
                 }
                 catch (Exception ex)
                 {
@@ -615,12 +629,13 @@ namespace LiveSplit.SplitsBet
             invoker.DoWork += delegate
             {
                 Thread.Sleep(TimeSpan.FromSeconds(Settings.Delay));
+                SplitIndex++;
                 try
                 {
                     if (Commands.ContainsKey("bet")) Commands.Remove("bet"); //It's pointless to try to bet after a skipped split since no segment time will be set. Maybe only if you use split time instead of segment time ?
-                    if (State.CurrentSplitIndex > 1) Scores[State.CurrentSplitIndex - 1] = new Dictionary<string, int>(Scores[State.CurrentSplitIndex - 2]);
-                    else Scores[State.CurrentSplitIndex - 1] = new Dictionary<string, int>();
-                    Bets[State.CurrentSplitIndex] = new Dictionary<string, Tuple<TimeSpan, double>>();
+                    if (SplitIndex > 1) Scores[SplitIndex - 1] = new Dictionary<string, int>(Scores[SplitIndex - 2]);
+                    else Scores[SplitIndex - 1] = new Dictionary<string, int>();
+                    Bets[SplitIndex] = new Dictionary<string, Tuple<TimeSpan, double>>();
                 }
                 catch (Exception ex) { LogException(ex); }
             };
@@ -633,6 +648,7 @@ namespace LiveSplit.SplitsBet
             invoker.DoWork += delegate
             {
                 Thread.Sleep(TimeSpan.FromSeconds(Settings.Delay));
+                SplitIndex = -1;
                 try
                 {
                     Array.Clear(Bets, 0, Bets.Length);
