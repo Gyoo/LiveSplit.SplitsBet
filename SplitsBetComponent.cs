@@ -68,8 +68,24 @@ namespace LiveSplit.SplitsBet
 
             /*Adding global commands*/
             Commands.Add("betcommands", BetCommands);
-            Commands.Add("start", EnableBets);
             Commands.Add("version", Version);
+            Commands.Add("checkbet", CheckBet);
+            Commands.Add("unbet", UnBet);
+            Commands.Add("score", Score);
+            Commands.Add("highscore", Highscore);
+            Commands.Add("specialbet", SpecialBet);
+            Commands.Add("stop", DisableBets);
+
+            /*Setting Livesplit events*/
+            State.OnStart += StartBets;
+            State.OnSplit += CalculateScore;
+            State.OnUndoSplit += RollbackScore;
+            State.OnSkipSplit += CopyScore;
+            State.OnReset += ResetSplitsBet;
+
+            SplitIndex = State.CurrentSplitIndex;
+
+            SendMessage("SplitsBet enabled!");
 
             /*Bot is ready !*/
             Start();
