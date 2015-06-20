@@ -76,7 +76,7 @@ namespace LiveSplit.SplitsBet
             settingsNode.AppendChild(ToElement(document, "Version", SplitsBetFactory.VersionString));
 
             settingsNode.AppendChild(ToElement(document, "UnBet", CanUnBet));
-            settingsNode.AppendChild(ToElement(document, "UnbetPenalty", UnBetPenalty));
+            settingsNode.AppendChild(ToElement(document, "UnBetPenalty", UnBetPenalty));
             settingsNode.AppendChild(ToElement(document, "MinimumTime", MinimumTime));
             settingsNode.AppendChild(ToElement(document, "NbScores", NbScores));
             settingsNode.AppendChild(ToElement(document, "UseGlobalTime", UseGlobalTime));
@@ -92,7 +92,7 @@ namespace LiveSplit.SplitsBet
         {
             if(settings["UnBet"] != null) CanUnBet = bool.Parse(settings["UnBet"].InnerText);
             else CanUnBet = true;
-            if(settings["UnbetPenalty"] != null) UnBetPenalty = int.Parse(settings["UnbetPenalty"].InnerText);
+            if(settings["UnBetPenalty"] != null) UnBetPenalty = int.Parse(settings["UnBetPenalty"].InnerText);
             else UnBetPenalty = 50;
             if(settings["MinimumTime"] != null) MinimumTime = TimeSpanParser.Parse(settings["MinimumTime"].InnerText);
             else MinimumTime = new TimeSpan(0, 0, 1);
