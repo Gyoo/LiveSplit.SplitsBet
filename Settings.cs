@@ -29,6 +29,7 @@ namespace LiveSplit.SplitsBet
         public bool SingleLineScores { get; set; }
         public string TimeToShow { get; set; }
         public int Delay { get; set; }
+        public bool ParentSubSplits { get; set; }
 
         private ITimeFormatter Formatter { get; set; }
 
@@ -45,6 +46,7 @@ namespace LiveSplit.SplitsBet
             SingleLineScores = false;
             TimeToShow = "Best Segments";
             Delay = 0;
+            ParentSubSplits = false;
 
             Formatter = new RegularTimeFormatter();
 
@@ -57,6 +59,7 @@ namespace LiveSplit.SplitsBet
             chkSingleLineScores.DataBindings.Add("Checked", this, "SingleLineScores", false, DataSourceUpdateMode.OnPropertyChanged);
             cmbTimeToShow.DataBindings.Add("SelectedItem", this, "TimeToShow", false, DataSourceUpdateMode.OnPropertyChanged);
             txtDelay.DataBindings.Add("Text", this, "Delay", false, DataSourceUpdateMode.OnPropertyChanged);
+            chkSubsplits.DataBindings.Add("Checked", this, "ParentSubSplits", false, DataSourceUpdateMode.OnPropertyChanged);
 
             this.Load += Settings_Load;
         }
@@ -68,6 +71,13 @@ namespace LiveSplit.SplitsBet
             cmbTimeToShow.Items.AddRange(LivesplitState.Run.Comparisons.Where(x => x != BestSplitTimesComparisonGenerator.ComparisonName).ToArray());
             if (!cmbTimeToShow.Items.Contains(TimeToShow))
                 cmbTimeToShow.Items.Add(TimeToShow);
+            if (LivesplitState.Layout.Components.Any(x => x.ComponentName == "Subsplits"))
+                chkSubsplits.Enabled = true;
+            else
+            {
+                chkSubsplits.Enabled = false;
+                ParentSubSplits = false;
+            }
         }
 
         public System.Xml.XmlNode GetSettings(System.Xml.XmlDocument document)
@@ -85,6 +95,7 @@ namespace LiveSplit.SplitsBet
             settingsNode.AppendChild(ToElement(document, "SingleLineScores", SingleLineScores));
             settingsNode.AppendChild(ToElement(document, "TimeToShow", TimeToShow));
             settingsNode.AppendChild(ToElement(document, "Delay", Delay));
+            settingsNode.AppendChild(ToElement(document, "ParentSubSplits", ParentSubSplits));
             return settingsNode;
         }
 
@@ -110,6 +121,8 @@ namespace LiveSplit.SplitsBet
             else TimeToShow = "Best Segments";
             if (settings["Delay"] != null) Delay = int.Parse(settings["Delay"].InnerText);
             else Delay = 0;
+            if (settings["ParentSubSplits"] != null) ParentSubSplits = bool.Parse(settings["ParentSubSplits"].InnerText);
+            else ParentSubSplits = false;
         }
 
         private TimingMethod? ParseTimingMethod(String method)
