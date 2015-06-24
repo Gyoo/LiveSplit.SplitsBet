@@ -243,6 +243,12 @@ namespace LiveSplit.SplitsBet
             SendMessage("An error occured - please look into the system event log for details.");
         }
 
+        private int getScore(KeyValuePair<string, Tuple<TimeSpan, double>> entry, TimeSpan? segmentTimeSpan)
+        {
+            double percentage = ((int)segmentTimeSpan.Value.TotalSeconds - (int)entry.Value.Item1.TotalSeconds) / (int)segmentTimeSpan.Value.TotalSeconds;
+            return (int)(entry.Value.Item2 * (int)segmentTimeSpan.Value.TotalSeconds * Math.Exp(-(Math.Pow(percentage, 2) / 100)));
+        }
+
         #endregion
 
         #region Commands
@@ -643,9 +649,9 @@ namespace LiveSplit.SplitsBet
                     {
                         if (Scores[BetIndex].ContainsKey(entry.Key))
                         {
-                            Scores[BetIndex][entry.Key] += (int)(entry.Value.Item2 * (int)segmentTimeSpan.Value.TotalSeconds * Math.Exp(-(Math.Pow((int)segmentTimeSpan.Value.TotalSeconds - (int)entry.Value.Item1.TotalSeconds, 2) / (int)segmentTimeSpan.Value.TotalSeconds)));
+                            Scores[BetIndex][entry.Key] += getScore(entry,segmentTimeSpan);
                         }
-                        else Scores[BetIndex].Add(entry.Key, (int)(entry.Value.Item2 * (int)segmentTimeSpan.Value.TotalSeconds * Math.Exp(-(Math.Pow((int)segmentTimeSpan.Value.TotalSeconds - (int)entry.Value.Item1.TotalSeconds, 2) / (int)segmentTimeSpan.Value.TotalSeconds))));
+                        else Scores[BetIndex].Add(entry.Key, getScore(entry, segmentTimeSpan));
                     }
                     ShowScore();
                     if (BetIndex < Scores.Count())
