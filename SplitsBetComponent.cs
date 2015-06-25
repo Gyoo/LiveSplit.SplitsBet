@@ -29,7 +29,6 @@ namespace LiveSplit.SplitsBet
         protected LiveSplitState State { get; set; }
         protected int SplitIndex { get; set; }
         protected int BetIndex { get; set; }
-        protected TimeSpan RunOffset { get; set; }
 
         //Commands : where the commands starting with an excalamation mark are stored. Key is the command, Value is the related method
         public Dictionary<String, Action<TwitchChat.User, string>> Commands { get; set; }
@@ -287,7 +286,7 @@ namespace LiveSplit.SplitsBet
             var timeFormatted = new ShortTimeFormatter().Format(GetTime(State.Run[SplitIndex].BestSegmentTime));
             //If no glod is set, percentage is kept to 0. There's no way to set a limit so better not fix an arbitrary one.
             if (TimeSpanParser.Parse(timeFormatted) > TimeSpan.Zero)
-                percentage = (GetTime(State.CurrentTime - SegmentBeginning[SplitIndex]) + (SplitIndex == 0 ? RunOffset : TimeSpan.Zero)).Value.TotalSeconds / GetTime(State.Run[SplitIndex].BestSegmentTime).Value.TotalSeconds;
+                percentage = (GetTime(State.CurrentTime - SegmentBeginning[SplitIndex])).Value.TotalSeconds / GetTime(State.Run[SplitIndex].BestSegmentTime).Value.TotalSeconds;
             else
                 percentage = 0;
 
@@ -618,9 +617,8 @@ namespace LiveSplit.SplitsBet
             BackgroundWorker invoker = new BackgroundWorker();
             invoker.DoWork += delegate
             {
-                Thread.Sleep(TimeSpan.FromSeconds(Settings.Delay));
+                Thread.Sleep(TimeSpan.FromSeconds(Settings.Delay) - State.Run.Offset); //Offset is mostly negative
                 SplitIndex = 0;
-                RunOffset = State.Run.Offset;
                 newSplit();
             };
             invoker.RunWorkerAsync();
@@ -642,7 +640,7 @@ namespace LiveSplit.SplitsBet
                         segment += new Time(new TimeSpan(0, 0, Settings.Delay), new TimeSpan(0, 0, Settings.Delay));
                     }
                     var timeFormatter = new ShortTimeFormatter();
-                    TimeSpan? segmentTimeSpan = GetTime(segment) + (BetIndex == 0 ? RunOffset : TimeSpan.Zero);
+                    TimeSpan? segmentTimeSpan = GetTime(segment);
                     SendMessage("The time for this split was " + timeFormatter.Format(segmentTimeSpan));
                     Scores[BetIndex] = Scores[BetIndex] ?? (BetIndex > 0 ? new Dictionary<string, int>(Scores[BetIndex-1]) : new Dictionary<string, int>());
                     foreach (KeyValuePair<string, Tuple<TimeSpan, double>> entry in Bets[BetIndex])
