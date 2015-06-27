@@ -14,7 +14,7 @@ namespace LiveSplit.SplitsBet
     {
         public readonly static string VersionString = "0.5";
         #if DEBUG
-        public readonly static string VersionPostfix = "-debug";
+        public readonly static string VersionPostfix = "-dev";
         #else
         public readonly static string VersionPostfix = "";
         #endif

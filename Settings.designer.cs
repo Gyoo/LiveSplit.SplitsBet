@@ -28,6 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.tabs = new System.Windows.Forms.TabControl();
+            this.tab1 = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.txtMinBetTime = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
@@ -48,14 +50,83 @@
             this.label6 = new System.Windows.Forms.Label();
             this.txtDelay = new System.Windows.Forms.TextBox();
             this.chkSubsplits = new System.Windows.Forms.CheckBox();
+            this.tab2 = new System.Windows.Forms.TabPage();
+            this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel7 = new System.Windows.Forms.TableLayoutPanel();
+            this.txtMsgCheckTimerEnd = new System.Windows.Forms.TextBox();
+            this.label18 = new System.Windows.Forms.Label();
+            this.groupBoxUnbet = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel6 = new System.Windows.Forms.TableLayoutPanel();
+            this.txtMsgUnbetTimerEnd = new System.Windows.Forms.TextBox();
+            this.txtMsgNoUnbet = new System.Windows.Forms.TextBox();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label16 = new System.Windows.Forms.Label();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
+            this.txtMsgNoHighscore = new System.Windows.Forms.TextBox();
+            this.txtMsgNoScore = new System.Windows.Forms.TextBox();
+            this.label14 = new System.Windows.Forms.Label();
+            this.label15 = new System.Windows.Forms.Label();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
+            this.txtMsgTimerEnded = new System.Windows.Forms.TextBox();
+            this.txtMsgTimerPaused = new System.Windows.Forms.TextBox();
+            this.txtMsgTimerNotRunning = new System.Windows.Forms.TextBox();
+            this.label12 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
+            this.txtMsgReset = new System.Windows.Forms.TextBox();
+            this.txtMsgDisable = new System.Windows.Forms.TextBox();
+            this.txtMsgEnable = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.label17 = new System.Windows.Forms.Label();
+            this.txtMsgTooLateToBet = new System.Windows.Forms.TextBox();
+            this.tabs.SuspendLayout();
+            this.tab1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numScores)).BeginInit();
+            this.tab2.SuspendLayout();
+            this.groupBox6.SuspendLayout();
+            this.tableLayoutPanel7.SuspendLayout();
+            this.groupBoxUnbet.SuspendLayout();
+            this.tableLayoutPanel6.SuspendLayout();
+            this.groupBox4.SuspendLayout();
+            this.tableLayoutPanel3.SuspendLayout();
+            this.groupBox3.SuspendLayout();
+            this.tableLayoutPanel5.SuspendLayout();
+            this.groupBox2.SuspendLayout();
+            this.tableLayoutPanel4.SuspendLayout();
             this.SuspendLayout();
+            // 
+            // tabs
+            // 
+            this.tabs.Controls.Add(this.tab1);
+            this.tabs.Controls.Add(this.tab2);
+            this.tabs.Location = new System.Drawing.Point(0, 0);
+            this.tabs.Name = "tabs";
+            this.tabs.Padding = new System.Drawing.Point(0, 0);
+            this.tabs.SelectedIndex = 0;
+            this.tabs.Size = new System.Drawing.Size(476, 489);
+            this.tabs.TabIndex = 0;
+            // 
+            // tab1
+            // 
+            this.tab1.Controls.Add(this.tableLayoutPanel1);
+            this.tab1.Location = new System.Drawing.Point(4, 22);
+            this.tab1.Name = "tab1";
+            this.tab1.Size = new System.Drawing.Size(468, 463);
+            this.tab1.TabIndex = 0;
+            this.tab1.Text = "Settings";
             // 
             // tableLayoutPanel1
             // 
+            this.tableLayoutPanel1.AutoScroll = true;
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 199F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
@@ -75,9 +146,9 @@
             this.tableLayoutPanel1.Controls.Add(this.txtDelay, 1, 8);
             this.tableLayoutPanel1.Controls.Add(this.chkSubsplits, 0, 9);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(7, 7);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 10;
+            this.tableLayoutPanel1.RowCount = 11;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 29F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 29F));
@@ -88,8 +159,10 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 29F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 29F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 29F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(462, 340);
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(468, 463);
             this.tableLayoutPanel1.TabIndex = 0;
+            this.tableLayoutPanel1.Paint += new System.Windows.Forms.PaintEventHandler(this.tableLayoutPanel1_Paint);
             // 
             // txtMinBetTime
             // 
@@ -238,7 +311,7 @@
             this.chkAllowMods.Location = new System.Drawing.Point(7, 201);
             this.chkAllowMods.Margin = new System.Windows.Forms.Padding(7, 3, 3, 3);
             this.chkAllowMods.Name = "chkAllowMods";
-            this.chkAllowMods.Size = new System.Drawing.Size(452, 17);
+            this.chkAllowMods.Size = new System.Drawing.Size(458, 17);
             this.chkAllowMods.TabIndex = 5;
             this.chkAllowMods.Text = "Allow Mods to Start and Stop SplitsBet";
             this.chkAllowMods.UseVisualStyleBackColor = true;
@@ -251,7 +324,7 @@
             this.chkGlobalTime.Location = new System.Drawing.Point(7, 172);
             this.chkGlobalTime.Margin = new System.Windows.Forms.Padding(7, 3, 3, 3);
             this.chkGlobalTime.Name = "chkGlobalTime";
-            this.chkGlobalTime.Size = new System.Drawing.Size(452, 17);
+            this.chkGlobalTime.Size = new System.Drawing.Size(458, 17);
             this.chkGlobalTime.TabIndex = 4;
             this.chkGlobalTime.Text = "Use Global Time Instead of Segment Time";
             this.chkGlobalTime.UseVisualStyleBackColor = true;
@@ -264,7 +337,7 @@
             this.chkSingleLineScores.Location = new System.Drawing.Point(7, 143);
             this.chkSingleLineScores.Margin = new System.Windows.Forms.Padding(7, 3, 3, 3);
             this.chkSingleLineScores.Name = "chkSingleLineScores";
-            this.chkSingleLineScores.Size = new System.Drawing.Size(452, 17);
+            this.chkSingleLineScores.Size = new System.Drawing.Size(458, 17);
             this.chkSingleLineScores.TabIndex = 3;
             this.chkSingleLineScores.Text = "Scores Show on a Single Message Instead of Multiple Lines";
             this.chkSingleLineScores.UseVisualStyleBackColor = true;
@@ -322,26 +395,430 @@
             this.chkSubsplits.Text = "(Subsplits) Track only parent segments";
             this.chkSubsplits.UseVisualStyleBackColor = true;
             // 
+            // tab2
+            // 
+            this.tab2.AutoScroll = true;
+            this.tab2.Controls.Add(this.groupBox6);
+            this.tab2.Controls.Add(this.groupBoxUnbet);
+            this.tab2.Controls.Add(this.groupBox4);
+            this.tab2.Controls.Add(this.groupBox3);
+            this.tab2.Controls.Add(this.groupBox2);
+            this.tab2.Location = new System.Drawing.Point(4, 22);
+            this.tab2.Name = "tab2";
+            this.tab2.Size = new System.Drawing.Size(468, 463);
+            this.tab2.TabIndex = 1;
+            this.tab2.Text = "Bot Messages";
+            // 
+            // groupBox6
+            // 
+            this.groupBox6.Controls.Add(this.tableLayoutPanel7);
+            this.groupBox6.Location = new System.Drawing.Point(3, 393);
+            this.groupBox6.Name = "groupBox6";
+            this.groupBox6.Size = new System.Drawing.Size(456, 45);
+            this.groupBox6.TabIndex = 8;
+            this.groupBox6.TabStop = false;
+            this.groupBox6.Text = "Checking Bets";
+            // 
+            // tableLayoutPanel7
+            // 
+            this.tableLayoutPanel7.ColumnCount = 2;
+            this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 42.88889F));
+            this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 57.11111F));
+            this.tableLayoutPanel7.Controls.Add(this.txtMsgCheckTimerEnd, 1, 0);
+            this.tableLayoutPanel7.Controls.Add(this.label18, 0, 0);
+            this.tableLayoutPanel7.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel7.Location = new System.Drawing.Point(3, 16);
+            this.tableLayoutPanel7.Name = "tableLayoutPanel7";
+            this.tableLayoutPanel7.RowCount = 3;
+            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel7.Size = new System.Drawing.Size(450, 26);
+            this.tableLayoutPanel7.TabIndex = 4;
+            // 
+            // txtMsgCheckTimerEnd
+            // 
+            this.txtMsgCheckTimerEnd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtMsgCheckTimerEnd.Location = new System.Drawing.Point(196, 3);
+            this.txtMsgCheckTimerEnd.Name = "txtMsgCheckTimerEnd";
+            this.txtMsgCheckTimerEnd.Size = new System.Drawing.Size(251, 20);
+            this.txtMsgCheckTimerEnd.TabIndex = 4;
+            // 
+            // label18
+            // 
+            this.label18.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(3, 6);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(66, 13);
+            this.label18.TabIndex = 11;
+            this.label18.Text = "Timer ended";
+            // 
+            // groupBoxUnbet
+            // 
+            this.groupBoxUnbet.Controls.Add(this.tableLayoutPanel6);
+            this.groupBoxUnbet.Location = new System.Drawing.Point(3, 315);
+            this.groupBoxUnbet.Name = "groupBoxUnbet";
+            this.groupBoxUnbet.Size = new System.Drawing.Size(456, 72);
+            this.groupBoxUnbet.TabIndex = 7;
+            this.groupBoxUnbet.TabStop = false;
+            this.groupBoxUnbet.Text = "Canceling Bets";
+            // 
+            // tableLayoutPanel6
+            // 
+            this.tableLayoutPanel6.ColumnCount = 2;
+            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 42.88889F));
+            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 57.11111F));
+            this.tableLayoutPanel6.Controls.Add(this.txtMsgUnbetTimerEnd, 1, 1);
+            this.tableLayoutPanel6.Controls.Add(this.txtMsgNoUnbet, 1, 0);
+            this.tableLayoutPanel6.Controls.Add(this.label13, 0, 1);
+            this.tableLayoutPanel6.Controls.Add(this.label16, 0, 0);
+            this.tableLayoutPanel6.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel6.Location = new System.Drawing.Point(3, 16);
+            this.tableLayoutPanel6.Name = "tableLayoutPanel6";
+            this.tableLayoutPanel6.RowCount = 3;
+            this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel6.Size = new System.Drawing.Size(450, 53);
+            this.tableLayoutPanel6.TabIndex = 4;
+            // 
+            // txtMsgUnbetTimerEnd
+            // 
+            this.txtMsgUnbetTimerEnd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtMsgUnbetTimerEnd.Location = new System.Drawing.Point(196, 29);
+            this.txtMsgUnbetTimerEnd.Name = "txtMsgUnbetTimerEnd";
+            this.txtMsgUnbetTimerEnd.Size = new System.Drawing.Size(251, 20);
+            this.txtMsgUnbetTimerEnd.TabIndex = 5;
+            // 
+            // txtMsgNoUnbet
+            // 
+            this.txtMsgNoUnbet.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtMsgNoUnbet.Location = new System.Drawing.Point(196, 3);
+            this.txtMsgNoUnbet.Name = "txtMsgNoUnbet";
+            this.txtMsgNoUnbet.Size = new System.Drawing.Size(251, 20);
+            this.txtMsgNoUnbet.TabIndex = 4;
+            // 
+            // label13
+            // 
+            this.label13.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(3, 32);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(66, 13);
+            this.label13.TabIndex = 12;
+            this.label13.Text = "Timer ended";
+            // 
+            // label16
+            // 
+            this.label16.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(3, 6);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(93, 13);
+            this.label16.TabIndex = 11;
+            this.label16.Text = "Unbet unavailable";
+            // 
+            // groupBox4
+            // 
+            this.groupBox4.Controls.Add(this.tableLayoutPanel3);
+            this.groupBox4.Location = new System.Drawing.Point(3, 237);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(456, 72);
+            this.groupBox4.TabIndex = 6;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "Scores";
+            // 
+            // tableLayoutPanel3
+            // 
+            this.tableLayoutPanel3.ColumnCount = 2;
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 42.88889F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 57.11111F));
+            this.tableLayoutPanel3.Controls.Add(this.txtMsgNoHighscore, 1, 1);
+            this.tableLayoutPanel3.Controls.Add(this.txtMsgNoScore, 1, 0);
+            this.tableLayoutPanel3.Controls.Add(this.label14, 0, 1);
+            this.tableLayoutPanel3.Controls.Add(this.label15, 0, 0);
+            this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel3.Location = new System.Drawing.Point(3, 16);
+            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
+            this.tableLayoutPanel3.RowCount = 3;
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(450, 53);
+            this.tableLayoutPanel3.TabIndex = 4;
+            // 
+            // txtMsgNoHighscore
+            // 
+            this.txtMsgNoHighscore.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtMsgNoHighscore.Location = new System.Drawing.Point(196, 29);
+            this.txtMsgNoHighscore.Name = "txtMsgNoHighscore";
+            this.txtMsgNoHighscore.Size = new System.Drawing.Size(251, 20);
+            this.txtMsgNoHighscore.TabIndex = 5;
+            // 
+            // txtMsgNoScore
+            // 
+            this.txtMsgNoScore.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtMsgNoScore.Location = new System.Drawing.Point(196, 3);
+            this.txtMsgNoScore.Name = "txtMsgNoScore";
+            this.txtMsgNoScore.Size = new System.Drawing.Size(251, 20);
+            this.txtMsgNoScore.TabIndex = 4;
+            // 
+            // label14
+            // 
+            this.label14.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(3, 32);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(117, 13);
+            this.label14.TabIndex = 12;
+            this.label14.Text = "No Highscore available";
+            // 
+            // label15
+            // 
+            this.label15.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(3, 6);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(95, 13);
+            this.label15.TabIndex = 11;
+            this.label15.Text = "No score available";
+            // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.tableLayoutPanel5);
+            this.groupBox3.Location = new System.Drawing.Point(3, 108);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(456, 123);
+            this.groupBox3.TabIndex = 5;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "Bets";
+            // 
+            // tableLayoutPanel5
+            // 
+            this.tableLayoutPanel5.ColumnCount = 2;
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 42.88889F));
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 57.11111F));
+            this.tableLayoutPanel5.Controls.Add(this.label17, 0, 3);
+            this.tableLayoutPanel5.Controls.Add(this.txtMsgTimerEnded, 1, 2);
+            this.tableLayoutPanel5.Controls.Add(this.txtMsgTimerPaused, 1, 1);
+            this.tableLayoutPanel5.Controls.Add(this.txtMsgTimerNotRunning, 1, 0);
+            this.tableLayoutPanel5.Controls.Add(this.label12, 0, 2);
+            this.tableLayoutPanel5.Controls.Add(this.label11, 0, 1);
+            this.tableLayoutPanel5.Controls.Add(this.label10, 0, 0);
+            this.tableLayoutPanel5.Controls.Add(this.txtMsgTooLateToBet, 1, 3);
+            this.tableLayoutPanel5.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel5.Location = new System.Drawing.Point(3, 16);
+            this.tableLayoutPanel5.Name = "tableLayoutPanel5";
+            this.tableLayoutPanel5.RowCount = 4;
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel5.Size = new System.Drawing.Size(450, 104);
+            this.tableLayoutPanel5.TabIndex = 4;
+            // 
+            // txtMsgTimerEnded
+            // 
+            this.txtMsgTimerEnded.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtMsgTimerEnded.Location = new System.Drawing.Point(196, 55);
+            this.txtMsgTimerEnded.Name = "txtMsgTimerEnded";
+            this.txtMsgTimerEnded.Size = new System.Drawing.Size(251, 20);
+            this.txtMsgTimerEnded.TabIndex = 6;
+            // 
+            // txtMsgTimerPaused
+            // 
+            this.txtMsgTimerPaused.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtMsgTimerPaused.Location = new System.Drawing.Point(196, 29);
+            this.txtMsgTimerPaused.Name = "txtMsgTimerPaused";
+            this.txtMsgTimerPaused.Size = new System.Drawing.Size(251, 20);
+            this.txtMsgTimerPaused.TabIndex = 5;
+            // 
+            // txtMsgTimerNotRunning
+            // 
+            this.txtMsgTimerNotRunning.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtMsgTimerNotRunning.Location = new System.Drawing.Point(196, 3);
+            this.txtMsgTimerNotRunning.Name = "txtMsgTimerNotRunning";
+            this.txtMsgTimerNotRunning.Size = new System.Drawing.Size(251, 20);
+            this.txtMsgTimerNotRunning.TabIndex = 4;
+            // 
+            // label12
+            // 
+            this.label12.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(3, 58);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(66, 13);
+            this.label12.TabIndex = 13;
+            this.label12.Text = "Timer ended";
+            // 
+            // label11
+            // 
+            this.label11.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(3, 32);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(71, 13);
+            this.label11.TabIndex = 12;
+            this.label11.Text = "Timer paused";
+            // 
+            // label10
+            // 
+            this.label10.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(3, 6);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(89, 13);
+            this.label10.TabIndex = 11;
+            this.label10.Text = "Timer not running";
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.tableLayoutPanel4);
+            this.groupBox2.Location = new System.Drawing.Point(3, 3);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(456, 99);
+            this.groupBox2.TabIndex = 1;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "General";
+            this.groupBox2.Enter += new System.EventHandler(this.groupBox2_Enter);
+            // 
+            // tableLayoutPanel4
+            // 
+            this.tableLayoutPanel4.ColumnCount = 2;
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 42.88889F));
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 57.11111F));
+            this.tableLayoutPanel4.Controls.Add(this.txtMsgReset, 1, 2);
+            this.tableLayoutPanel4.Controls.Add(this.txtMsgDisable, 1, 1);
+            this.tableLayoutPanel4.Controls.Add(this.txtMsgEnable, 1, 0);
+            this.tableLayoutPanel4.Controls.Add(this.label7, 0, 0);
+            this.tableLayoutPanel4.Controls.Add(this.label8, 0, 1);
+            this.tableLayoutPanel4.Controls.Add(this.label9, 0, 2);
+            this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel4.Location = new System.Drawing.Point(3, 16);
+            this.tableLayoutPanel4.Name = "tableLayoutPanel4";
+            this.tableLayoutPanel4.RowCount = 3;
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel4.Size = new System.Drawing.Size(450, 80);
+            this.tableLayoutPanel4.TabIndex = 4;
+            // 
+            // txtMsgReset
+            // 
+            this.txtMsgReset.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.txtMsgReset.Location = new System.Drawing.Point(196, 56);
+            this.txtMsgReset.Name = "txtMsgReset";
+            this.txtMsgReset.Size = new System.Drawing.Size(251, 20);
+            this.txtMsgReset.TabIndex = 3;
+            // 
+            // txtMsgDisable
+            // 
+            this.txtMsgDisable.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtMsgDisable.Location = new System.Drawing.Point(196, 29);
+            this.txtMsgDisable.Name = "txtMsgDisable";
+            this.txtMsgDisable.Size = new System.Drawing.Size(251, 20);
+            this.txtMsgDisable.TabIndex = 2;
+            // 
+            // txtMsgEnable
+            // 
+            this.txtMsgEnable.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtMsgEnable.Location = new System.Drawing.Point(196, 3);
+            this.txtMsgEnable.Name = "txtMsgEnable";
+            this.txtMsgEnable.Size = new System.Drawing.Size(251, 20);
+            this.txtMsgEnable.TabIndex = 1;
+            // 
+            // label7
+            // 
+            this.label7.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(3, 6);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(92, 13);
+            this.label7.TabIndex = 0;
+            this.label7.Text = "Enabling SplitsBet";
+            // 
+            // label8
+            // 
+            this.label8.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(3, 32);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(94, 13);
+            this.label8.TabIndex = 9;
+            this.label8.Text = "Disabling SplitsBet";
+            this.label8.Click += new System.EventHandler(this.label8_Click);
+            // 
+            // label9
+            // 
+            this.label9.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(3, 59);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(70, 13);
+            this.label9.TabIndex = 10;
+            this.label9.Text = "Resetting run";
+            // 
+            // label17
+            // 
+            this.label17.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(3, 84);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(76, 13);
+            this.label17.TabIndex = 14;
+            this.label17.Text = "Too late to bet";
+            // 
+            // txtMsgTooLateToBet
+            // 
+            this.txtMsgTooLateToBet.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtMsgTooLateToBet.Location = new System.Drawing.Point(196, 81);
+            this.txtMsgTooLateToBet.Name = "txtMsgTooLateToBet";
+            this.txtMsgTooLateToBet.Size = new System.Drawing.Size(251, 20);
+            this.txtMsgTooLateToBet.TabIndex = 15;
+            // 
             // Settings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.tableLayoutPanel1);
+            this.AutoScroll = true;
+            this.Controls.Add(this.tabs);
             this.Name = "Settings";
             this.Padding = new System.Windows.Forms.Padding(7);
-            this.Size = new System.Drawing.Size(476, 354);
+            this.Size = new System.Drawing.Size(476, 489);
+            this.tabs.ResumeLayout(false);
+            this.tab1.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
             this.tableLayoutPanel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numScores)).EndInit();
+            this.tab2.ResumeLayout(false);
+            this.groupBox6.ResumeLayout(false);
+            this.tableLayoutPanel7.ResumeLayout(false);
+            this.tableLayoutPanel7.PerformLayout();
+            this.groupBoxUnbet.ResumeLayout(false);
+            this.tableLayoutPanel6.ResumeLayout(false);
+            this.tableLayoutPanel6.PerformLayout();
+            this.groupBox4.ResumeLayout(false);
+            this.tableLayoutPanel3.ResumeLayout(false);
+            this.tableLayoutPanel3.PerformLayout();
+            this.groupBox3.ResumeLayout(false);
+            this.tableLayoutPanel5.ResumeLayout(false);
+            this.tableLayoutPanel5.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
+            this.tableLayoutPanel4.ResumeLayout(false);
+            this.tableLayoutPanel4.PerformLayout();
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
+        private System.Windows.Forms.TabControl tabs;
+        private System.Windows.Forms.TabPage tab1;
+        private System.Windows.Forms.TabPage tab2;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.CheckBox chkCancelBets;
         private System.Windows.Forms.TextBox txtCancelingPenalty;
@@ -362,5 +839,39 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TextBox txtDelay;
         private System.Windows.Forms.CheckBox chkSubsplits;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.TextBox txtMsgEnable;
+        private System.Windows.Forms.TextBox txtMsgDisable;
+        private System.Windows.Forms.TextBox txtMsgReset;
+        private System.Windows.Forms.TextBox txtMsgTimerNotRunning;
+        private System.Windows.Forms.TextBox txtMsgTimerPaused;
+        private System.Windows.Forms.TextBox txtMsgTimerEnded;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
+        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
+        private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
+        private System.Windows.Forms.TextBox txtMsgNoHighscore;
+        private System.Windows.Forms.TextBox txtMsgNoScore;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.GroupBox groupBoxUnbet;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel6;
+        private System.Windows.Forms.TextBox txtMsgUnbetTimerEnd;
+        private System.Windows.Forms.TextBox txtMsgNoUnbet;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.GroupBox groupBox6;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel7;
+        private System.Windows.Forms.TextBox txtMsgCheckTimerEnd;
+        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.TextBox txtMsgTooLateToBet;
     }
 }

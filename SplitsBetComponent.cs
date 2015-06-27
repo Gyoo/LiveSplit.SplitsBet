@@ -87,7 +87,7 @@ namespace LiveSplit.SplitsBet
 
             /*Bot is ready !*/
             Start();
-            SendMessage("SplitsBet enabled!");
+            SendMessage(Settings.msgEnable);
         }
 
         #endregion
@@ -261,24 +261,24 @@ namespace LiveSplit.SplitsBet
             //Check the state of the timer. It must be running to set a bet
             if (SplitIndex < 0)
             {
-                SendMessage("Timer is not running; bets are closed.");
+                SendMessage(Settings.msgTimerNotRunning);
                 return;
             }
             if (State.CurrentPhase == TimerPhase.Paused)
             {
-                SendMessage("Timer is paused; bets are paused too.");
+                SendMessage(Settings.msgTimerPaused);
                 return;
             }
             if (SplitIndex >= State.Run.Count)
             {
-                SendMessage("Run is over; there is nothing to bet!");
+                SendMessage(Settings.msgTimerEnded);
                 return;
             }
 
             //You can't bet again if you have already bet once, unless you type !unbet, which erases your bet (and some of your points)
             if (Bets[SplitIndex].ContainsKey(user.Name))
             {
-                SendMessage(user.Name + ": You already bet, silly!");
+                SendMessage(user.Name + ": You already bet!");
                 return;
             }
 
@@ -293,7 +293,7 @@ namespace LiveSplit.SplitsBet
             //Forbids the bets if the time of the segment reaches over 75% of the best segment
             if (percentage > 0.75)
             {
-                SendMessage("Too late to bet for this split; wait for the next one!");
+                SendMessage(Settings.msgTooLateToBet);
                 return;
             }
 
@@ -329,12 +329,12 @@ namespace LiveSplit.SplitsBet
         {
             if (SplitIndex < 0)
             {
-                SendMessage("Timer is not running; bets are closed.");
+                SendMessage(Settings.msgTimerNotRunning);
                 return;
             }
             if (SplitIndex >= State.Run.Count)
             {
-                SendMessage("The run has ended; nothing to check!");
+                SendMessage(Settings.msgCheckTimerEnd);
                 return;
             }
 
@@ -355,18 +355,18 @@ namespace LiveSplit.SplitsBet
         {
             if (!Settings.CanUnBet)
             {
-                SendMessage("You can't unbet :(");
+                SendMessage(Settings.msgNoUnbet);
                 return;
             }
 
             if (SplitIndex < 0)
             {
-                SendMessage("Timer is not running; bets are closed.");
+                SendMessage(Settings.msgTimerNotRunning);
                 return;
             }
             if (SplitIndex >= State.Run.Count)
             {
-                SendMessage("The run has ended, nothing to unbet!");
+                SendMessage(Settings.msgUnbetTimerEnd);
                 return;
             }
 
@@ -407,7 +407,7 @@ namespace LiveSplit.SplitsBet
         {
             if (SplitIndex < 0)
             {
-                SendMessage("Timer is not running; no score available.");
+                SendMessage(Settings.msgNoScore);
                 return;
             }
             if (SplitIndex == 0 || !Scores[SplitIndex - 1].ContainsKey(user.Name))
@@ -422,7 +422,7 @@ namespace LiveSplit.SplitsBet
         {
             if (SplitIndex < 0)
             {
-                SendMessage("Timer is not running; no score available.");
+                SendMessage(Settings.msgNoScore);
                 return;
             }
             if (SplitIndex > 0 && Scores[SplitIndex - 1].Count > 0)
@@ -430,7 +430,7 @@ namespace LiveSplit.SplitsBet
                 var orderedScores = Scores[SplitIndex - 1].OrderByDescending(x => x.Value);
                 SendMessage(orderedScores.ToList()[0].Key + "'s score is " + orderedScores.ToList()[0].Value);
             }
-            else SendMessage("No highscore yet!");
+            else SendMessage(Settings.msgNoHighscore);
         }
 
         private void EnableBets(TwitchChat.User user, string argument)
@@ -456,7 +456,7 @@ namespace LiveSplit.SplitsBet
 
                 SplitIndex = State.CurrentSplitIndex;
 
-                SendMessage("SplitsBet enabled!");
+                SendMessage(Settings.msgEnable);
                 if (State.CurrentPhase != TimerPhase.NotRunning)
                 {
                     for (int i = 0; i < SplitIndex; i++)
@@ -494,7 +494,7 @@ namespace LiveSplit.SplitsBet
                 State.OnUndoSplit -= RollbackScore;
                 State.OnSkipSplit -= CopyScore;
                 State.OnReset -= ResetSplitsBet;
-                SendMessage("SplitsBet disabled!");
+                SendMessage(Settings.msgDisable);
             }
             else SendMessage("You're not allowed to stop the bets!");
         }
@@ -541,13 +541,13 @@ namespace LiveSplit.SplitsBet
             switch (State.CurrentPhase)
             {
                 case TimerPhase.NotRunning:
-                    SendMessage("Timer is not running; bets are closed;");
+                    SendMessage(Settings.msgTimerNotRunning);
                     return;
                 case TimerPhase.Paused:
-                    SendMessage("Timer is paused; bets are paused too.");
+                    SendMessage(Settings.msgTimerPaused);
                     return;
                 case TimerPhase.Ended:
-                    SendMessage("Run is over; there is nothing to bet!");
+                    SendMessage(Settings.msgTimerEnded);
                     return;
             }
 
@@ -721,7 +721,7 @@ namespace LiveSplit.SplitsBet
                     initArrays();
                 }
                 catch (Exception ex) { LogException(ex); }
-                if (!EndOfRun) SendMessage("Run is kill. RIP :(");
+                if (!EndOfRun) SendMessage(Settings.msgReset);
             };
             invoker.RunWorkerAsync();
             
