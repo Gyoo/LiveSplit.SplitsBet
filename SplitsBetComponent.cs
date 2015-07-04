@@ -143,22 +143,25 @@ namespace LiveSplit.SplitsBet
             {
                 SegmentBeginning[BetIndex] = State.CurrentTime;
                 Bets[BetIndex] = new Dictionary<string, Tuple<TimeSpan, double>>();
-                var timeFormatter = new ShortTimeFormatter();
-                var comparison = State.Run.Comparisons.Contains(Settings.TimeToShow) ? Settings.TimeToShow : Run.PersonalBestComparisonName;
-                var previousTime = lastParent() >= 0 
-                    ? GetTime(State.Run[lastParent()].Comparisons[comparison]) 
-                    : TimeSpan.Zero;
-                Time timeToFormat = new Time(new TimeSpan(0, 0, 0), new TimeSpan(0, 0, 0));
-                timeToFormat += State.Run[nextParent()].Comparisons[comparison];
-                var timeFormatted = timeFormatter.Format(GetTime(timeToFormat) - previousTime);
-                string ret = "Place your bets for " + State.Run[nextParent()].Name + "! ";
-                if (TimeSpanParser.Parse(timeFormatted) > TimeSpan.Zero && comparison != "None")
+                if (Settings.SelectedSegments.Contains(State.CurrentSplit.Name) || Settings.ParentSubSplits && Settings.SelectedSegments.Contains(State.Run[nextParent()].Name))
                 {
-                    ret += CompositeComparisons.GetShortComparisonName(comparison) + " segment for this split is " + timeFormatted + " ";
-                }
-                if (Settings.UseGlobalTime) ret += "And remember that global time is used to bet!";
+                    var timeFormatter = new ShortTimeFormatter();
+                    var comparison = State.Run.Comparisons.Contains(Settings.TimeToShow) ? Settings.TimeToShow : Run.PersonalBestComparisonName;
+                    var previousTime = lastParent() >= 0
+                        ? GetTime(State.Run[lastParent()].Comparisons[comparison])
+                        : TimeSpan.Zero;
+                    Time timeToFormat = new Time(new TimeSpan(0, 0, 0), new TimeSpan(0, 0, 0));
+                    timeToFormat += State.Run[nextParent()].Comparisons[comparison];
+                    var timeFormatted = timeFormatter.Format(GetTime(timeToFormat) - previousTime);
+                    string ret = "Place your bets for " + State.Run[nextParent()].Name + "! ";
+                    if (TimeSpanParser.Parse(timeFormatted) > TimeSpan.Zero && comparison != "None")
+                    {
+                        ret += CompositeComparisons.GetShortComparisonName(comparison) + " segment for this split is " + timeFormatted + " ";
+                    }
+                    if (Settings.UseGlobalTime) ret += "And remember that global time is used to bet!";
 
-                SendMessage(ret);
+                    SendMessage(ret);
+                }
             }
             catch (Exception ex) { LogException(ex); }
         }
@@ -223,14 +226,6 @@ namespace LiveSplit.SplitsBet
             Twitch.Instance.Chat.SendMessage("/me " + message);
         }
 
-        static void Delay(int ms, EventHandler action)
-        {
-            var tmp = new System.Windows.Forms.Timer { Interval = ms };
-            tmp.Tick += new EventHandler((o, e) => tmp.Enabled = false);
-            tmp.Tick += action;
-            tmp.Enabled = true;
-        }
-
         private TimeSpan? GetTime(Time segment)
         {
             return segment[Settings.OverridenTimingMethod ?? State.CurrentTimingMethod];
@@ -244,7 +239,7 @@ namespace LiveSplit.SplitsBet
 
         private int getScore(KeyValuePair<string, Tuple<TimeSpan, double>> entry, TimeSpan? segmentTimeSpan)
         {
-            double percentage = ((int)segmentTimeSpan.Value.TotalSeconds - (int)entry.Value.Item1.TotalSeconds) / (int)segmentTimeSpan.Value.TotalSeconds;
+            double percentage = (segmentTimeSpan.Value.TotalSeconds - entry.Value.Item1.TotalSeconds) / segmentTimeSpan.Value.TotalSeconds;
             return (int)(entry.Value.Item2 * (int)segmentTimeSpan.Value.TotalSeconds * Math.Exp(-(Math.Pow(percentage, 2) / 100)));
         }
 
@@ -272,6 +267,12 @@ namespace LiveSplit.SplitsBet
             if (SplitIndex >= State.Run.Count)
             {
                 SendMessage(Settings.msgTimerEnded);
+                return;
+            }
+
+            if (!Settings.SelectedSegments.Contains(State.CurrentSplit.Name) || Settings.ParentSubSplits && !Settings.SelectedSegments.Contains(State.Run[nextParent()].Name))
+            {
+                SendMessage("Bets disabled for this segment");
                 return;
             }
 
@@ -594,7 +595,8 @@ namespace LiveSplit.SplitsBet
         void State_OnSplit(object sender, EventArgs e)
         {
             SplitIndex++;
-            if (!Settings.ParentSubSplits || State.Run[SplitIndex-1].Name.Substring(0, 1) != "-") CalculateScore(sender, e);
+            if (!Settings.SelectedSegments.Contains(State.Run[SplitIndex - 1].Name) || Settings.ParentSubSplits && !Settings.SelectedSegments.Contains(State.Run[nextParent()].Name)) CopyScore(sender, e);
+            else if (!Settings.ParentSubSplits || State.Run[SplitIndex-1].Name.Substring(0, 1) != "-") CalculateScore(sender, e);
         }
 
         private void OnMessage(object sender, TwitchChat.Message message)
@@ -641,7 +643,10 @@ namespace LiveSplit.SplitsBet
                     }
                     var timeFormatter = new ShortTimeFormatter();
                     TimeSpan? segmentTimeSpan = GetTime(segment);
-                    SendMessage("The time for this split was " + timeFormatter.Format(segmentTimeSpan));
+                    if (Settings.SelectedSegments.Contains(State.Run[SplitIndex - 1].Name) || Settings.ParentSubSplits && Settings.SelectedSegments.Contains(State.Run[nextParent()].Name))
+                    {
+                        SendMessage("The time for this split was " + timeFormatter.Format(segmentTimeSpan));
+                    }
                     Scores[BetIndex] = Scores[BetIndex] ?? (BetIndex > 0 ? new Dictionary<string, int>(Scores[BetIndex-1]) : new Dictionary<string, int>());
                     foreach (KeyValuePair<string, Tuple<TimeSpan, double>> entry in Bets[BetIndex])
                     {
@@ -692,13 +697,18 @@ namespace LiveSplit.SplitsBet
             invoker.DoWork += delegate
             {
                 Thread.Sleep(TimeSpan.FromSeconds(Settings.Delay));
-                SplitIndex++;
                 try
                 {
-                    if (Commands.ContainsKey("bet")) Commands.Remove("bet"); //It's pointless to try to bet after a skipped split since no segment time will be set. Maybe only if you use split time instead of segment time ?
+                    if (Commands.ContainsKey("bet") && 
+                        (Settings.SelectedSegments.Contains(State.Run[SplitIndex - 1].Name) || Settings.ParentSubSplits && Settings.SelectedSegments.Contains(State.Run[nextParent()].Name))) Commands.Remove("bet"); 
+                    // It's pointless to try to bet after a skipped split since no segment time will be set. Maybe only if you use split time instead of segment time ?
+                    // Second rule means that if the segment was in the selected segments and CopyScore is called, it means the split has been skipped, therefore we remove bet ability.
                     if (BetIndex > 0) Scores[BetIndex] = new Dictionary<string, int>(Scores[BetIndex-1]);
                     else Scores[BetIndex] = new Dictionary<string, int>();
+                    BetIndex++;
                     Bets[BetIndex] = new Dictionary<string, Tuple<TimeSpan, double>>();
+                    SegmentBeginning[BetIndex] = State.CurrentTime;
+                    if (Settings.SelectedSegments.Contains(State.Run[SplitIndex].Name)) newSplit();
                 }
                 catch (Exception ex) { LogException(ex); }
             };

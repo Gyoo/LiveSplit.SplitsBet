@@ -50,6 +50,8 @@
             this.label6 = new System.Windows.Forms.Label();
             this.txtDelay = new System.Windows.Forms.TextBox();
             this.chkSubsplits = new System.Windows.Forms.CheckBox();
+            this.label19 = new System.Windows.Forms.Label();
+            this.listSegments = new System.Windows.Forms.ListBox();
             this.tab2 = new System.Windows.Forms.TabPage();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel7 = new System.Windows.Forms.TableLayoutPanel();
@@ -69,12 +71,14 @@
             this.label15 = new System.Windows.Forms.Label();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
+            this.label17 = new System.Windows.Forms.Label();
             this.txtMsgTimerEnded = new System.Windows.Forms.TextBox();
             this.txtMsgTimerPaused = new System.Windows.Forms.TextBox();
             this.txtMsgTimerNotRunning = new System.Windows.Forms.TextBox();
             this.label12 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
+            this.txtMsgTooLateToBet = new System.Windows.Forms.TextBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
             this.txtMsgReset = new System.Windows.Forms.TextBox();
@@ -83,8 +87,6 @@
             this.label7 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
-            this.label17 = new System.Windows.Forms.Label();
-            this.txtMsgTooLateToBet = new System.Windows.Forms.TextBox();
             this.tabs.SuspendLayout();
             this.tab1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -112,7 +114,7 @@
             this.tabs.Name = "tabs";
             this.tabs.Padding = new System.Drawing.Point(0, 0);
             this.tabs.SelectedIndex = 0;
-            this.tabs.Size = new System.Drawing.Size(476, 489);
+            this.tabs.Size = new System.Drawing.Size(466, 489);
             this.tabs.TabIndex = 0;
             // 
             // tab1
@@ -120,7 +122,7 @@
             this.tab1.Controls.Add(this.tableLayoutPanel1);
             this.tab1.Location = new System.Drawing.Point(4, 22);
             this.tab1.Name = "tab1";
-            this.tab1.Size = new System.Drawing.Size(468, 463);
+            this.tab1.Size = new System.Drawing.Size(458, 463);
             this.tab1.TabIndex = 0;
             this.tab1.Text = "Settings";
             // 
@@ -145,10 +147,12 @@
             this.tableLayoutPanel1.Controls.Add(this.label6, 0, 8);
             this.tableLayoutPanel1.Controls.Add(this.txtDelay, 1, 8);
             this.tableLayoutPanel1.Controls.Add(this.chkSubsplits, 0, 9);
+            this.tableLayoutPanel1.Controls.Add(this.label19, 0, 10);
+            this.tableLayoutPanel1.Controls.Add(this.listSegments, 1, 10);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 11;
+            this.tableLayoutPanel1.RowCount = 13;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 29F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 29F));
@@ -159,8 +163,10 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 29F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 29F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 29F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(468, 463);
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 29F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 72F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 21F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(458, 463);
             this.tableLayoutPanel1.TabIndex = 0;
             this.tableLayoutPanel1.Paint += new System.Windows.Forms.PaintEventHandler(this.tableLayoutPanel1_Paint);
             // 
@@ -192,7 +198,7 @@
             this.groupBox1.Controls.Add(this.tableLayoutPanel2);
             this.groupBox1.Location = new System.Drawing.Point(3, 3);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(456, 73);
+            this.groupBox1.Size = new System.Drawing.Size(452, 73);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Canceling Bets";
@@ -211,7 +217,7 @@
             this.tableLayoutPanel2.RowCount = 2;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(450, 54);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(446, 54);
             this.tableLayoutPanel2.TabIndex = 4;
             // 
             // label1
@@ -220,7 +226,7 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(3, 6);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(187, 13);
+            this.label1.Size = new System.Drawing.Size(185, 13);
             this.label1.TabIndex = 3;
             this.label1.Text = "Points Penalty for Canceling Bet:";
             // 
@@ -231,7 +237,7 @@
             this.chkCancelBets.Location = new System.Drawing.Point(7, 31);
             this.chkCancelBets.Margin = new System.Windows.Forms.Padding(7, 3, 3, 3);
             this.chkCancelBets.Name = "chkCancelBets";
-            this.chkCancelBets.Size = new System.Drawing.Size(183, 17);
+            this.chkCancelBets.Size = new System.Drawing.Size(181, 17);
             this.chkCancelBets.TabIndex = 1;
             this.chkCancelBets.Text = "Allow Players to Cancel Bets";
             this.chkCancelBets.UseVisualStyleBackColor = true;
@@ -240,7 +246,7 @@
             // txtCancelingPenalty
             // 
             this.txtCancelingPenalty.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.txtCancelingPenalty.Location = new System.Drawing.Point(196, 3);
+            this.txtCancelingPenalty.Location = new System.Drawing.Point(194, 3);
             this.txtCancelingPenalty.Name = "txtCancelingPenalty";
             this.txtCancelingPenalty.Size = new System.Drawing.Size(120, 20);
             this.txtCancelingPenalty.TabIndex = 0;
@@ -311,7 +317,7 @@
             this.chkAllowMods.Location = new System.Drawing.Point(7, 201);
             this.chkAllowMods.Margin = new System.Windows.Forms.Padding(7, 3, 3, 3);
             this.chkAllowMods.Name = "chkAllowMods";
-            this.chkAllowMods.Size = new System.Drawing.Size(458, 17);
+            this.chkAllowMods.Size = new System.Drawing.Size(448, 17);
             this.chkAllowMods.TabIndex = 5;
             this.chkAllowMods.Text = "Allow Mods to Start and Stop SplitsBet";
             this.chkAllowMods.UseVisualStyleBackColor = true;
@@ -324,7 +330,7 @@
             this.chkGlobalTime.Location = new System.Drawing.Point(7, 172);
             this.chkGlobalTime.Margin = new System.Windows.Forms.Padding(7, 3, 3, 3);
             this.chkGlobalTime.Name = "chkGlobalTime";
-            this.chkGlobalTime.Size = new System.Drawing.Size(458, 17);
+            this.chkGlobalTime.Size = new System.Drawing.Size(448, 17);
             this.chkGlobalTime.TabIndex = 4;
             this.chkGlobalTime.Text = "Use Global Time Instead of Segment Time";
             this.chkGlobalTime.UseVisualStyleBackColor = true;
@@ -337,7 +343,7 @@
             this.chkSingleLineScores.Location = new System.Drawing.Point(7, 143);
             this.chkSingleLineScores.Margin = new System.Windows.Forms.Padding(7, 3, 3, 3);
             this.chkSingleLineScores.Name = "chkSingleLineScores";
-            this.chkSingleLineScores.Size = new System.Drawing.Size(458, 17);
+            this.chkSingleLineScores.Size = new System.Drawing.Size(448, 17);
             this.chkSingleLineScores.TabIndex = 3;
             this.chkSingleLineScores.Text = "Scores Show on a Single Message Instead of Multiple Lines";
             this.chkSingleLineScores.UseVisualStyleBackColor = true;
@@ -387,13 +393,36 @@
             this.chkSubsplits.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.chkSubsplits.AutoSize = true;
             this.tableLayoutPanel1.SetColumnSpan(this.chkSubsplits, 2);
+            this.chkSubsplits.Enabled = false;
             this.chkSubsplits.Location = new System.Drawing.Point(7, 317);
             this.chkSubsplits.Margin = new System.Windows.Forms.Padding(7, 3, 3, 3);
             this.chkSubsplits.Name = "chkSubsplits";
-            this.chkSubsplits.Size = new System.Drawing.Size(208, 17);
+            this.chkSubsplits.Size = new System.Drawing.Size(251, 17);
             this.chkSubsplits.TabIndex = 13;
-            this.chkSubsplits.Text = "(Subsplits) Track only parent segments";
+            this.chkSubsplits.Text = "(Subsplits) Track only parent segments (Soon™)";
             this.chkSubsplits.UseVisualStyleBackColor = true;
+            this.chkSubsplits.CheckedChanged += new System.EventHandler(this.chkSubsplits_CheckedChanged);
+            // 
+            // label19
+            // 
+            this.label19.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(3, 348);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(158, 13);
+            this.label19.TabIndex = 15;
+            this.label19.Text = "Splits on which bets are allowed";
+            // 
+            // listSegments
+            // 
+            this.listSegments.FormattingEnabled = true;
+            this.listSegments.Location = new System.Drawing.Point(202, 343);
+            this.listSegments.Name = "listSegments";
+            this.tableLayoutPanel1.SetRowSpan(this.listSegments, 2);
+            this.listSegments.SelectionMode = System.Windows.Forms.SelectionMode.MultiSimple;
+            this.listSegments.Size = new System.Drawing.Size(253, 95);
+            this.listSegments.TabIndex = 14;
+            this.listSegments.Click += new System.EventHandler(this.listSegments_Click);
             // 
             // tab2
             // 
@@ -405,7 +434,7 @@
             this.tab2.Controls.Add(this.groupBox2);
             this.tab2.Location = new System.Drawing.Point(4, 22);
             this.tab2.Name = "tab2";
-            this.tab2.Size = new System.Drawing.Size(468, 463);
+            this.tab2.Size = new System.Drawing.Size(458, 463);
             this.tab2.TabIndex = 1;
             this.tab2.Text = "Bot Messages";
             // 
@@ -618,6 +647,16 @@
             this.tableLayoutPanel5.Size = new System.Drawing.Size(450, 104);
             this.tableLayoutPanel5.TabIndex = 4;
             // 
+            // label17
+            // 
+            this.label17.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(3, 84);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(76, 13);
+            this.label17.TabIndex = 14;
+            this.label17.Text = "Too late to bet";
+            // 
             // txtMsgTimerEnded
             // 
             this.txtMsgTimerEnded.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
@@ -671,6 +710,14 @@
             this.label10.Size = new System.Drawing.Size(89, 13);
             this.label10.TabIndex = 11;
             this.label10.Text = "Timer not running";
+            // 
+            // txtMsgTooLateToBet
+            // 
+            this.txtMsgTooLateToBet.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtMsgTooLateToBet.Location = new System.Drawing.Point(196, 81);
+            this.txtMsgTooLateToBet.Name = "txtMsgTooLateToBet";
+            this.txtMsgTooLateToBet.Size = new System.Drawing.Size(251, 20);
+            this.txtMsgTooLateToBet.TabIndex = 15;
             // 
             // groupBox2
             // 
@@ -758,24 +805,6 @@
             this.label9.Size = new System.Drawing.Size(70, 13);
             this.label9.TabIndex = 10;
             this.label9.Text = "Resetting run";
-            // 
-            // label17
-            // 
-            this.label17.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(3, 84);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(76, 13);
-            this.label17.TabIndex = 14;
-            this.label17.Text = "Too late to bet";
-            // 
-            // txtMsgTooLateToBet
-            // 
-            this.txtMsgTooLateToBet.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtMsgTooLateToBet.Location = new System.Drawing.Point(196, 81);
-            this.txtMsgTooLateToBet.Name = "txtMsgTooLateToBet";
-            this.txtMsgTooLateToBet.Size = new System.Drawing.Size(251, 20);
-            this.txtMsgTooLateToBet.TabIndex = 15;
             // 
             // Settings
             // 
@@ -873,5 +902,7 @@
         private System.Windows.Forms.Label label18;
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.TextBox txtMsgTooLateToBet;
+        private System.Windows.Forms.ListBox listSegments;
+        private System.Windows.Forms.Label label19;
     }
 }

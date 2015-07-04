@@ -10,6 +10,8 @@ using LiveSplit.Model;
 using System.Xml;
 using LiveSplit.TimeFormatters;
 using LiveSplit.Model.Comparisons;
+using System.Xml.XPath;
+using System.Xml.Serialization;
 
 namespace LiveSplit.SplitsBet
 {
@@ -42,6 +44,7 @@ namespace LiveSplit.SplitsBet
         public string msgUnbetTimerEnd { get; set; }
         public string msgCheckTimerEnd { get; set; }
         public string msgTooLateToBet { get; set; }
+        public List<string> SelectedSegments { get; set; }
 
         private ITimeFormatter Formatter { get; set; }
 
@@ -60,6 +63,7 @@ namespace LiveSplit.SplitsBet
             TimeToShow = "Best Segments";
             Delay = 0;
             ParentSubSplits = false;
+            SelectedSegments = new List<string>();
 
             //Init messages to default values
             msgEnable = "SplitsBet enabled!";
@@ -114,13 +118,22 @@ namespace LiveSplit.SplitsBet
             cmbTimeToShow.Items.AddRange(LivesplitState.Run.Comparisons.Where(x => x != BestSplitTimesComparisonGenerator.ComparisonName).ToArray());
             if (!cmbTimeToShow.Items.Contains(TimeToShow))
                 cmbTimeToShow.Items.Add(TimeToShow);
-            if (LivesplitState.Layout.Components.Any(x => x.ComponentName == "Subsplits"))
-                chkSubsplits.Enabled = true;
+            if (LivesplitState.Layout.Components.Any(x => x.ComponentName == "Subsplits")){
+                //chkSubsplits.Enabled = true;
+                // TODO : Re-enable this once SubSplits + Splits Selection when fully debugged
+            }
             else
             {
                 chkSubsplits.Enabled = false;
                 ParentSubSplits = false;
             }
+            List<string> segments = new List<string>();
+            foreach(Segment s in LivesplitState.Run){
+                if (chkSubsplits.Checked && s.Name.StartsWith("-")) continue;
+                else segments.Add(s.Name);
+            }
+            listSegments.DataSource = segments;
+            SelectItems();
 
             // Bot Messages
             txtMsgEnable.Text = msgEnable;
@@ -135,6 +148,27 @@ namespace LiveSplit.SplitsBet
             txtMsgUnbetTimerEnd.Text = msgUnbetTimerEnd;
             txtMsgCheckTimerEnd.Text = msgCheckTimerEnd;
             txtMsgTooLateToBet.Text = msgTooLateToBet;
+        }
+
+        private void SelectItems()
+        {
+            if (SelectedSegments.Count > 0)
+            {
+                foreach (string s in SelectedSegments)
+                {
+                    if (listSegments.Items.Contains(s))
+                    {
+                        listSegments.SetSelected(listSegments.Items.IndexOf(s), true);
+                    }
+                }
+            }
+            else
+            {
+                for (int i = 0; i < listSegments.Items.Count; i++)
+                {
+                    listSegments.SetSelected(i, true);
+                }
+            }
         }
 
         public System.Xml.XmlNode GetSettings(System.Xml.XmlDocument document)
@@ -154,6 +188,7 @@ namespace LiveSplit.SplitsBet
             settingsNode.AppendChild(ToElement(document, "TimeToShow", TimeToShow));
             settingsNode.AppendChild(ToElement(document, "Delay", Delay));
             settingsNode.AppendChild(ToElement(document, "ParentSubSplits", ParentSubSplits));
+            settingsNode.AppendChild(ToElement(document, "SelectedSegments", SelectedSegments));
 
             //Bot Messages
             settingsNode.AppendChild(ToElement(document, "msgEnable", msgEnable));
@@ -168,7 +203,20 @@ namespace LiveSplit.SplitsBet
             settingsNode.AppendChild(ToElement(document, "msgUnbetTimerEnd", msgUnbetTimerEnd));
             settingsNode.AppendChild(ToElement(document, "msgCheckTimerEnd", msgCheckTimerEnd));
             settingsNode.AppendChild(ToElement(document, "msgTooLateToBet", msgTooLateToBet));
+            serializeAppend(settingsNode, SelectedSegments);
+            
             return settingsNode;
+        }
+        void serializeAppend(XmlNode parentNode, object obj)
+        {
+            XPathNavigator nav = parentNode.CreateNavigator();
+            using (var writer = nav.AppendChild())
+            {
+                var serializer = new XmlSerializer(obj.GetType());
+                writer.WriteWhitespace("");
+                serializer.Serialize(writer, obj);
+                writer.Close();
+            }
         }
 
         public void SetSettings(System.Xml.XmlNode settings)
@@ -196,6 +244,8 @@ namespace LiveSplit.SplitsBet
             else Delay = 0;
             if (settings["ParentSubSplits"] != null) ParentSubSplits = bool.Parse(settings["ParentSubSplits"].InnerText);
             else ParentSubSplits = false;
+            if (settings["ArrayOfString"] != null) SelectedSegments = deserialize<List<string>>(settings["ArrayOfString"]);
+            else SelectedSegments = new List<string>();
 
             //Bot messages
             if (settings["msgEnable"] != null) msgEnable = settings["msgEnable"].InnerText;
@@ -222,6 +272,16 @@ namespace LiveSplit.SplitsBet
             else msgCheckTimerEnd = "The run has ended; nothing to check!";
             if (settings["msgTooLateToBet"] != null) msgTooLateToBet = settings["msgTooLateToBet"].InnerText;
             else msgTooLateToBet = "Too late to bet for this split; wait for the next one!";
+            
+        }
+        T deserialize<T>(XmlNode node)
+        {
+            XPathNavigator nav = node.CreateNavigator();
+            using (var reader = nav.ReadSubtree())
+            {
+                var serializer = new XmlSerializer(typeof(T));
+                return (T)serializer.Deserialize(reader);
+            }
         }
 
         private TimingMethod? ParseTimingMethod(String method)
@@ -289,6 +349,30 @@ namespace LiveSplit.SplitsBet
         private void groupBox2_Enter(object sender, EventArgs e)
         {
 
+        }
+
+        private void chkSubsplits_CheckedChanged(object sender, EventArgs e)
+        {
+            List<string> segments = new List<string>();
+            foreach (Segment s in LivesplitState.Run)
+            {
+                if (chkSubsplits.Checked && s.Name.StartsWith("-")) continue;
+                else segments.Add(s.Name);
+            }
+            listSegments.DataSource = segments;
+            SelectItems();
+        }
+
+        private void listSegments_Click(object sender, EventArgs e)
+        {
+            SelectedSegments = new List<string>();
+            for (int i = 0; i < listSegments.Items.Count; i++)
+            {
+                if (listSegments.GetSelected(i))
+                {
+                    SelectedSegments.Add(listSegments.GetItemText(listSegments.Items[i]));
+                }
+            }
         }
     }
 }
