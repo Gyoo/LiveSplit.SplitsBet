@@ -62,41 +62,25 @@ A window will show, asking for your Twitch credentials (__WARNING__: If you alre
 
 See complete changelog [here](https://gist.github.com/Gyoo/5ea00ea18a26419731fe)
 
-##v0.4.1
+## v0.5
 
 ### Fixes
 
-- Time to show at the beginning of a split is now correct, and not the sum since the beginning
+- Delay is now working completely
+- Fixed !unbet, got buggy since last update
+- Fixed wrong behaviour with the run starting offset
  
+### Changes
+
+- SplitsBet is now enabled by default on startup (no need to type !start anymore)
+- Changed the scoring system slightly: Now, you will get points if you are in a 15% range around the segment time, no matter the length of the segment.
+
 ### Features
 
-- Added support for custom comparisons for the time to show at the beginning of a split
- 
+- Added Subsplits compatibility : if Subsplits is part of your layout, you can choose to enable bets only for parent splits or for every single split
+- Added messages customization. Only the messages that don't designate a user are available for customization right now.
+- Added Splits Selection : If you don't want people to bet on a certain split, unselect it in the settings. Currently buggy with SubSplits "parent splits only" feature.
+
 ### Known bugs
 
-- Delay is still buggy, but if you don't abuse it it works fine. Just don't make another action while an event is delayed.
-
-##v0.4
-
-###Fixes
-
-- Fixed error when there is no highscore in the middle of a run
-- Fixed bugs with the scores when unsplitting then resplitting
-- Changed settings management to prevent settings from being completely reset from a version to another
-- Fixed a bug related to loading new splits without reloading SplitsBet
-
-###Features
-
-- Added `!version` to see which version is running
-- Added setting to choose which comparison is shown in the chat at the beginning of a split (either Best segment, average segment, best split times segment, PB segment, or none)
-- Added setting to set a delay between your split and the messages showing in the chat. This is done to prevent spoiling the run because of the stream delay
-
-
-###Misc
-- Refactoring of some code (you won't see that as a user)
-- Changed the phrasing of the bot
-- Changed the time coefficient formula, because users felt like it's more rewarding to bet fast than to bet accurate. From now on, the coef will start decreasing at around 30% of the time of the best segment, and at the latest (aka 75% of the time of the best segment) the coef will be around 0.5, which means you'll only earn 50% of what you would've earned if you bet at the beginning.
-
-###Known Bugs
-
-- If your segment time is shorter than the delay you set, SplitsBet will be completely rekt until you reset your run. This is mostly because the current method used for the delay is a bit dirty, but hey it does the job. This will be refactored at some point.
+- As said just above, you cannot use Splits Selection and SubSplits at the same time because it's buggy. Only backup solution is to unselect subsplits in the splits selector (but it might not exactly be the behaviour you want). **Help greatly appreciated to fix that.**
