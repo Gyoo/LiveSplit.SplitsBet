@@ -62,6 +62,12 @@ A window will show, asking for your Twitch credentials (__WARNING__: If you alre
 
 See complete changelog [here](https://gist.github.com/Gyoo/5ea00ea18a26419731fe)
 
+## v0.5.1
+
+### Fixes
+
+- Fixed critical misbehaviour when trying to stop or remove SplitsBet.
+
 ## v0.5
 
 ### Fixes
