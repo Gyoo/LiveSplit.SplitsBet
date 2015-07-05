@@ -450,7 +450,7 @@ namespace LiveSplit.SplitsBet
 
                 /*Setting Livesplit events*/
                 State.OnStart += StartBets;
-                State.OnSplit += CalculateScore;
+                State.OnSplit += State_OnSplit;
                 State.OnUndoSplit += RollbackScore;
                 State.OnSkipSplit += CopyScore;
                 State.OnReset += ResetSplitsBet;
@@ -491,7 +491,7 @@ namespace LiveSplit.SplitsBet
 
                 /*Removing events*/
                 State.OnStart -= StartBets;
-                State.OnSplit -= CalculateScore;
+                State.OnSplit -= State_OnSplit;
                 State.OnUndoSplit -= RollbackScore;
                 State.OnSkipSplit -= CopyScore;
                 State.OnReset -= ResetSplitsBet;
@@ -766,7 +766,7 @@ namespace LiveSplit.SplitsBet
             Twitch.Instance.Chat.OnMessage -= OnMessage;
 
             State.OnStart -= StartBets;
-            State.OnSplit -= CalculateScore;
+            State.OnSplit -= State_OnSplit;
             State.OnUndoSplit -= RollbackScore;
             State.OnSkipSplit -= CopyScore;
             State.OnReset -= ResetSplitsBet;
