@@ -397,9 +397,9 @@
             this.chkSubsplits.Location = new System.Drawing.Point(7, 317);
             this.chkSubsplits.Margin = new System.Windows.Forms.Padding(7, 3, 3, 3);
             this.chkSubsplits.Name = "chkSubsplits";
-            this.chkSubsplits.Size = new System.Drawing.Size(251, 17);
+            this.chkSubsplits.Size = new System.Drawing.Size(322, 17);
             this.chkSubsplits.TabIndex = 13;
-            this.chkSubsplits.Text = "(Subsplits) Track only parent segments (Soon™)";
+            this.chkSubsplits.Text = "(Subsplits) Track only parent segments (Disabled for unstability)\r\n";
             this.chkSubsplits.UseVisualStyleBackColor = true;
             this.chkSubsplits.CheckedChanged += new System.EventHandler(this.chkSubsplits_CheckedChanged);
             // 
@@ -407,14 +407,16 @@
             // 
             this.label19.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label19.AutoSize = true;
-            this.label19.Location = new System.Drawing.Point(3, 348);
+            this.label19.Enabled = false;
+            this.label19.Location = new System.Drawing.Point(3, 341);
             this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(158, 13);
+            this.label19.Size = new System.Drawing.Size(161, 26);
             this.label19.TabIndex = 15;
-            this.label19.Text = "Splits on which bets are allowed";
+            this.label19.Text = "Splits on which bets are allowed (Disabled for unstability)\r\n";
             // 
             // listSegments
             // 
+            this.listSegments.Enabled = false;
             this.listSegments.FormattingEnabled = true;
             this.listSegments.Location = new System.Drawing.Point(202, 343);
             this.listSegments.Name = "listSegments";
