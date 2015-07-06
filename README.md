@@ -62,6 +62,14 @@ A window will show, asking for your Twitch credentials (__WARNING__: If you alre
 
 See complete changelog [here](https://gist.github.com/Gyoo/5ea00ea18a26419731fe)
 
+## v0.5.2
+
+### Fixes
+
+- Disabled Splits Selection because it was making a mess.
+- Fixed !unbet, one and for all
+- Fixed delay shenanigans caused by Splits Selection
+
 ## v0.5.1
 
 ### Fixes
