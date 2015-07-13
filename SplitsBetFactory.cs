@@ -12,7 +12,7 @@ namespace LiveSplit.SplitsBet
 {
     public class SplitsBetFactory : IComponentFactory
     {
-        public readonly static string VersionString = "0.5.2";
+        public readonly static string VersionString = "0.5.3";
         #if DEBUG
         public readonly static string VersionPostfix = "-dev";
         #else

@@ -244,8 +244,8 @@ namespace LiveSplit.SplitsBet
 
         private int getScore(KeyValuePair<string, Tuple<TimeSpan, double>> entry, TimeSpan? segmentTimeSpan)
         {
-            double percentage = ((int)segmentTimeSpan.Value.TotalSeconds - (int)entry.Value.Item1.TotalSeconds) / (int)segmentTimeSpan.Value.TotalSeconds;
-            return (int)(entry.Value.Item2 * (int)segmentTimeSpan.Value.TotalSeconds * Math.Exp(-(Math.Pow(percentage, 2) / 100)));
+            double percentage = (Math.Floor(segmentTimeSpan.Value.TotalSeconds) - Math.Floor(entry.Value.Item1.TotalSeconds)) / Math.Floor(segmentTimeSpan.Value.TotalSeconds);
+            return (int)Math.Floor(entry.Value.Item2 * Math.Floor(segmentTimeSpan.Value.TotalSeconds) * Math.Exp(-(Math.Pow(percentage, 2) / 100)));
         }
 
         #endregion
@@ -651,11 +651,12 @@ namespace LiveSplit.SplitsBet
                     Scores[BetIndex] = Scores[BetIndex] ?? (BetIndex > 0 ? new Dictionary<string, int>(Scores[BetIndex - 1]) : new Dictionary<string, int>());
                     foreach (KeyValuePair<string, Tuple<TimeSpan, double>> entry in Bets[BetIndex])
                     {
+                        double score = getScore(entry, segmentTimeSpan);
                         if (Scores[BetIndex].ContainsKey(entry.Key))
                         {
-                            Scores[BetIndex][entry.Key] += getScore(entry, segmentTimeSpan);
+                            Scores[BetIndex][entry.Key] += (int)score;
                         }
-                        else Scores[BetIndex].Add(entry.Key, getScore(entry, segmentTimeSpan));
+                        else Scores[BetIndex].Add(entry.Key, (int)score);
                     }
                     ShowScore();
                     if (++BetIndex < Scores.Count())
