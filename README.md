@@ -62,6 +62,16 @@ A window will show, asking for your Twitch credentials (__WARNING__: If you alre
 
 See complete changelog [here](https://gist.github.com/Gyoo/5ea00ea18a26419731fe)
 
+## v0.5.3
+
+### Fixes
+
+- Fixed issue with scores being equal to each other no matter the bet
+
+### Known issues
+
+- Scores can be pretty high even if you bet far away from the segment time
+
 ## v0.5.2
 
 ### Fixes
