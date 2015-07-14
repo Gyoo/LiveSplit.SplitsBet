@@ -62,6 +62,12 @@ A window will show, asking for your Twitch credentials (__WARNING__: If you alre
 
 See complete changelog [here](https://gist.github.com/Gyoo/5ea00ea18a26419731fe)
 
+## v0.5.4
+
+### Fixes
+
+- Scores should be completely fixed
+
 ## v0.5.3
 
 ### Fixes
@@ -93,7 +99,7 @@ See complete changelog [here](https://gist.github.com/Gyoo/5ea00ea18a26419731fe)
 - Delay is now working completely
 - Fixed !unbet, got buggy since last update
 - Fixed wrong behaviour with the run starting offset
- 
+
 ### Changes
 
 - SplitsBet is now enabled by default on startup (no need to type !start anymore)
