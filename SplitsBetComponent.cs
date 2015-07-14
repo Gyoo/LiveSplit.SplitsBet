@@ -245,7 +245,7 @@ namespace LiveSplit.SplitsBet
         private int getScore(KeyValuePair<string, Tuple<TimeSpan, double>> entry, TimeSpan? segmentTimeSpan)
         {
             double percentage = (Math.Floor(segmentTimeSpan.Value.TotalSeconds) - Math.Floor(entry.Value.Item1.TotalSeconds)) / Math.Floor(segmentTimeSpan.Value.TotalSeconds);
-            return (int)Math.Floor(entry.Value.Item2 * Math.Floor(segmentTimeSpan.Value.TotalSeconds) * Math.Exp(-(Math.Pow(percentage, 2) / 100)));
+            return (int)Math.Floor(entry.Value.Item2 * Math.Floor(segmentTimeSpan.Value.TotalSeconds) * Math.Exp(-Math.Floor(segmentTimeSpan.Value.TotalSeconds)*(Math.Pow(percentage, 2))));
         }
 
         #endregion
