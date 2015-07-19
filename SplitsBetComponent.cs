@@ -382,13 +382,13 @@ namespace LiveSplit.SplitsBet
                 return;
             }
 
-            if (Scores[BetIndex - 1].ContainsKey(user.Name) && Scores[BetIndex - 1][user.Name] < Settings.UnBetPenalty)
+            if (!Scores[BetIndex - 1].ContainsKey(user.Name) || Scores[BetIndex - 1][user.Name] < Settings.UnBetPenalty)
             {
-                SendMessage(user.Name + ": You need " + Settings.UnBetPenalty + " points to undo your bet but only have " + Scores[SplitIndex - 1][user.Name] + ".");
+                SendMessage(user.Name + ": You need " + Settings.UnBetPenalty + " points to undo your bet but only have " + (Scores[BetIndex - 1].ContainsKey(user.Name)?Scores[SplitIndex - 1][user.Name]:0) + ".");
                 return;
             }
 
-            if (BetIndex >= 0 && Scores[BetIndex-1] != null)
+            if (BetIndex >= 0 && Scores[BetIndex - 1] != null)
             {
                 Scores[BetIndex-1][user.Name] -= Settings.UnBetPenalty;
             }
