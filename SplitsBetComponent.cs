@@ -572,7 +572,7 @@ namespace LiveSplit.SplitsBet
                 }
                 SpecialBets.Add(user.Name, time);
             }
-            catch
+            catch (Exception e)
             {
                 LogException(e);
             }
