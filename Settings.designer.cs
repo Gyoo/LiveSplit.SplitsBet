@@ -397,9 +397,9 @@
             this.chkSubsplits.Location = new System.Drawing.Point(7, 317);
             this.chkSubsplits.Margin = new System.Windows.Forms.Padding(7, 3, 3, 3);
             this.chkSubsplits.Name = "chkSubsplits";
-            this.chkSubsplits.Size = new System.Drawing.Size(322, 17);
+            this.chkSubsplits.Size = new System.Drawing.Size(208, 17);
             this.chkSubsplits.TabIndex = 13;
-            this.chkSubsplits.Text = "(Subsplits) Track only parent segments (Disabled for unstability)\r\n";
+            this.chkSubsplits.Text = "(Subsplits) Track only parent segments";
             this.chkSubsplits.UseVisualStyleBackColor = true;
             this.chkSubsplits.CheckedChanged += new System.EventHandler(this.chkSubsplits_CheckedChanged);
             // 

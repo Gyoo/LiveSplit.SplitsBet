@@ -62,55 +62,12 @@ A window will show, asking for your Twitch credentials (__WARNING__: If you alre
 
 See complete changelog [here](https://gist.github.com/Gyoo/5ea00ea18a26419731fe)
 
-## v0.5.4
+## v0.6
 
 ### Fixes
 
-- Scores should be completely fixed
-
-## v0.5.3
-
-### Fixes
-
-- Fixed issue with scores being equal to each other no matter the bet
-
-### Known issues
-
-- Scores can be pretty high even if you bet far away from the segment time
-
-## v0.5.2
-
-### Fixes
-
-- Disabled Splits Selection because it was making a mess.
-- Fixed !unbet, one and for all
-- Fixed delay shenanigans caused by Splits Selection
-
-## v0.5.1
-
-### Fixes
-
-- Fixed critical misbehaviour when trying to stop or remove SplitsBet.
-
-## v0.5
-
-### Fixes
-
-- Delay is now working completely
-- Fixed !unbet, got buggy since last update
-- Fixed wrong behaviour with the run starting offset
-
-### Changes
-
-- SplitsBet is now enabled by default on startup (no need to type !start anymore)
-- Changed the scoring system slightly: Now, you will get points if you are in a 15% range around the segment time, no matter the length of the segment.
+- Fixed several issues coming from a confusion between variables (Affected : Unbet, Highscore, several commands after unsplitting)
 
 ### Features
 
-- Added Subsplits compatibility : if Subsplits is part of your layout, you can choose to enable bets only for parent splits or for every single split
-- Added messages customization. Only the messages that don't designate a user are available for customization right now.
-- Added Splits Selection : If you don't want people to bet on a certain split, unselect it in the settings. Currently buggy with SubSplits "parent splits only" feature.
-
-### Known bugs
-
-- As said just above, you cannot use Splits Selection and SubSplits at the same time because it's buggy. Only backup solution is to unselect subsplits in the splits selector (but it might not exactly be the behaviour you want). **Help greatly appreciated to fix that.**
+- Due to better stability after bugfixing, SubSplits integration is back. Splits Selector... not yet

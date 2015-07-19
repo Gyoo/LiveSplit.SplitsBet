@@ -145,13 +145,13 @@ namespace LiveSplit.SplitsBet
                 Bets[BetIndex] = new Dictionary<string, Tuple<TimeSpan, double>>();
                 var timeFormatter = new ShortTimeFormatter();
                 var comparison = State.Run.Comparisons.Contains(Settings.TimeToShow) ? Settings.TimeToShow : Run.PersonalBestComparisonName;
-                var previousTime = lastParent() >= 0
-                    ? GetTime(State.Run[lastParent()].Comparisons[comparison])
+                var previousTime = lastParent(SplitIndex) >= 0
+                    ? GetTime(State.Run[lastParent(SplitIndex)].Comparisons[comparison])
                     : TimeSpan.Zero;
                 Time timeToFormat = new Time(new TimeSpan(0, 0, 0), new TimeSpan(0, 0, 0));
-                timeToFormat += State.Run[nextParent()].Comparisons[comparison];
+                timeToFormat += State.Run[nextParent(SplitIndex)].Comparisons[comparison];
                 var timeFormatted = timeFormatter.Format(GetTime(timeToFormat) - previousTime);
-                string ret = "Place your bets for " + State.Run[nextParent()].Name + "! ";
+                string ret = "Place your bets for " + State.Run[nextParent(SplitIndex)].Name + "! ";
                 if (TimeSpanParser.Parse(timeFormatted) > TimeSpan.Zero && comparison != "None")
                 {
                     ret += CompositeComparisons.GetShortComparisonName(comparison) + " segment for this split is " + timeFormatted + " ";
@@ -163,9 +163,9 @@ namespace LiveSplit.SplitsBet
             catch (Exception ex) { LogException(ex); }
         }
 
-        private int nextParent()
+        private int nextParent(int split)
         {
-            int i = SplitIndex;
+            int i = split;
             for (; i < State.Run.Count(); i++)
             {
                 if (!Settings.ParentSubSplits || State.Run[i].Name.Substring(0, 1) != "-") break;
@@ -173,9 +173,9 @@ namespace LiveSplit.SplitsBet
             return i;
         }
 
-        private int lastParent()
+        private int lastParent(int split)
         {
-            int i = SplitIndex - 1;
+            int i = split - 1;
             for (; i >= 0; i--)
             {
                 if (!Settings.ParentSubSplits || State.Run[i].Name.Substring(0, 1) != "-") break;
@@ -276,7 +276,7 @@ namespace LiveSplit.SplitsBet
             }
 
             //You can't bet again if you have already bet once, unless you type !unbet, which erases your bet (and some of your points)
-            if (Bets[SplitIndex].ContainsKey(user.Name))
+            if (Bets[BetIndex].ContainsKey(user.Name))
             {
                 SendMessage(user.Name + ": You already bet!");
                 return;
@@ -286,7 +286,7 @@ namespace LiveSplit.SplitsBet
             var timeFormatted = new ShortTimeFormatter().Format(GetTime(State.Run[SplitIndex].BestSegmentTime));
             //If no glod is set, percentage is kept to 0. There's no way to set a limit so better not fix an arbitrary one.
             if (TimeSpanParser.Parse(timeFormatted) > TimeSpan.Zero)
-                percentage = (GetTime(State.CurrentTime - SegmentBeginning[SplitIndex])).Value.TotalSeconds / GetTime(State.Run[SplitIndex].BestSegmentTime).Value.TotalSeconds;
+                percentage = (GetTime(State.CurrentTime - SegmentBeginning[BetIndex])).Value.TotalSeconds / GetTime(State.Run[BetIndex].BestSegmentTime).Value.TotalSeconds;
             else
                 percentage = 0;
 
@@ -317,7 +317,7 @@ namespace LiveSplit.SplitsBet
 
                 //Add the bet to its Dictionary
                 var t = new Tuple<TimeSpan, double>(time, Math.Exp(-2 * Math.Pow(percentage, 4)));
-                Bets[SplitIndex].Add(user.Name, t);
+                Bets[BetIndex].Add(user.Name, t);
             }
             catch
             {
@@ -411,24 +411,24 @@ namespace LiveSplit.SplitsBet
                 SendMessage(Settings.msgNoScore);
                 return;
             }
-            if (SplitIndex == 0 || !Scores[SplitIndex - 1].ContainsKey(user.Name))
+            if (SplitIndex == 0 || !Scores[BetIndex - 1].ContainsKey(user.Name))
             {
                 SendMessage(user.Name + "'s score is 0");
                 return;
             }
-            SendMessage(user.Name + "'s score is " + Scores[SplitIndex - 1][user.Name]);
+            SendMessage(user.Name + "'s score is " + Scores[BetIndex - 1][user.Name]);
         }
 
         private void Highscore(TwitchChat.User user, string argument)
         {
-            if (SplitIndex < 0)
+            if (BetIndex < 0)
             {
                 SendMessage(Settings.msgNoScore);
                 return;
             }
-            if (SplitIndex > 0 && Scores[SplitIndex - 1].Count > 0)
+            if (BetIndex > 0 && Scores[BetIndex - 1].Count > 0)
             {
-                var orderedScores = Scores[SplitIndex - 1].OrderByDescending(x => x.Value);
+                var orderedScores = Scores[BetIndex - 1].OrderByDescending(x => x.Value);
                 SendMessage(orderedScores.ToList()[0].Key + "'s score is " + orderedScores.ToList()[0].Value);
             }
             else SendMessage(Settings.msgNoHighscore);
@@ -574,7 +574,7 @@ namespace LiveSplit.SplitsBet
             }
             catch
             {
-                SendMessage(user.Name + ": Invalid time, please retry.");
+                LogException(e);
             }
         }
 
@@ -678,11 +678,15 @@ namespace LiveSplit.SplitsBet
                 Thread.Sleep(TimeSpan.FromSeconds(Settings.Delay));
                 try
                 {
-                    BetIndex--;
-                    Scores[BetIndex + 1] = null;
-                    Scores[BetIndex] = null;
-                    if (BetIndex > 0) Scores[BetIndex] = new Dictionary<string, int>(Scores[BetIndex - 1]);
-                    else Scores[BetIndex] = new Dictionary<string, int>();
+                    if (BetIndex > 0 && nextParent(SplitIndex - 1) != nextParent(SplitIndex))
+                    {
+                        BetIndex--;
+                        Scores[BetIndex + 1] = null;
+                        Scores[BetIndex] = null;
+                        if (BetIndex > 0) Scores[BetIndex] = new Dictionary<string, int>(Scores[BetIndex - 1]);
+                        else Scores[BetIndex] = new Dictionary<string, int>();
+                    }
+                    SplitIndex--;
                 }
                 catch (Exception ex)
                 {

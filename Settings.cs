@@ -119,8 +119,7 @@ namespace LiveSplit.SplitsBet
             if (!cmbTimeToShow.Items.Contains(TimeToShow))
                 cmbTimeToShow.Items.Add(TimeToShow);
             if (LivesplitState.Layout.Components.Any(x => x.ComponentName == "Subsplits")){
-                //chkSubsplits.Enabled = true;
-                // TODO : Re-enable this once SubSplits + Splits Selection when fully debugged
+                chkSubsplits.Enabled = true;
             }
             else
             {
